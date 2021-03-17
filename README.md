@@ -14,8 +14,39 @@ Nowadays IoT is one of the fastest growing industries, we impersonate a company 
 .....
 
 ## Usage
-.......
-docker...
+
+### Requirements
+- Docker
+- Docker Compose
+- Make
+
+### Environment
+You can define project variables changing the `.env` file. 
+This file is read by docker-compose to execute the services defined in docker-compose.yml.
+
+### Build, Run, Clean
+- Build and run the project: `make start`, to run on background use `make start-d`
+- Stop: `make stop` or `make kill`
+- See logs (useful if running on background): `make logs`
+- Clean projects (deleting docker images too): `make purge`
+
+### Delete postgres data
+All postgres data is contained in `postgres-data` folder.
+
+Run `sudo make delete-db` to delete all postgres data in order to start with a new database.
+
+
+### Connect to Postgres container
+Connect to the database container running:
+`docker exec -it database-postgres psql -U ${user} ${database}`
+
+Where user and database are defined in `.env`, e.g.:
+`docker exec -it database-postgres psql -U docker device-management`
+
+You can now execute SQL statements.
+
+For more information refer to: https://hub.docker.com/_/postgres
+
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
