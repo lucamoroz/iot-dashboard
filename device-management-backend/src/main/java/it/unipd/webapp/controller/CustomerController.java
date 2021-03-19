@@ -7,27 +7,37 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/v1")
+@RequestMapping("")
 public class CustomerController {
     
     @Autowired
     private CustomerRepository repository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @GetMapping("/customer")
     public List<Customer> getAllCustomers() {
         log.info("getAllCustomers");
         return repository.findAll();
+    }
+
+    @GetMapping("/me")
+    public String loggedUser(Principal principal) {
+        return principal.getClass().toString();
     }
 
     @GetMapping("/customer/{id}")
@@ -39,9 +49,10 @@ public class CustomerController {
 
     }
 
-    @PostMapping("/customer")
+    @PostMapping("/register")
     public Customer createCustomer(@Valid @RequestBody Customer customer) {
-        log.info("createCustomer");
+        log.info("register");
+        customer.setPassword(passwordEncoder.encode(customer.getPassword()));
         return repository.save(customer);
     }
 
@@ -54,8 +65,7 @@ public class CustomerController {
         log.info("customerById");
         Customer customer = repository.findById(customerId).
                 orElseThrow(() -> new ResourceNotFoundException("customer not found for this id:: " + customerId));
-        customer.setName(updatedCustomer.getName());
-        customer.setAge(updatedCustomer.getAge());
+        customer.setUsername(updatedCustomer.getUsername());
         repository.save(customer);
         return ResponseEntity.ok().body(customer);
     }
