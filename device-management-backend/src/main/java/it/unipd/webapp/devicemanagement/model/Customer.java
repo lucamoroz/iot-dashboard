@@ -24,9 +24,9 @@ public class Customer {
     @Column(name = "password", length = 255, nullable = false)
     private String password;
 
-    @NotBlank(message = "Name is mandatory")
-    @Column(name = "name", length = 127, nullable = false)
-    private String name;
+    @NotBlank(message = "Username is mandatory")
+    @Column(name = "username", length = 127, nullable = false)
+    private String username;
 
     @Column(name = "calls_count", nullable = false)
     private long callsCount;
@@ -38,4 +38,10 @@ public class Customer {
 
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     private List<Device> devices;
+
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+    private List<CustomerGroup> groups;
+
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+    private List<Order> orders;
 }
