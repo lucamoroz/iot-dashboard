@@ -57,10 +57,10 @@ Nicola Maino
 Francesco Pham
 Fabio Vaccaro
 
-| **[Stefano Ivancich](https://stefanoivancich.com)**| **[Denis Deronjic](https://github.com/deno750)** |
-| :---: |:---:|
-| [![Stefano Ivancich](https://avatars1.githubusercontent.com/u/36710626?s=200&v=4)](https://stefanoivancich.com)    | [![Denis Deronjic](https://avatars1.githubusercontent.com/u/28018184?s=200&v=4)](https://github.com/deno750) |
-| [`github.com/ivaste`](https://github.com/ivaste) | [`github.com/deno750`](https://github.com/deno750) |
+| **[Stefano Ivancich](https://stefanoivancich.com)**| **[Denis Deronjic](https://github.com/deno750)** | **[Francesco Pham](https://github.com/frankplus)** |
+| :---: |:---:|:---:|
+| [![Stefano Ivancich](https://avatars1.githubusercontent.com/u/36710626?s=200&v=4)](https://stefanoivancich.com)    | [![Denis Deronjic](https://avatars1.githubusercontent.com/u/28018184?s=200&v=4)](https://github.com/deno750) | [![Francesco Pham](https://avatars.githubusercontent.com/u/3135881?s=200&v=4)](https://github.com/frankplus) |
+| [`github.com/ivaste`](https://github.com/ivaste) | [`github.com/deno750`](https://github.com/deno750) | [`https://github.com/frankplus`](https://github.com/frankplus) |
 ...
 
 ## License
