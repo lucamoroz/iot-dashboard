@@ -59,7 +59,7 @@ Fabio Vaccaro
 
 | **[Stefano Ivancich](https://stefanoivancich.com)**| **[Denis Deronjic](https://github.com/deno750)** | **[Francesco Pham](https://github.com/frankplus)** | **[Luca Moroldo](https://github.com/lucamoroz)** |
 | :---: |:---:|:---:|:---:|
-| [![Stefano Ivancich](https://avatars1.githubusercontent.com/u/36710626?s=200&v=4)](https://stefanoivancich.com)    | [![Denis Deronjic](https://avatars1.githubusercontent.com/u/28018184?s=200&v=4)](https://github.com/deno750) | [![Francesco Pham](https://avatars.githubusercontent.com/u/3135881?s=200&v=4)](https://github.com/frankplus) | [![Luca Moroldo](https://avatars.githubusercontent.com/u/44212562?v=4)](https://github.com/lucamoroz)
+| [![Stefano Ivancich](https://avatars1.githubusercontent.com/u/36710626?s=200&v=4)](https://stefanoivancich.com)    | [![Denis Deronjic](https://avatars1.githubusercontent.com/u/28018184?s=200&v=4)](https://github.com/deno750) | [![Francesco Pham](https://avatars.githubusercontent.com/u/3135881?s=200&v=4)](https://github.com/frankplus) | [![Luca Moroldo](https://avatars.githubusercontent.com/u/44212562?s=200&v=4)](https://github.com/lucamoroz)
 | [`github.com/ivaste`](https://github.com/ivaste) | [`github.com/deno750`](https://github.com/deno750) | [`https://github.com/frankplus`](https://github.com/frankplus) | [`https://github.com/lucamoroz`](https://github.com/lucamoroz) |
 ...
 
