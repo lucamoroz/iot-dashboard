@@ -4,21 +4,22 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @Entity
 @Table(name = "device")
 public class Device {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false)
-    private DeviceType type;
+    @Embedded
+    private DeviceStatus deviceStatus;
 
-    @Column(name = "label", length = 64)
-    private String label;
+    @Embedded
+    private DeviceConfig config;
 
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -26,10 +27,14 @@ public class Device {
     @JsonIgnore
     private Customer customer;
 
-    @OneToOne(mappedBy = "device")
-    private DeviceStatus status;
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @JoinColumn(name = "product_id", referencedColumnName = "id")
+    private Product product;
 
-    @OneToOne(mappedBy = "device")
-    private DeviceConfig config;
+    @OneToMany(mappedBy = "device", fetch = FetchType.LAZY)
+    private List<SensorData> sensorData;
+
+    @ManyToMany(mappedBy = "devices")
+    private List<CustomerGroup> groups;
 
 }

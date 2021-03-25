@@ -2,6 +2,8 @@ package it.unipd.webapp.devicemanagement.controller;
 
 import it.unipd.webapp.devicemanagement.exception.ResourceNotFoundException;
 import it.unipd.webapp.devicemanagement.model.Customer;
+import it.unipd.webapp.devicemanagement.model.Device;
+import it.unipd.webapp.devicemanagement.model.DeviceStatus;
 import it.unipd.webapp.devicemanagement.repository.CustomerRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,12 @@ public class CustomerController {
     
     @Autowired
     private CustomerRepository repository;
+
+    @GetMapping("/me")
+    public ResponseEntity<Device> test() {
+        Device device = new Device();
+        return ResponseEntity.ok(device);
+    }
 
     @GetMapping("/customer")
     public List<Customer> getAllCustomers() {
