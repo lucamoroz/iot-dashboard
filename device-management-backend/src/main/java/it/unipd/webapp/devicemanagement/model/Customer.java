@@ -43,5 +43,5 @@ public class Customer {
     private List<CustomerGroup> groups;
 
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
-    private List<Order> orders;
+    private List<OrderDetail> orderDetails;
 }

@@ -7,8 +7,8 @@ import java.util.Date;
 import java.util.List;
 
 @Data
-@Entity(name = "order")
-public class Order {
+@Entity(name = "order_detail")
+public class OrderDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
