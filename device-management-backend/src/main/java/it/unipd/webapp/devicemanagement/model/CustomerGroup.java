@@ -10,7 +10,7 @@ import java.util.List;
 public class CustomerGroup {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(name = "name", nullable = false)

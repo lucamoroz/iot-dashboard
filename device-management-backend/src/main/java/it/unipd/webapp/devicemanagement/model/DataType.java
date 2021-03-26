@@ -9,7 +9,7 @@ import javax.persistence.*;
 public class DataType {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(name = "type_name", unique = true, nullable = false)

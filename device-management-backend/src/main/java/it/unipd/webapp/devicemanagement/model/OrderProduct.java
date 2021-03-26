@@ -10,7 +10,7 @@ import java.io.Serializable;
 public class OrderProduct implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(name = "quantity", nullable = false)
