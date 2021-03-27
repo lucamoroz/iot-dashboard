@@ -1,6 +1,7 @@
 package it.unipd.webapp.devicemanagement.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -37,11 +38,14 @@ public class Customer {
 
 
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Device> devices;
 
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<CustomerGroup> groups;
 
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<OrderDetail> orderDetails;
 }

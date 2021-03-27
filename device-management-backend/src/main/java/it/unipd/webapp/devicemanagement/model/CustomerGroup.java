@@ -1,5 +1,6 @@
 package it.unipd.webapp.devicemanagement.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -19,6 +20,7 @@ public class CustomerGroup {
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
+    @JsonIgnore
     private Customer customer;
 
     @ManyToMany
@@ -27,5 +29,6 @@ public class CustomerGroup {
             joinColumns = @JoinColumn(name = "customer_group_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "device_id", referencedColumnName = "id")
     )
+    @JsonIgnore
     private List<Device> devices;
 }

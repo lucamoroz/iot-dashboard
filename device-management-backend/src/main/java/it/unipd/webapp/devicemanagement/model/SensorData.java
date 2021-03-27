@@ -28,6 +28,7 @@ public class SensorData {
 
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "data_type_id", referencedColumnName = "id")
+    @JsonIgnore
     private DataType dataType;
 
 }

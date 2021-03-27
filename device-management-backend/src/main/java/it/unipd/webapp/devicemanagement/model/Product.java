@@ -1,5 +1,6 @@
 package it.unipd.webapp.devicemanagement.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -13,6 +14,9 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Column(name = "name", nullable = false)
+    private String name;
+
     @Lob
     @Column(name = "image", nullable = true)
     private Byte[] image;
@@ -25,6 +29,7 @@ public class Product {
 
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Device> devices;
 
     @ManyToMany
@@ -33,8 +38,10 @@ public class Product {
             joinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "data_type_id", referencedColumnName = "id")
     )
+    @JsonIgnore
     private List<DataType> dataTypes;
 
     @OneToMany(mappedBy = "product")
+    @JsonIgnore
     private List<OrderProduct> orderProducts;
 }

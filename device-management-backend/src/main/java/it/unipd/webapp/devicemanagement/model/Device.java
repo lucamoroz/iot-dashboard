@@ -29,12 +29,15 @@ public class Device {
 
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id", referencedColumnName = "id")
+    @JsonIgnore
     private Product product;
 
     @OneToMany(mappedBy = "device", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<SensorData> sensorData;
 
     @ManyToMany(mappedBy = "devices")
+    @JsonIgnore
     private List<CustomerGroup> groups;
 
 }

@@ -1,5 +1,6 @@
 package it.unipd.webapp.devicemanagement.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -26,9 +27,11 @@ public class OrderDetail {
 
 
     @OneToMany(mappedBy = "order")
+    @JsonIgnore
     private List<OrderProduct> orderProducts;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
+    @JsonIgnore
     private Customer customer;
 }

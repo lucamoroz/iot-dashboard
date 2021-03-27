@@ -18,10 +18,10 @@ VALUES
 ('Best Wind sensor on the market','https://images-na.ssl-images-amazon.com/images/I/6187maZE%2B1L._AC_SX425_.jpg',150.50);*/
 
 INSERT INTO product
-(description,image,price)
+(name, description,image,price)
 VALUES
-('Best Temperature sensor on the market',0,199.99),
-('Best Wind sensor on the market',0,150.50);
+('temperature sensor', 'Best Temperature sensor on the market',0,199.99),
+('wind sensor', 'Best Wind sensor on the market',0,150.50);
 
 
 /* INSERT DATATYPE	data_type */

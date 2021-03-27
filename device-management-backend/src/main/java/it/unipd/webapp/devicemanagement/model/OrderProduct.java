@@ -1,5 +1,6 @@
 package it.unipd.webapp.devicemanagement.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -19,10 +20,12 @@ public class OrderProduct implements Serializable {
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", referencedColumnName = "id")
+    @JsonIgnore
     private OrderDetail order;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", referencedColumnName = "id")
+    @JsonIgnore
     private Product product;
 
 }
