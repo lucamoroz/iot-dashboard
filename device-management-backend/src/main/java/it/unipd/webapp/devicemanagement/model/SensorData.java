@@ -26,7 +26,7 @@ public class SensorData {
     @JsonIgnore
     private Device device;
 
-    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "data_type_id", referencedColumnName = "id")
     @JsonIgnore
     private DataType dataType;
