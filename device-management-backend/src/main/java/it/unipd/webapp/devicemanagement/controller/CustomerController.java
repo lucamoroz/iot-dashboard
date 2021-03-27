@@ -1,8 +1,8 @@
-package it.unipd.webapp.controller;
+package it.unipd.webapp.devicemanagement.controller;
 
-import it.unipd.webapp.exception.ResourceNotFoundException;
-import it.unipd.webapp.model.Customer;
-import it.unipd.webapp.repository.CustomerRepository;
+import it.unipd.webapp.devicemanagement.exception.ResourceNotFoundException;
+import it.unipd.webapp.devicemanagement.model.Customer;
+import it.unipd.webapp.devicemanagement.repository.CustomerRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,7 +36,6 @@ public class CustomerController {
         Customer customer = repository.findById(customerId).
                 orElseThrow(() -> new ResourceNotFoundException("customer not found for id:: " + customerId));
         return ResponseEntity.ok().body(customer);
-
     }
 
     @PostMapping("/customer")
@@ -54,8 +53,7 @@ public class CustomerController {
         log.info("customerById");
         Customer customer = repository.findById(customerId).
                 orElseThrow(() -> new ResourceNotFoundException("customer not found for this id:: " + customerId));
-        customer.setName(updatedCustomer.getName());
-        customer.setAge(updatedCustomer.getAge());
+        customer.setEmail(updatedCustomer.getEmail());
         repository.save(customer);
         return ResponseEntity.ok().body(customer);
     }
