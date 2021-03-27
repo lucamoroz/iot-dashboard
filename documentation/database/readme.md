@@ -8,16 +8,16 @@
 ![Relational diagram](er_diagram-Relational.png)
 
 # Table names in the implemetation
-CUSTOMER 		customer
-CUSTOMERGROUP	customer_group
-BELONGS			customer_groups_devices
-DATATYPE		data_type
-DEVICE			device
-ORDER  			order_detail
-CONTAINS		orders_products
-PRODUCT			product
-HAS				products_data_types
-SENSORDATA		sensor_data
+CUSTOMER 		customer\\
+CUSTOMERGROUP	customer_group\\
+BELONGS			customer_groups_devices\\
+DATATYPE		data_type\\
+DEVICE			device\\
+ORDER  			order_detail\\
+CONTAINS		orders_products\\
+PRODUCT			product\\
+HAS				products_data_types\\
+SENSORDATA		sensor_data\\
 
 
 
