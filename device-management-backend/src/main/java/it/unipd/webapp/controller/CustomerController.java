@@ -7,6 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -35,9 +38,12 @@ public class CustomerController {
         return repository.findAll();
     }
 
-    @GetMapping("/me")
-    public String loggedUser(Principal principal) {
-        return principal.getClass().toString();
+    @Secured("ROLE_DEVICE")
+    @GetMapping("/device/me")
+    public String loggedUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        log.info("Received request with role: " + auth.getAuthorities().toString());
+        return auth.getName();
     }
 
     @GetMapping("/customer/{id}")
