@@ -28,7 +28,6 @@ final class DeviceAuthenticationFilter extends AbstractAuthenticationProcessingF
     @Override
     public Authentication attemptAuthentication(final HttpServletRequest request, final HttpServletResponse response) {
         // Extract token from Authorization header
-
         final String param = ofNullable(request.getHeader(AUTHORIZATION))
                 .orElseThrow(() -> new BadCredentialsException("Missing Authorization header"));
 
@@ -53,6 +52,8 @@ final class DeviceAuthenticationFilter extends AbstractAuthenticationProcessingF
             final FilterChain chain,
             final Authentication authResult) throws IOException, ServletException {
         super.successfulAuthentication(request, response, chain, authResult);
+        // Let the request reach the application if the request is authenticated
         chain.doFilter(request, response);
     }
+
 }

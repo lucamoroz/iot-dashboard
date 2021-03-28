@@ -20,7 +20,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    final RequestMatcher DEVICE_REQ_MATCHER = new OrRequestMatcher(new AntPathRequestMatcher("/device/**"));
+    final RequestMatcher DEVICE_API_MATCHER = new OrRequestMatcher(new AntPathRequestMatcher("/device/**"));
 
     @Autowired
     UserDetailsService userDetailsService;
@@ -31,7 +31,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http
                 .httpBasic()
                 .and()
-                .addFilterBefore(deviceAuthenticationFilter(), AnonymousAuthenticationFilter.class)
+                .addFilterBefore(createDeviceAuthenticationFilter(DEVICE_API_MATCHER), AnonymousAuthenticationFilter.class)
                 .authorizeRequests()
                     .antMatchers("/", "/register").permitAll()
                     .anyRequest().authenticated()
@@ -41,8 +41,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .and()
                 .logout()
                     .permitAll()
-                    .and()
-                .csrf().disable();
+                .and().csrf();
     }
 
     @Autowired
@@ -56,10 +55,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         builder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
 
-    @Bean
-    DeviceAuthenticationFilter deviceAuthenticationFilter() throws Exception {
+    DeviceAuthenticationFilter createDeviceAuthenticationFilter(RequestMatcher protectedMatcher) throws Exception {
 
-        final DeviceAuthenticationFilter filter = new DeviceAuthenticationFilter(DEVICE_REQ_MATCHER);
+        final DeviceAuthenticationFilter filter = new DeviceAuthenticationFilter(protectedMatcher);
         filter.setAuthenticationManager(authenticationManager());
 
         SimpleUrlAuthenticationSuccessHandler successHandler = new SimpleUrlAuthenticationSuccessHandler();
