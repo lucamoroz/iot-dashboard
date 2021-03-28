@@ -14,30 +14,34 @@ import java.util.List;
 
 @Component
 @Slf4j
-public class CustomAuthenticationProvider implements AuthenticationProvider {
+public class DeviceAuthenticationProvider implements AuthenticationProvider {
     @Override
     public Authentication authenticate(Authentication auth) throws AuthenticationException {
         // TODO this authentication provider will retrieve the device ID given a token.
         // The request will be authenticated if the token is associated with a device
 
+        final DeviceAuthenticationToken authenticationToken = (DeviceAuthenticationToken) auth;
         String token = auth.getCredentials().toString();
-        String device_id = "device_id"; // username = findDeviceIdByToken(token)
 
-        log.info(String.format("Custom auth provider checking credentials for usr: %s, pass: %s", device_id, token));
+        log.info(String.format("retrieving device for token: %s", token));
+        String deviceId = "device_id"; // device_id = findDeviceIdByToken(token)
 
-        if (device_id == null || !token.equals("123")) { // todo remove the token equals once findDeviceIdByToken(token) is available
-            throw new BadCredentialsException("External system authentication failed");
+        if (deviceId == null || !token.equals("123")) { // todo remove the token equals once findDeviceIdByToken(token) is available
+            throw new BadCredentialsException(String.format("Device with token %s not found!", token));
         }
 
-        return new UsernamePasswordAuthenticationToken(
-                device_id,
+        DeviceAuthenticationToken authenticatedDevice = new DeviceAuthenticationToken(
+                deviceId,
                 token,
-                List.of(new SimpleGrantedAuthority("ROLE_DEVICE"))
-        );
+                List.of(new SimpleGrantedAuthority("ROLE_DEVICE")
+        ));
+
+        authenticatedDevice.setDetails(authenticationToken.getDetails());
+        return authenticatedDevice;
     }
 
     @Override
     public boolean supports(Class<?> auth) {
-        return auth.equals(UsernamePasswordAuthenticationToken.class);
+        return auth.equals(DeviceAuthenticationToken.class);
     }
 }

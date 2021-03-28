@@ -31,6 +31,8 @@ final class DeviceAuthenticationFilter extends AbstractAuthenticationProcessingF
 
     @Override
     public Authentication attemptAuthentication(final HttpServletRequest request, final HttpServletResponse response) {
+        // Extract token from Authorization header
+
         final String param = ofNullable(request.getHeader(AUTHORIZATION))
                 .orElseThrow(() -> new BadCredentialsException("Missing Authorization header"));
 
@@ -41,8 +43,11 @@ final class DeviceAuthenticationFilter extends AbstractAuthenticationProcessingF
                 .map(String::trim)
                 .orElseThrow(() -> new BadCredentialsException("Missing Authentication Token"));
 
-        final Authentication auth = new UsernamePasswordAuthenticationToken(token, token);
-        return getAuthenticationManager().authenticate(auth);
+        final DeviceAuthenticationToken authenticationToken = new DeviceAuthenticationToken(null, token);
+        authenticationToken.setDetails(authenticationDetailsSource.buildDetails(request));
+
+        // Delegate authentication to the authentication manager
+        return getAuthenticationManager().authenticate(authenticationToken);
     }
 
     @Override

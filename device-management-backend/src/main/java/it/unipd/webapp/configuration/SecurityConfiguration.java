@@ -10,15 +10,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-
-import javax.sql.DataSource;
 
 @Configuration
 @EnableWebSecurity
@@ -50,12 +46,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Autowired
-    CustomAuthenticationProvider customAuthenticationProvider;
+    DeviceAuthenticationProvider deviceAuthenticationProvider;
 
     @Override
     public void configure(AuthenticationManagerBuilder builder) throws Exception {
         // Add authentication with a custom authentication provider
-        builder.authenticationProvider(customAuthenticationProvider);
+        builder.authenticationProvider(deviceAuthenticationProvider);
         // Add authentication with a custom user details service
         builder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
