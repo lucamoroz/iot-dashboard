@@ -34,7 +34,7 @@ public class CustomerController {
 
     @GetMapping("/customer")
     public List<Customer> getAllCustomers() {
-        log.info("getAllCustomers");
+        log.debug("getAllCustomers");
         return repository.findAll();
     }
 
@@ -42,13 +42,13 @@ public class CustomerController {
     @GetMapping("/device/me")
     public String loggedUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        log.info("Received request with role: " + auth.getAuthorities().toString());
+        log.debug("Received request with role: " + auth.getAuthorities().toString());
         return auth.getName();
     }
 
     @GetMapping("/customer/{id}")
     public ResponseEntity<Customer> getCustomerById(@PathVariable(value = "id") long customerId) throws ResourceNotFoundException {
-        log.info("getCustomerById");
+        log.debug("getCustomerById");
         Customer customer = repository.findById(customerId).
                 orElseThrow(() -> new ResourceNotFoundException("customer not found for id:: " + customerId));
         return ResponseEntity.ok().body(customer);
@@ -57,7 +57,7 @@ public class CustomerController {
 
     @PostMapping("/register")
     public Customer createCustomer(@Valid @RequestBody Customer customer) {
-        log.info("register");
+        log.debug("register");
         customer.setPassword(passwordEncoder.encode(customer.getPassword()));
         return repository.save(customer);
     }
@@ -68,7 +68,7 @@ public class CustomerController {
             @Valid @RequestBody Customer updatedCustomer
     ) throws ResourceNotFoundException {
 
-        log.info("customerById");
+        log.debug("customerById");
         Customer customer = repository.findById(customerId).
                 orElseThrow(() -> new ResourceNotFoundException("customer not found for this id:: " + customerId));
         customer.setUsername(updatedCustomer.getUsername());
@@ -79,7 +79,7 @@ public class CustomerController {
 
     @DeleteMapping("/customer/{id}")
     public void deleteCustomer(@PathVariable(value = "id") long customerId) throws ResourceNotFoundException {
-        log.info("deleteCustomer");
+        log.debug("deleteCustomer");
         Customer customer = repository.findById(customerId).
                 orElseThrow(() -> new ResourceNotFoundException("customer not found for this id:: " + customerId));
         repository.delete(customer);

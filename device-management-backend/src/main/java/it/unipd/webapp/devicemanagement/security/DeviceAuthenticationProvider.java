@@ -21,10 +21,11 @@ public class DeviceAuthenticationProvider implements AuthenticationProvider {
         final DeviceAuthenticationToken authenticationToken = (DeviceAuthenticationToken) auth;
         String token = auth.getCredentials().toString();
 
-        log.info(String.format("retrieving device for token: %s", token));
+        log.debug(String.format("retrieving device for token: %s", token));
         String deviceId = "device_id"; // device_id = findDeviceIdByToken(token)
 
         if (deviceId == null || !token.equals("123")) { // todo remove the token equals once findDeviceIdByToken(token) is available
+            log.debug(String.format("device with token %s not found", token));
             throw new BadCredentialsException(String.format("Device with token %s not found!", token));
         }
 
@@ -35,6 +36,8 @@ public class DeviceAuthenticationProvider implements AuthenticationProvider {
         ));
 
         authenticatedDevice.setDetails(authenticationToken.getDetails());
+
+        log.debug(String.format("authenticated device: %s", deviceId));
         return authenticatedDevice;
     }
 

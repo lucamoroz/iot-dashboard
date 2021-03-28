@@ -31,7 +31,7 @@ final class DeviceAuthenticationFilter extends AbstractAuthenticationProcessingF
         final String param = ofNullable(request.getHeader(AUTHORIZATION))
                 .orElseThrow(() -> new BadCredentialsException("Missing Authorization header"));
 
-        log.info("received request with token " + param);
+        log.debug("received request with authorization value: " + param);
 
         final String token = ofNullable(param)
                 .map(value -> value.replace(BEARER, ""))

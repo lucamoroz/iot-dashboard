@@ -19,14 +19,13 @@ public class CustomerDetailService implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        log.info("loading user " + s);
+        log.debug("loading user " + s);
         var customer =  repository.findByUsername(s);
 
         if (customer == null) {
-            log.info("user not found!");
+            log.debug("user not found!");
             throw new UsernameNotFoundException("user " + s + "does not exist");
         } else {
-            log.info("loaded user: " + customer.toString());
             return customer;
         }
     }
