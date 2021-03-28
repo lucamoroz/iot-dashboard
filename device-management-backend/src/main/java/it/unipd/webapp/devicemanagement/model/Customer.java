@@ -39,6 +39,9 @@ public class Customer implements UserDetails {
     @Column(name = "username", length = 127, nullable = false)
     private String username;
 
+    @Column(name = "role", length = 50, nullable = false)
+    private String role;
+
     @Column(name = "calls_count", nullable = false)
     private long callsCount;
 
@@ -64,7 +67,7 @@ public class Customer implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_CUSTOMER"));
+        return List.of(new SimpleGrantedAuthority(this.role));
     }
 
     @Override

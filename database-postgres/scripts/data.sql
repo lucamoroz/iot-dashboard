@@ -2,11 +2,11 @@
 
 /* INSERT CUSTOMERS customer - password is 'password' for all customers (bcrypt encrypted) */
 INSERT INTO customer
-(calls_count, email, password, plan, username)
+(calls_count, email, password, plan, username, role)
 VALUES
-(50, 'email.com', '$2a$10$wEUMgXHcrBNM2.5Pnv7p5OPKW8yCcCBOMOS6UrS18R/uiaHp8JG5S', 'FREE', 'username1'),
-(50, 'email2.com', '$2a$10$wEUMgXHcrBNM2.5Pnv7p5OPKW8yCcCBOMOS6UrS18R/uiaHp8JG5S', 'FREE', 'username2'),
-(150, 'email3.com', '$2a$10$wEUMgXHcrBNM2.5Pnv7p5OPKW8yCcCBOMOS6UrS18R/uiaHp8JG5S', 'FREE', 'username3');
+(50, 'email.com', '$2a$10$wEUMgXHcrBNM2.5Pnv7p5OPKW8yCcCBOMOS6UrS18R/uiaHp8JG5S', 'FREE', 'username1', 'ROLE_CUSTOMER'),
+(50, 'email2.com', '$2a$10$wEUMgXHcrBNM2.5Pnv7p5OPKW8yCcCBOMOS6UrS18R/uiaHp8JG5S', 'FREE', 'username2', 'ROLE_CUSTOMER'),
+(150, 'email3.com', '$2a$10$wEUMgXHcrBNM2.5Pnv7p5OPKW8yCcCBOMOS6UrS18R/uiaHp8JG5S', 'FREE', 'username3', 'ROLE_CUSTOMER');
 
 
 /******TODO ATTRIBUTE "NAME" ********/
