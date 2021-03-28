@@ -1,12 +1,12 @@
 /* The statements in this file must be executed in order*/
 
-/* INSERT CUSTOMERS customer*/
+/* INSERT CUSTOMERS customer - password is 'password' for all customers (bcrypt encrypted) */
 INSERT INTO customer
 (calls_count, email, password, plan, username)
 VALUES
-(50, 'email.com', 'password', 'FREE', 'username1'),
-(50, 'email2.com', 'password', 'FREE', 'username2'),
-(150, 'email3.com', 'password', 'FREE', 'username3');
+(50, 'email.com', '$2a$10$wEUMgXHcrBNM2.5Pnv7p5OPKW8yCcCBOMOS6UrS18R/uiaHp8JG5S', 'FREE', 'username1'),
+(50, 'email2.com', '$2a$10$wEUMgXHcrBNM2.5Pnv7p5OPKW8yCcCBOMOS6UrS18R/uiaHp8JG5S', 'FREE', 'username2'),
+(150, 'email3.com', '$2a$10$wEUMgXHcrBNM2.5Pnv7p5OPKW8yCcCBOMOS6UrS18R/uiaHp8JG5S', 'FREE', 'username3');
 
 
 /******TODO ATTRIBUTE "NAME" ********/
