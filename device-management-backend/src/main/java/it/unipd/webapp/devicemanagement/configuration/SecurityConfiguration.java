@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,11 +26,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     UserDetailsService userDetailsService;
 
+    @Autowired
+    DeviceAuthenticationProvider deviceAuthenticationProvider;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
         http
                 .httpBasic()
+                .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER)
                 .and()
                 .addFilterBefore(createDeviceAuthenticationFilter(DEVICE_API_MATCHER), AnonymousAuthenticationFilter.class)
                 .authorizeRequests()
@@ -43,9 +49,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .permitAll()
                 .and().csrf();
     }
-
-    @Autowired
-    DeviceAuthenticationProvider deviceAuthenticationProvider;
 
     @Override
     public void configure(AuthenticationManagerBuilder builder) throws Exception {

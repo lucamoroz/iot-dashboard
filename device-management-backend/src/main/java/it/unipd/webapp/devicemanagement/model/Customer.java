@@ -1,7 +1,11 @@
 package it.unipd.webapp.devicemanagement.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,7 +15,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
 import java.util.Collection;
 import java.util.List;
 
@@ -21,14 +24,41 @@ import java.util.List;
 public class Customer implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NotBlank(message = "Username is mandatory")
-    private String username;
+    @NotBlank(message = "Email is mandatory")
+    @Column(name = "email", length = 127, nullable = false, unique = true)
+    private String email;
 
     @NotBlank(message = "Password is mandatory")
-    String password;
+    @Column(name = "password", length = 255, nullable = false)
+    private String password;
+
+    @NotBlank(message = "Username is mandatory")
+    @Column(name = "username", length = 127, nullable = false)
+    private String username;
+
+    @Column(name = "calls_count", nullable = false)
+    private long callsCount;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "plan", nullable = false)
+    private CustomerPlan plan;
+
+
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Device> devices;
+
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<CustomerGroup> groups;
+
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<OrderDetail> orderDetails;
+
 
     // Required by Spring Security
 

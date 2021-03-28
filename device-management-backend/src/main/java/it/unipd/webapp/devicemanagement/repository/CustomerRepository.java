@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
-
     @Query("SELECT c FROM Customer c WHERE c.username = ?1")
     Customer findByUsername(String username);
 }

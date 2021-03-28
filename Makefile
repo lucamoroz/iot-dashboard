@@ -1,3 +1,6 @@
+include .env
+export
+
 start: build run
 start-d: build run-d
 
@@ -20,8 +23,14 @@ stop:
 kill:
 	docker-compose kill
 
+open-db:
+	docker exec -it database-postgres psql -U ${POSTGRES_USER} ${POSTGRES_DB}
+
+populate-db:
+	docker exec -it database-postgres bash -c "psql -d ${POSTGRES_DB} -a  -U ${POSTGRES_USER} -f /scripts/data.sql"
+
 delete-db:
-	chmod -R 777 postgres-data && rm -r postgres-data/
+	rm -r database-postgres/data
 
 
 purge:

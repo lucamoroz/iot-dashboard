@@ -31,6 +31,7 @@ public class CustomerController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+
     @GetMapping("/customer")
     public List<Customer> getAllCustomers() {
         log.info("getAllCustomers");
@@ -71,6 +72,7 @@ public class CustomerController {
         Customer customer = repository.findById(customerId).
                 orElseThrow(() -> new ResourceNotFoundException("customer not found for this id:: " + customerId));
         customer.setUsername(updatedCustomer.getUsername());
+        customer.setEmail(updatedCustomer.getEmail());
         repository.save(customer);
         return ResponseEntity.ok().body(customer);
     }

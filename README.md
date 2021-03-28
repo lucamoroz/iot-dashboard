@@ -30,22 +30,21 @@ This file is read by docker-compose to execute the services defined in docker-co
 - See logs (useful if running on background): `make logs`
 - Clean projects (deleting docker images too): `make purge`
 
-### Delete postgres data
-All postgres data is contained in `postgres-data` folder.
-
-Run `sudo make delete-db` to delete all postgres data in order to start with a new database.
-
-
-### Connect to Postgres container
-Connect to the database container running:
-`docker exec -it database-postgres psql -U ${user} ${database}`
-
-Where user and database are defined in `.env`, e.g.:
-`docker exec -it database-postgres psql -U docker device-management`
-
-You can now execute SQL statements.
+### Database
+All postgres data is contained in `database-postgres/data` folder.
 
 For more information refer to: https://hub.docker.com/_/postgres
+
+#### Connect to database
+Run `make open-db` to open a `psql` terminal (useful to inspect the database or run raw SQL commands).
+
+#### Populate database
+In order to populate the database with some fake data, run `make populate-db`.
+
+The SQL script that will be executed to populate the database can be found in `database-postgres/scripts/data.sql`.
+
+#### Clear database
+Run `sudo make delete-db` to delete all postgres data in order to start with a fresh new database.
 
 
 ## Contributing
@@ -57,10 +56,10 @@ Nicola Maino
 Francesco Pham
 Fabio Vaccaro
 
-| **[Stefano Ivancich](https://stefanoivancich.com)**| **[Denis Deronjic](https://github.com/deno750)** |
-| :---: |:---:|
-| [![Stefano Ivancich](https://avatars1.githubusercontent.com/u/36710626?s=200&v=4)](https://stefanoivancich.com)    | [![Denis Deronjic](https://avatars1.githubusercontent.com/u/28018184?s=200&v=4)](https://github.com/deno750) |
-| [`github.com/ivaste`](https://github.com/ivaste) | [`github.com/deno750`](https://github.com/deno750) |
+| **[Stefano Ivancich](https://stefanoivancich.com)**| **[Denis Deronjic](https://github.com/deno750)** | **[Francesco Pham](https://github.com/frankplus)** | **[Luca Moroldo](https://github.com/lucamoroz)** |
+| :---: |:---:|:---:|:---:|
+| [![Stefano Ivancich](https://avatars1.githubusercontent.com/u/36710626?s=200&v=4)](https://stefanoivancich.com)    | [![Denis Deronjic](https://avatars1.githubusercontent.com/u/28018184?s=200&v=4)](https://github.com/deno750) | [![Francesco Pham](https://avatars.githubusercontent.com/u/3135881?s=200&v=4)](https://github.com/frankplus) | [![Luca Moroldo](https://avatars.githubusercontent.com/u/44212562?s=200&v=4)](https://github.com/lucamoroz)
+| [`github.com/ivaste`](https://github.com/ivaste) | [`github.com/deno750`](https://github.com/deno750) | [`https://github.com/frankplus`](https://github.com/frankplus) | [`https://github.com/lucamoroz`](https://github.com/lucamoroz) |
 ...
 
 ## License
