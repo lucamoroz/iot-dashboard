@@ -47,7 +47,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .and()
                 .logout()
                     .permitAll()
-                .and().csrf();
+                .and().csrf().disable(); // TODO enable CSRF protection later (doesn't work with postman)
     }
 
     @Override
