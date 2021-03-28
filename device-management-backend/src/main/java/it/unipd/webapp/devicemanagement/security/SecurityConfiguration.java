@@ -1,4 +1,4 @@
-package it.unipd.webapp.devicemanagement.configuration;
+package it.unipd.webapp.devicemanagement.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

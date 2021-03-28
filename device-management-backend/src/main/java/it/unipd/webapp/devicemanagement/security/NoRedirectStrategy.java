@@ -1,4 +1,4 @@
-package it.unipd.webapp.devicemanagement.configuration;
+package it.unipd.webapp.devicemanagement.security;
 
 import org.springframework.security.web.RedirectStrategy;
 
