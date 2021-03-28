@@ -1,6 +1,6 @@
-package it.unipd.webapp.service;
+package it.unipd.webapp.devicemanagement.service;
 
-import it.unipd.webapp.repository.CustomerRepository;
+import it.unipd.webapp.devicemanagement.repository.CustomerRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

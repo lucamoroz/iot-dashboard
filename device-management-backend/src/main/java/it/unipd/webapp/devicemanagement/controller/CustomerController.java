@@ -1,8 +1,8 @@
-package it.unipd.webapp.controller;
+package it.unipd.webapp.devicemanagement.controller;
 
-import it.unipd.webapp.exception.ResourceNotFoundException;
-import it.unipd.webapp.model.Customer;
-import it.unipd.webapp.repository.CustomerRepository;
+import it.unipd.webapp.devicemanagement.exception.ResourceNotFoundException;
+import it.unipd.webapp.devicemanagement.model.Customer;
+import it.unipd.webapp.devicemanagement.repository.CustomerRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,7 +16,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package it.unipd.webapp.configuration;
+package it.unipd.webapp.devicemanagement.configuration;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;

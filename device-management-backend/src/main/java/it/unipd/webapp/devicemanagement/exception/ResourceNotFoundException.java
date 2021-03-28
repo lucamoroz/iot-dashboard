@@ -1,4 +1,4 @@
-package it.unipd.webapp.exception;
+package it.unipd.webapp.devicemanagement.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

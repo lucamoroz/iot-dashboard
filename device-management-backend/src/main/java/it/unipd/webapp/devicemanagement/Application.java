@@ -1,5 +1,6 @@
-package it.unipd.webapp;
+package it.unipd.webapp.devicemanagement;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -10,13 +11,12 @@ import java.util.logging.Logger;
 
 @SpringBootApplication
 @RestController
+@Slf4j
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class Application {
 
-	private static final Logger logger = Logger.getLogger(Application.class.getName());
-
 	public static void main(String[] args) {
-		logger.info("Initializing application...");
+		log.info("Initializing application...");
 		SpringApplication.run(Application.class, args);
 	}
 

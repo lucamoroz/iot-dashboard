@@ -1,4 +1,4 @@
-package it.unipd.webapp.model;
+package it.unipd.webapp.devicemanagement.model;
 
 
 import lombok.Data;
@@ -12,7 +12,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 

@@ -1,6 +1,6 @@
-package it.unipd.webapp.repository;
+package it.unipd.webapp.devicemanagement.repository;
 
-import it.unipd.webapp.model.Customer;
+import it.unipd.webapp.devicemanagement.model.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
