@@ -17,9 +17,8 @@ public class Product {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Lob
     @Column(name = "image", nullable = true)
-    private Byte[] image;
+    private String image;
 
     @Column(name = "price", nullable = false)
     private float price;
