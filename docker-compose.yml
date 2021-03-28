@@ -5,6 +5,8 @@ services:
   database-postgres:
     image: library/postgres:13.2
     container_name: database-postgres
+    ports: 
+      - 5432:5432
     volumes:
       - ./database-postgres/data:/var/lib/postgresql/data
       - ./database-postgres/scripts:/scripts
