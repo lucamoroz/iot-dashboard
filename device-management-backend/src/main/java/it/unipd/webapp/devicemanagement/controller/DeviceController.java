@@ -29,7 +29,14 @@ public class DeviceController {
         log.info("getAllDevices");
         return repository.findAll();
     }
-
+    
+    @GetMapping("/device/{id}")
+    public ResponseEntity<Device> getDeviceById(@PathVariable(value = "id") long deviceId) throws ResourceNotFoundException {
+        log.info("getDeviceById");
+        Device device = repository.findById(deviceId).
+                orElseThrow(() -> new ResourceNotFoundException("device not found for id:: " + deviceId));
+        return ResponseEntity.ok().body(device);
+    }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class) // handler for not @Valid requests
