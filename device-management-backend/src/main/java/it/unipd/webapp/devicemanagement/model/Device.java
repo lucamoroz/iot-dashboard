@@ -32,7 +32,7 @@ public class Device {
     @JsonIgnore
     private Product product;
 
-    @OneToMany(mappedBy = "device", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "device", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JsonIgnore
     private List<SensorData> sensorData;
 
