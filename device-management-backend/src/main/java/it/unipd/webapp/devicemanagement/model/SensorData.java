@@ -1,6 +1,9 @@
 package it.unipd.webapp.devicemanagement.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+
 import lombok.Data;
 
 import javax.persistence.*;
@@ -28,7 +31,7 @@ public class SensorData {
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "data_type_id", referencedColumnName = "id")
-    @JsonIgnore
+    @JsonProperty(access = Access.WRITE_ONLY)
     private DataType dataType;
 
 }
