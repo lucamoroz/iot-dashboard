@@ -39,7 +39,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .addFilterBefore(createDeviceAuthenticationFilter(DEVICE_API_MATCHER), AnonymousAuthenticationFilter.class)
                 .authorizeRequests()
-                    .antMatchers("/", "/register").permitAll()
+                    .antMatchers("/", "/customer/register").permitAll()
                     .anyRequest().authenticated()
                     .and()
                 .formLogin()
