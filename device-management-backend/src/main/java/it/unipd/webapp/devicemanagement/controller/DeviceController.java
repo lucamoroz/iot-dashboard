@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import it.unipd.webapp.devicemanagement.model.Customer;
 
 @RestController
 @Slf4j
@@ -27,28 +29,17 @@ public class DeviceController {
     @GetMapping("/device")
     public List<Device> getAllDevices() {
         log.info("getAllDevices");
-        return repository.findAll();
+        Customer loggedCustomer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return repository.findDevicesByCustomerId(loggedCustomer.getId());
     }
     
     @GetMapping("/device/{id}")
-    public ResponseEntity<Device> getDeviceById(@PathVariable(value = "id") long deviceId) throws ResourceNotFoundException {
+    public ResponseEntity<Device> getDeviceById(@PathVariable(value = "id") long deviceId)
+            throws ResourceNotFoundException {
         log.info("getDeviceById");
         Device device = repository.findById(deviceId).
                 orElseThrow(() -> new ResourceNotFoundException("device not found for id:: " + deviceId));
         return ResponseEntity.ok().body(device);
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class) // handler for not @Valid requests
-    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException exception) {
-        Map<String, String> errors = new HashMap<>();
-
-        exception.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-
-        return errors;
-    }
 }
