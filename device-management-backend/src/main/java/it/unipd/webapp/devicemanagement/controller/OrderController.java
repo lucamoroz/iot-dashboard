@@ -33,8 +33,12 @@ public class OrderController {
 - Remove item from non-completed order
 - Change quantity of a item on a non-completed order:
 - Query List of all completed orders of customer with id=1234
-- Go to the chart: Query the unique non completed order of customer with id=1234 and the products associated
+    SELECT * FROM
+- Go to the chart: Query the unique non completed order of customer with id=1234 and the products associated to that
+    SELECT * FROM order_detail WHERE customer_id=1234 AND completed=FALSE
+    SELECT * FROM .....
 - Query list of products of order with id=1234
+   SELECT * FROM
 *
 * */
 
@@ -44,14 +48,14 @@ public class OrderController {
     @Autowired
     private OrderRepository orderRepository;
 
-    @GetMapping("/chart/{id}")
+    /*@GetMapping("/chart/{id}")
     public ResponseEntity<List> chart(
             @PathVariable(value = "id") long customerId
     )throws ResourceNotFoundException{
         // to continueeeeeeeeeeeeeeeeeee
         OrderDetail o=orderRepository.findById(customerId);
         return ResponseEntity.ok().body(new List<>);
-    }
+    }*/
 
 
 }
