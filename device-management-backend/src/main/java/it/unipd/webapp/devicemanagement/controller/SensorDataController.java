@@ -3,6 +3,7 @@ package it.unipd.webapp.devicemanagement.controller;
 import it.unipd.webapp.devicemanagement.model.Device;
 import it.unipd.webapp.devicemanagement.model.SensorData;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -106,5 +107,43 @@ public class SensorDataController {
         }
 
         return ResponseEntity.ok().body(deviceDatas);
+    }
+
+    @GetMapping("/devices/map")
+    public ResponseEntity<List<HashMap<String, Object>>> getDeviceMap() {
+
+        //TODO
+        //I have to substitute it with the current customer
+        Long customerId = 1l; 
+
+        Optional<List<Device>> customerDeviceOpts = deviceRepo.findDevicesByCustomer(customerId);
+        if (customerDeviceOpts.isEmpty()) {
+             //Error: devices not found //TODO
+             log.info("Devices not found");
+             return ResponseEntity.notFound().build();
+        }
+
+        List<HashMap<String, Object>> outputs = new ArrayList<>();
+
+        List<Device> customerDevices = customerDeviceOpts.get();
+        for (Device customerDevice : customerDevices) {
+            Optional<List<SensorData>> sensorDataOpts = sensorDataRepo.getLastDeviceDataByDeviceId(customerDevice.getId());
+            List<SensorData> sensorDatas = sensorDataOpts.get();
+
+            Map<String, Float> deviceData = new HashMap<>();
+            for (SensorData sensorData : sensorDatas) {
+                String sensorType = sensorData.getDataType().getTypeName();
+                Float sensorValue = sensorData.getValue();
+                deviceData.put(sensorType, sensorValue);
+            }
+            
+            Map<String, Object> output = new HashMap<>();
+            output.put("device", customerDevice);
+            output.put("data", deviceData);
+
+            outputs.add((HashMap<String, Object>) output);
+        }
+
+        return ResponseEntity.ok().body(outputs);
     }
 }
