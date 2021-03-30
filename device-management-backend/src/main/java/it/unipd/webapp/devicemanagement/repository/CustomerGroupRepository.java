@@ -10,7 +10,6 @@ import java.util.List;
 @Repository
 public interface CustomerGroupRepository extends JpaRepository<CustomerGroup, Long> {
 
-    //TODO: Not needed now. Should be removed when pull request passes
     @Query("SELECT g FROM customer_group g WHERE g.customer.id = ?1")
     List<CustomerGroup> findGroupsByCustomerId(long customerId);
 }

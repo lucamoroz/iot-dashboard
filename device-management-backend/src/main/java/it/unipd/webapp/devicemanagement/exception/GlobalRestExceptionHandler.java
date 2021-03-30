@@ -74,4 +74,17 @@ public class GlobalRestExceptionHandler extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<CustomErrorResponse> forbiddenExceptionHandler(Exception ex, WebRequest request) {
+
+        var errors = CustomErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .error("Forbidden")
+                .message(ex.getMessage())
+                .status(HttpStatus.FORBIDDEN.value())
+                .build();
+
+        return new ResponseEntity<>(errors, HttpStatus.FORBIDDEN);
+    }
 }
