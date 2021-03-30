@@ -2,6 +2,7 @@ package it.unipd.webapp.devicemanagement.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.postgresql.util.PSQLException;
+import org.postgresql.util.ServerErrorMessage;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,13 +62,16 @@ public class GlobalRestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(PSQLException.class)
     public ResponseEntity<CustomErrorResponse> pgExceptionHandler(PSQLException ex, WebRequest request) {
+
+        ServerErrorMessage error = ex.getServerErrorMessage();
+
         var errors = CustomErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
-                .error("Database error")
-                .message(ex.getMessage()) // TODO remove this on "production" - we shouldn't expose internal errors
-                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .error(error.getDetail())
+                .message(error.getMessage()) // TODO remove this on "production" - we shouldn't expose internal errors
+                .status(HttpStatus.BAD_REQUEST.value())
                 .build();
 
-        return new ResponseEntity<>(errors, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 }
