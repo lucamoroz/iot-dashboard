@@ -33,7 +33,7 @@ public class SensorDataController {
     private SensorDataRepository sensorDataRepo;
 
 
-    @PostMapping("/addsensordata")
+    @PostMapping("/sensordata")
     public ResponseEntity<List<SensorData>> addSensorData(@RequestHeader("Authorization") String token, @RequestBody SensorData[] sensorDatas) {
         //Parses the token
         token = token.split(" ")[1];
@@ -109,8 +109,8 @@ public class SensorDataController {
         return ResponseEntity.ok().body(deviceDatas);
     }
 
-    @GetMapping("/devices/map")
-    public ResponseEntity<List<HashMap<String, Object>>> getDeviceMap() {
+    @GetMapping("/devices/data")
+    public ResponseEntity<List<HashMap<String, Object>>> getDevicesWithData() {
 
         //TODO
         //I have to substitute it with the current customer
@@ -122,6 +122,32 @@ public class SensorDataController {
              log.info("Devices not found");
              return ResponseEntity.notFound().build();
         }
+
+        List<HashMap<String, Object>> body = getDeviceAndDataList(customerDeviceOpts);
+
+        return ResponseEntity.ok().body(body);
+    }
+
+    @GetMapping("/devices/groups/{id}/data")
+    public ResponseEntity<List<HashMap<String, Object>>> getDevicesWithDataByGroupId(@PathVariable(value = "id") Long groupId) {
+
+        //TODO
+        //I have to substitute it with the current customer
+        Long customerId = 1l; 
+
+        Optional<List<Device>> customerDeviceOpts = deviceRepo.findDevicesByCustomerAndGroup(customerId, groupId);
+        if (customerDeviceOpts.isEmpty()) {
+             //Error: devices not found //TODO
+             log.info("Devices not found");
+             return ResponseEntity.notFound().build();
+        }
+
+        List<HashMap<String, Object>> body = getDeviceAndDataList(customerDeviceOpts);
+
+        return ResponseEntity.ok().body(body);
+    }
+
+    private List<HashMap<String, Object>> getDeviceAndDataList(Optional<List<Device>> customerDeviceOpts) {
 
         List<HashMap<String, Object>> outputs = new ArrayList<>();
 
@@ -144,6 +170,7 @@ public class SensorDataController {
             outputs.add((HashMap<String, Object>) output);
         }
 
-        return ResponseEntity.ok().body(outputs);
+        return outputs;
     }
+
 }
