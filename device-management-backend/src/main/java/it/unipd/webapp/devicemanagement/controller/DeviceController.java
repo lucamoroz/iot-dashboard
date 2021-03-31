@@ -1,7 +1,9 @@
 package it.unipd.webapp.devicemanagement.controller;
 
 import it.unipd.webapp.devicemanagement.exception.ResourceNotFoundException;
+import it.unipd.webapp.devicemanagement.model.ClientMessage;
 import it.unipd.webapp.devicemanagement.model.Device;
+import it.unipd.webapp.devicemanagement.model.DeviceConfig;
 import it.unipd.webapp.devicemanagement.repository.DeviceRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,13 +39,26 @@ public class DeviceController {
     public ResponseEntity<Device> getDeviceById(@PathVariable(value = "id") long deviceId)
             throws ResourceNotFoundException {
         log.info("getDeviceById");
-        Device device = repository.findById(deviceId).
-                orElseThrow(() -> new ResourceNotFoundException("user's device not found for id: " + deviceId));
         Customer loggedCustomer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (device.getCustomer().getId() != loggedCustomer.getId()) {
-            throw new ResourceNotFoundException("user's device not found for id: " + deviceId);
-        }
+        Device device = repository.findCustomerDeviceById(loggedCustomer.getId(), deviceId).
+                orElseThrow(() -> new ResourceNotFoundException("user's device not found for id: " + deviceId));
         return ResponseEntity.ok().body(device);
     }
 
+    @PutMapping("/device/{id}/config")
+    public ResponseEntity<ClientMessage> updateDeviceConfig(
+            @PathVariable(value = "id") long deviceId,
+            @RequestParam long updateFrequency,
+            @RequestParam boolean enabled)
+            throws ResourceNotFoundException {
+        Customer loggedCustomer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Device device = repository.findCustomerDeviceById(loggedCustomer.getId(), deviceId).
+                orElseThrow(() -> new ResourceNotFoundException("user's device not found for id: " + deviceId));
+        DeviceConfig deviceConfig = device.getConfig();
+        deviceConfig.setEnabled(enabled);
+        deviceConfig.setUpdate_frequency(updateFrequency);
+        repository.save(device);
+        ClientMessage clientMessage = new ClientMessage("Device configuration updated");
+        return ResponseEntity.ok(clientMessage);
+    }
 }
