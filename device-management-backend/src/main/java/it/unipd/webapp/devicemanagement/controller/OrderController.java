@@ -10,52 +10,57 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/v1")
+@RequestMapping("/order")
 public class OrderController {
-
-/*
-*
-- Add element to chart: put the product on the unique non-completed order.
-- Buy button (on the chart): update from non-completed to completed, update timestamp, update address.
-    - create new empty, non-completed order
-    - for each product, for each quantity: create device
-- Remove item from non-completed order
-- Change quantity of a item on a non-completed order:
-- Query List of all completed orders of customer with id=1234
-    SELECT * FROM
-- Go to the chart: Query the unique non completed order of customer with id=1234 and the products associated to that
-    SELECT * FROM order_detail WHERE customer_id=1234 AND completed=FALSE
-    SELECT * FROM .....
-- Query list of products of order with id=1234
-   SELECT * FROM
-*
-* */
 
     @Autowired
     private CustomerRepository customerRepository;
 
     @Autowired
-    private OrderRepository orderRepository;
+    private OrderRepository orderRepo;
 
-    /*@GetMapping("/chart/{id}")
-    public ResponseEntity<List> chart(
-            @PathVariable(value = "id") long customerId
-    )throws ResourceNotFoundException{
-        // to continueeeeeeeeeeeeeeeeeee
-        OrderDetail o=orderRepository.findById(customerId);
-        return ResponseEntity.ok().body(new List<>);
-    }*/
+    // This method can be replaced by a Customer static method
+    private Customer getLoggedCustomer() {
+        return (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
+    //Cart information: Query the unique non completed order of customer with id=1234.
+    @GetMapping("/cartInfo/")
+    public ResponseEntity<OrderDetail> chartInfo(){
+        log.debug("getNotcompletedOrders");
+        //get customerId
+        long customerId=getLoggedCustomer().getId();
+
+        //get the unique not completed order
+        Optional<OrderDetail> order=orderRepo.notcompletedOrders(customerId);
+
+        // if the there are no not-completed orders, create one
+        if(order.isEmpty()){
+            log.debug("not-completed Order does not exist! This shouldn happen.");
+            OrderDetail orderToAdd=new OrderDetail();
+            orderToAdd.setAddress("");
+            orderToAdd.setCustomer(getLoggedCustomer());
+            Date date = new Date();
+            date.setTime(date.getTime());   //???
+            orderToAdd.setTimestamp(date);
+
+            orderRepo.save(orderToAdd);
+            return ResponseEntity.ok().body(orderToAdd);
+
+        }
+
+        return ResponseEntity.ok().body(order.get());
+    }
 
 
 }
