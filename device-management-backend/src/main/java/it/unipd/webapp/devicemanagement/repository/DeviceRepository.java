@@ -9,6 +9,6 @@ import java.util.List;
 
 @Repository
 public interface DeviceRepository extends JpaRepository<Device, Long> {
-    @Query("SELECT d FROM device d WHERE d.customer_id = ?1")
+    @Query("SELECT d FROM Device d WHERE d.customer.id = ?1")
     List<Device> findDevicesByCustomerId(long customerId);
 }

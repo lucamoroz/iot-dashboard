@@ -32,13 +32,17 @@ public class DeviceController {
         Customer loggedCustomer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return repository.findDevicesByCustomerId(loggedCustomer.getId());
     }
-    
+
     @GetMapping("/device/{id}")
     public ResponseEntity<Device> getDeviceById(@PathVariable(value = "id") long deviceId)
             throws ResourceNotFoundException {
         log.info("getDeviceById");
         Device device = repository.findById(deviceId).
-                orElseThrow(() -> new ResourceNotFoundException("device not found for id:: " + deviceId));
+                orElseThrow(() -> new ResourceNotFoundException("user's device not found for id: " + deviceId));
+        Customer loggedCustomer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (device.getCustomer().getId() != loggedCustomer.getId()) {
+            throw new ResourceNotFoundException("user's device not found for id: " + deviceId);
+        }
         return ResponseEntity.ok().body(device);
     }
 
