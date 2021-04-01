@@ -35,7 +35,7 @@ public class OrderController {
     }
 
     //Cart information: Query the unique non completed order of customer with id=1234.
-    @GetMapping("/cartInfo/")
+    @GetMapping("/cartInfo")
     public ResponseEntity<OrderDetail> chartInfo(){
         log.debug("getNotcompletedOrders");
         //get customerId
@@ -62,5 +62,61 @@ public class OrderController {
         return ResponseEntity.ok().body(order.get());
     }
 
+
+    //Query List of all completed orders of customer with id=1234
+    @GetMapping("/completedOrders")
+    public ResponseEntity<List<OrderDetail>> completedOrders(){
+        log.debug("getCompletedOrders");
+
+        //get customerId
+        long customerId=getLoggedCustomer().getId();
+
+        //get the list of completed order of the user with id = customerId
+        Optional<List<OrderDetail>> orders=orderRepo.completedOrders(customerId);
+
+        return ResponseEntity.ok().body(orders.get());
+    }
+
+    //Add product to cart
+    @GetMapping("/addProductToCart/{id}")
+    public ResponseEntity<OrderProduct> completedOrders(@PathVariable(value = "id") long productId){
+        log.debug("addProductToCart");
+
+        // to execute this query we are going to get the product and the order(cart)
+
+        //get customerId
+        long customerId=getLoggedCustomer().getId();
+
+        OrderDetail cart;
+        //get non-complete order info
+        //get the unique not completed order
+        Optional<OrderDetail> order=orderRepo.notcompletedOrders(customerId);
+        // if the there are no not-completed orders, create one
+        if(order.isEmpty()){
+            log.debug("not-completed Order does not exist! This should not happen.");
+            OrderDetail orderToAdd=new OrderDetail();
+            orderToAdd.setAddress("");
+            orderToAdd.setCustomer(getLoggedCustomer());
+            Date date = new Date();
+            date.setTime(date.getTime());   //???
+            orderToAdd.setTimestamp(date);
+            orderRepo.save(orderToAdd);
+            cart=orderToAdd;
+        }else{
+            cart=order.get();
+        }
+
+        //get the product coresponding to the id given or return an error.
+
+        // check if the product id really exist
+        OrderProduct order_product = new OrderProduct();
+        order_product.setQuantity(1);
+        order_product.setOrder(cart);
+        //order_product.setProduct(productId);
+
+
+        return ResponseEntity.ok();
+
+    }
 
 }
