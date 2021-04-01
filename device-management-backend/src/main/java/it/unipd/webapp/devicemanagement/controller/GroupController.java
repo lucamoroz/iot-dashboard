@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/v1")
+@RequestMapping("/groups")
 public class GroupController {
 
     @Autowired
@@ -27,14 +27,25 @@ public class GroupController {
         return (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
-    @GetMapping("/groups")
+    /**
+     * Shows to the users the groups he owns
+     *
+     * @return A response with the group list
+     */
+    @GetMapping("") // Empty mapping is correct
     public ResponseEntity<List<CustomerGroup>> getGroups() {
         Customer customer = getLoggedCustomer();
         List<CustomerGroup> groups = groupRepository.findGroupsByCustomerId(customer.getId());
         return ResponseEntity.ok(groups);
     }
 
-    @PutMapping("/addgroup")
+    /**
+     * Adds a new group for the logged user
+     *
+     * @param name The name given for the group
+     * @return The 200 ok response message is always returned
+     */
+    @PutMapping("/add")
     public ResponseEntity<ClientMessage> addGroup(@RequestParam String name) {
         CustomerGroup groupToAdd = new CustomerGroup();
         Customer customer = getLoggedCustomer();
@@ -46,7 +57,15 @@ public class GroupController {
     }
 
 
-    @DeleteMapping("/deletegroup")
+    /**
+     * Deletes the group specified by the user
+     *
+     * @param groupId The group id whose the user want to delete
+     * @return A response message if the operation is completed successfully
+     * @throws ResourceNotFoundException When no group with specified id is found
+     * @throws ForbiddenException When an user tries to delete a group that he doesn't own
+     */
+    @DeleteMapping("/delete")
     public ResponseEntity<ClientMessage> deleteGroup(@RequestParam long groupId) throws ResourceNotFoundException, ForbiddenException {
 
         Customer customer = getLoggedCustomer();
@@ -67,5 +86,33 @@ public class GroupController {
         groupRepository.delete(groupToDelete);
         ClientMessage clientMessage = new ClientMessage("Group deleted");
         return ResponseEntity.ok(clientMessage);
+    }
+
+    /**
+     * Gets an information about the group. A list of devices that the group owns
+     * are included
+     *
+     * @param groupId The group whose the user wants the information
+     * @return The response with the group details
+     * @throws ResourceNotFoundException When no group with specified id is found
+     * @throws ForbiddenException When an user tries to look at a group that he doesn't own
+     */
+    @GetMapping("{group_id}")
+    public ResponseEntity<CustomerGroup> getDevices(@PathVariable("group_id") long groupId) throws ResourceNotFoundException, ForbiddenException {
+        Customer customer = getLoggedCustomer();
+        // The only one whose allowed to show the group is the customer which has the group. So we have to check when
+        // the group to delete is among the groups owned by the customer
+        CustomerGroup groupToShow = groupRepository.findGroupsByCustomerId(customer.getId()).stream()
+                .filter(g -> g.getId() == groupId).findAny().orElse(null);
+        if (groupToShow == null) {
+            // If the group is found here, it means that the group belongs to another customer where the id != customerId.
+            // So when this happen, we have to send an error to the client
+            CustomerGroup cg = groupRepository.findById(groupId).orElse(null);
+            if (cg != null) throw new ForbiddenException("Customer " +customer.getId()+ " is not allowed to look at group " +groupId);
+
+            // The group is not found so we are sure that the groupId does not exist in the database
+            throw new ResourceNotFoundException("Group " +groupId+ " not found");
+        }
+        return ResponseEntity.ok(groupToShow);
     }
 }
