@@ -92,13 +92,13 @@ public class OrderController {
     public ResponseEntity<OrderProduct> completedOrders(@PathVariable(value = "id") long productId){
         log.debug("addProductToCart");
 
-        // to execute this query we are going to get the product and the order(cart)
+        // to execute this query we need get the product and the order(cart) entities.
 
         //get customerId
         long customerId=getLoggedCustomer().getId();
 
+        //get non-complete order info (cart)
         OrderDetail cart;
-        //get non-complete order info
         //get the unique not completed order
         Optional<OrderDetail> order=orderRepo.notcompletedOrders(customerId);
         // if the there are no not-completed orders, create one
@@ -123,6 +123,9 @@ public class OrderController {
             log.info("No products available");
             return ResponseEntity.notFound().build();
         }
+
+        //check if the pair (order_id,product_id) already present in the orders_products table. (That mean there was already some quantity of that product in the cart)
+
 
         OrderProduct order_product = new OrderProduct();
         order_product.setQuantity(1);
