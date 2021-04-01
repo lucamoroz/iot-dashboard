@@ -89,7 +89,7 @@ public class OrderController {
 
     //Add product to cart
     @GetMapping("/addProductToCart/{id}")
-    public ResponseEntity<OrderProduct> completedOrders(@PathVariable(value = "id") long productId){
+    public ResponseEntity<OrderProduct> addProductToCart(@PathVariable(value = "id") long productId){
         log.debug("addProductToCart");
 
         // to execute this query we need get the product and the order(cart) entities.
@@ -120,22 +120,85 @@ public class OrderController {
         Optional<Product> prodData = productRepo.getInfo(productId);
         if (prodData.isEmpty()) {
             // Error: product not found
-            log.info("No products available");
+            log.debug("The product does not exists");
             return ResponseEntity.notFound().build();
         }
 
+
         //check if the pair (order_id,product_id) already present in the orders_products table. (That mean there was already some quantity of that product in the cart)
+        Optional<OrderProduct> ordprod=order_productRepo.getQuantity(cart.getId(), prodData.get().getId());
+        if(ordprod.isEmpty()){
+            log.debug("The product was not in the cart, so we add it");
+            //that product wasn't in the cart, so insert 1 unit of it
+            OrderProduct order_product = new OrderProduct();
+            order_product.setQuantity(1);
+            order_product.setOrder(cart);
+            order_product.setProduct(prodData.get());
+            order_productRepo.save(order_product);
+            //return
+            return ResponseEntity.ok(order_product);
+        }else{
+            log.debug("The product was already in the cart, so quantity+=1");
+            // there was already some quantity of that product, so just add +1
+            OrderProduct order_product=ordprod.get();
+            order_product.setQuantity(order_product.getQuantity()+1);
+            order_productRepo.save(order_product);
+            //return
+            return ResponseEntity.ok(order_product);
+        }
 
+    }
 
-        OrderProduct order_product = new OrderProduct();
-        order_product.setQuantity(1);
-        order_product.setOrder(cart);
-        order_product.setProduct(prodData.get());
+    //Remove item from the cart
+    @GetMapping("/removeProductFromCart/{id}")
+    public ResponseEntity<OrderProduct> removeProductFromCart(@PathVariable(value = "id") long productId) {
+        log.debug("removeProductFromCart");
 
-        order_productRepo.save(order_product);
+        //get customerId
+        long customerId=getLoggedCustomer().getId();
 
+        //get non-complete order info (cart)
+        OrderDetail cart;
+        //get the unique not completed order
+        Optional<OrderDetail> order=orderRepo.notcompletedOrders(customerId);
+        // if the there are no not-completed orders, create one
+        if(order.isEmpty()){
+            log.debug("not-completed Order does not exist! This should not happen.");
+            OrderDetail orderToAdd=new OrderDetail();
+            orderToAdd.setAddress("");
+            orderToAdd.setCustomer(getLoggedCustomer());
+            Date date = new Date();
+            date.setTime(date.getTime());   //???
+            orderToAdd.setTimestamp(date);
+            orderRepo.save(orderToAdd);
+            cart=orderToAdd;
+        }else{
+            cart=order.get();
+        }
 
-        return ResponseEntity.ok(order_product);
+        //get the product corresponding to the id given or return an error.
+        Optional<Product> prodData = productRepo.getInfo(productId);
+        if (prodData.isEmpty()) {
+            // Error: product not found
+            log.debug("The product does not exists");
+            return ResponseEntity.notFound().build();
+        }
+
+        //delete, if the product or the cart does not exist doesn't matter.
+        //check if the pair (order_id,product_id) is present in the orders_products table.
+        Optional<OrderProduct> ordprod=order_productRepo.getQuantity(cart.getId(), prodData.get().getId());
+        if(ordprod.isEmpty()){
+            log.debug("The product was not in the cart");
+            //that product wasn't in the cart
+            //return
+            return ResponseEntity.notFound().build();
+        }else{
+            log.debug("The product was in the cart, so we delete it");
+            // The product was in the cart, so we delete it
+            order_productRepo.delete(ordprod.get());
+            //return
+            return ResponseEntity.ok().build();
+        }
 
     }
 
