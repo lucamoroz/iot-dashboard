@@ -65,8 +65,8 @@ public class GroupController {
      * @throws ResourceNotFoundException When no group with specified id is found
      * @throws ForbiddenException When an user tries to delete a group that he doesn't own
      */
-    @DeleteMapping("/delete")
-    public ResponseEntity<ClientMessage> deleteGroup(@RequestParam long groupId) throws ResourceNotFoundException, ForbiddenException {
+    @DeleteMapping("/{id}/delete")
+    public ResponseEntity<ClientMessage> deleteGroup(@PathVariable("id") long groupId) throws ResourceNotFoundException, ForbiddenException {
 
         Customer customer = getLoggedCustomer();
         List<CustomerGroup> groups = groupRepository.findGroupsByCustomerId(customer.getId());
@@ -88,17 +88,17 @@ public class GroupController {
         return ResponseEntity.ok(clientMessage);
     }
 
-    /**
-     * Gets an information about the group. A list of devices that the group owns
-     * are included
-     *
-     * @param groupId The group whose the user wants the information
-     * @return The response with the group details
-     * @throws ResourceNotFoundException When no group with specified id is found
-     * @throws ForbiddenException When an user tries to look at a group that he doesn't own
-     */
-    @GetMapping("{group_id}")
-    public ResponseEntity<CustomerGroup> getDevices(@PathVariable("group_id") long groupId) throws ResourceNotFoundException, ForbiddenException {
+    //TODO: No needed to obtain the devices from a group. It can be removed
+    ///**
+    // * Gets the device list which the selected group owns
+    // *
+    // * @param groupId The group whose the user wants to get devices information
+    // * @return The response with the group details
+    // * @throws ResourceNotFoundException When no group with specified id is found
+    // * @throws ForbiddenException When an user tries to look at a group that he doesn't own
+    // */
+    /*@GetMapping("{id}")
+    public ResponseEntity<List<Device>> getDevices(@PathVariable("id") long groupId) throws ResourceNotFoundException, ForbiddenException {
         Customer customer = getLoggedCustomer();
         // The only one whose allowed to show the group is the customer which has the group. So we have to check when
         // the group to delete is among the groups owned by the customer
@@ -113,6 +113,6 @@ public class GroupController {
             // The group is not found so we are sure that the groupId does not exist in the database
             throw new ResourceNotFoundException("Group " +groupId+ " not found");
         }
-        return ResponseEntity.ok(groupToShow);
-    }
+        return ResponseEntity.ok(groupToShow.getDevices());
+    }*/
 }

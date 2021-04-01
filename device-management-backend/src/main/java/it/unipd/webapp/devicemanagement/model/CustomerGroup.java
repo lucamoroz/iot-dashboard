@@ -29,6 +29,6 @@ public class CustomerGroup {
             joinColumns = @JoinColumn(name = "customer_group_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "device_id", referencedColumnName = "id")
     )
-    //@JsonIgnore
+    @JsonIgnore
     private List<Device> devices;
 }
