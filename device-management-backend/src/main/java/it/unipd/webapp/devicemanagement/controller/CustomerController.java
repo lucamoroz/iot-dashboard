@@ -1,82 +1,66 @@
 package it.unipd.webapp.devicemanagement.controller;
 
 import it.unipd.webapp.devicemanagement.exception.ResourceNotFoundException;
+import it.unipd.webapp.devicemanagement.model.ClientMessage;
 import it.unipd.webapp.devicemanagement.model.Customer;
-import it.unipd.webapp.devicemanagement.repository.CustomerRepository;
+import it.unipd.webapp.devicemanagement.service.CustomerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/v1")
+@RequestMapping("/customer")
 public class CustomerController {
-    
+
     @Autowired
-    private CustomerRepository repository;
+    private CustomerService service;
 
-    @GetMapping("/customer")
-    public List<Customer> getAllCustomers() {
-        log.info("getAllCustomers");
-        return repository.findAll();
+
+    @GetMapping("/me")
+    public Customer currentLoggedUser() {
+        log.debug("currentLoggedUser");
+        return (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
-    @GetMapping("/customer/{id}")
-    public ResponseEntity<Customer> getCustomerById(@PathVariable(value = "id") long customerId) throws ResourceNotFoundException {
-        log.info("getCustomerById");
-        Customer customer = repository.findById(customerId).
-                orElseThrow(() -> new ResourceNotFoundException("customer not found for id:: " + customerId));
-        return ResponseEntity.ok().body(customer);
+    @DeleteMapping("/me")
+    public ResponseEntity<ClientMessage> deleteLoggedCustomer() throws ResourceNotFoundException {
+        log.debug("deleteLoggedCustomer");
+        Customer loggedCustomer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        service.deleteCustomer(loggedCustomer.getId());
+
+        var message = new ClientMessage(String.format("customer %s deleted", loggedCustomer.getUsername()));
+        return ResponseEntity.ok().body(message);
     }
 
-    @PostMapping("/customer")
-    public Customer createCustomer(@Valid @RequestBody Customer customer) {
-        log.info("createCustomer");
-        return repository.save(customer);
+    @PutMapping("/me")
+    public ResponseEntity<Customer> updateLoggedUser(@Valid @RequestBody Customer updatedCustomer) throws ResourceNotFoundException {
+        log.debug("updateLoggedUser");
+        var loggedCustomer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var newCustomer = service.updateCustomer(loggedCustomer.getId(), updatedCustomer);
+
+        return ResponseEntity.ok().body(newCustomer);
     }
 
-    @PutMapping("/customer/{id}")
-    public ResponseEntity<Customer> customerById(
-            @PathVariable(value = "id") long customerId,
-            @Valid @RequestBody Customer updatedCustomer
-    ) throws ResourceNotFoundException {
+    @PostMapping("/me/upgrade")
+    public ResponseEntity<ClientMessage> upgradeLoggedCustomerPlan() throws ResourceNotFoundException {
+        log.debug("upgradeLoggedCustomerPlan");
+        var loggedCustomer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        service.upgradeCustomerPlan(loggedCustomer.getId());
 
-        log.info("customerById");
-        Customer customer = repository.findById(customerId).
-                orElseThrow(() -> new ResourceNotFoundException("customer not found for this id:: " + customerId));
-        customer.setEmail(updatedCustomer.getEmail());
-        repository.save(customer);
-        return ResponseEntity.ok().body(customer);
+        var message = new ClientMessage("successfully upgraded plan");
+        return ResponseEntity.ok().body(message);
     }
 
-    @DeleteMapping("/customer/{id}")
-    public void deleteCustomer(@PathVariable(value = "id") long customerId) throws ResourceNotFoundException {
-        log.info("deleteCustomer");
-        Customer customer = repository.findById(customerId).
-                orElseThrow(() -> new ResourceNotFoundException("customer not found for this id:: " + customerId));
-        repository.delete(customer);
-    }
+    @PostMapping("/register")
+    public ResponseEntity<Customer> createCustomer(@Valid @RequestBody Customer customer) {
+        log.debug("register");
+        var createdCustomer = service.registerCustomer(customer);
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class) // handler for not @Valid requests
-    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException exception) {
-        Map<String, String> errors = new HashMap<>();
-
-        exception.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-
-        return errors;
+        return ResponseEntity.ok().body(createdCustomer);
     }
 }

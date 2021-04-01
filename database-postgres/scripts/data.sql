@@ -1,12 +1,12 @@
 /* The statements in this file must be executed in order*/
 
-/* INSERT CUSTOMERS customer*/
+/* INSERT CUSTOMERS customer - password is 'password' for all customers (bcrypt encrypted) */
 INSERT INTO customer
-(calls_count, email, password, plan, username)
+(calls_count, email, password, plan, username, role)
 VALUES
-(50, 'email.com', 'password', 'FREE', 'username1'),
-(50, 'email2.com', 'password', 'FREE', 'username2'),
-(150, 'email3.com', 'password', 'FREE', 'username3');
+(50, 'email.com', '$2a$10$wEUMgXHcrBNM2.5Pnv7p5OPKW8yCcCBOMOS6UrS18R/uiaHp8JG5S', 'FREE', 'username1', 'ROLE_CUSTOMER'),
+(50, 'email2.com', '$2a$10$wEUMgXHcrBNM2.5Pnv7p5OPKW8yCcCBOMOS6UrS18R/uiaHp8JG5S', 'FREE', 'username2', 'ROLE_CUSTOMER'),
+(150, 'email3.com', '$2a$10$wEUMgXHcrBNM2.5Pnv7p5OPKW8yCcCBOMOS6UrS18R/uiaHp8JG5S', 'FREE', 'username3', 'ROLE_CUSTOMER');
 
 
 /******TODO ATTRIBUTE "NAME" ********/
@@ -96,9 +96,9 @@ VALUES
 (2,2,0,'fgh',FALSE,36.109611, -115.173700,50,80,CURRENT_TIMESTAMP),
 /*customer 3*/
 (1,3,0,'ghi',TRUE,51.503421, -0.119293,300,95,CURRENT_TIMESTAMP),
-(2,3,0,'def',TRUE,51.503421, -0.119293,300,65,CURRENT_TIMESTAMP),
-(2,3,0,'def',FALSE,51.503421, -0.119293,300,65,CURRENT_TIMESTAMP),
-(2,3,0,'def',FALSE,51.503421, -0.119293,300,65,CURRENT_TIMESTAMP);
+(2,3,0,'dei',TRUE,51.503421, -0.119293,300,65,CURRENT_TIMESTAMP),
+(2,3,0,'deg',FALSE,51.503421, -0.119293,300,65,CURRENT_TIMESTAMP),
+(2,3,0,'deh',FALSE,51.503421, -0.119293,300,65,CURRENT_TIMESTAMP);
 
 
 

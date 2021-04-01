@@ -26,7 +26,7 @@ public class OrderDetail {
     private boolean completed;
 
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE)
     @JsonIgnore
     private List<OrderProduct> orderProducts;
 
