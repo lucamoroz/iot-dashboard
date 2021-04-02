@@ -1,4 +1,4 @@
-package it.unipd.webapp.devicemanagement.controller;
+package it.unipd.webapp.devicemanagement.security;
 
 import java.security.SecureRandom;
 import java.util.Locale;
