@@ -27,15 +27,26 @@ public class DeviceController {
 
 
     @GetMapping("/devices")
-    public List<HashMap<String, Object>> getAllDevices(@RequestParam(defaultValue = "false") boolean includeLastData)
+    public List<HashMap<String, Object>> getAllDevices(
+            @RequestParam(defaultValue = "false") boolean includeLastData,
+            @RequestParam(required = false) Long groupId
+    )
             throws ResourceNotFoundException{
         Customer loggedCustomer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<Device> devices = repository.findDevicesByCustomer(loggedCustomer.getId()).orElseThrow(
-                () -> new ResourceNotFoundException("No devices of current user")
-        );
+
+        Optional<List<Device>> devices;
+        if (groupId != null){
+            devices = repository.findDevicesByCustomerAndGroup(loggedCustomer.getId(), groupId);
+        } else {
+            devices = repository.findDevicesByCustomer(loggedCustomer.getId());
+        }
+
+        if (devices.isEmpty() || devices.get().isEmpty()) {
+            throw new ResourceNotFoundException("No devices found");
+        }
 
         List<HashMap<String, Object>> outputs = new ArrayList<>();
-        for (Device device : devices) {
+        for (Device device : devices.get()) {
             HashMap<String, Object> output = new HashMap<>();
             output.put("device", device);
 
