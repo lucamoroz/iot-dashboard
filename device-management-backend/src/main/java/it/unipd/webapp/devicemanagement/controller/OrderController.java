@@ -264,4 +264,18 @@ public class OrderController {
 
     }
 
+
+
+
+    //Query list of products of order with order_Id=1234
+    @GetMapping("/getProductsOfOrder")
+    public ResponseEntity<HashMap<String,Object>> getProductsOfOrder(
+            @RequestParam(value = "orderId") long orderId
+    ) throws ResourceNotFoundException {
+        log.debug("getProductsOfOrder");
+
+        //TODO:......
+
+    }
+
 }
