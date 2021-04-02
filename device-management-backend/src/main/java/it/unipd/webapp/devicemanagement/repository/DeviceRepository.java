@@ -21,9 +21,6 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
     @Query(value = "SELECT d.id, d.enabled, d.latitude, d.longitude, d.token, d.update_frequency, d.battery, d.last_update, d.version, d.customer_id, d.product_id FROM device as d LEFT JOIN customer_groups_devices AS cgd ON d.id = cgd.device_id WHERE d.customer_id = :customerId AND cgd.customer_group_id = :groupId", nativeQuery = true)
     public Optional<List<Device>> findDevicesByCustomerAndGroup(Long customerId, Long groupId);
 
-    @Query(value = "SELECT * FROM device WHERE id = :deviceId AND customer_id = :customerId", nativeQuery = true)
-    public Optional<Device> isDeviceOfCustomer(Long deviceId, Long customerId);
-
     @Query("SELECT d FROM Device d WHERE d.customer.id = ?1 AND d.id = ?2")
     Optional<Device> findCustomerDeviceById(long customerId, long deviceId);
 }

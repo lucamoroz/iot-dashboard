@@ -86,7 +86,7 @@ public class SensorDataController {
         Long customerId = getLoggedCustomerId();
 
         //Checks if there is a device with id=deviceId of a the current Customer with id=customerId
-        deviceRepo.isDeviceOfCustomer(deviceId, customerId).orElseThrow(
+        deviceRepo.findCustomerDeviceById(customerId, deviceId).orElseThrow(
             () -> new ResourceNotFoundException(String.format("Device with id=%d of current user not found", deviceId))
         );
          
@@ -117,63 +117,6 @@ public class SensorDataController {
         }
 
         return ResponseEntity.ok().body(deviceDatas);
-    }
-
-    @GetMapping("/devices/data")
-    public ResponseEntity<List<HashMap<String, Object>>> getDevicesWithData() throws ResourceNotFoundException {
-
-        //Gets the Customer ID from the current logged customer
-        Long customerId = getLoggedCustomerId();
-
-        //Checks if devices are found of current customer
-        List<Device> customerDevices = deviceRepo.findDevicesByCustomer(customerId).orElseThrow(
-            () -> new ResourceNotFoundException("No devices of current user")
-        );
-
-        List<HashMap<String, Object>> body = getDeviceAndDataList(customerDevices);
-
-        return ResponseEntity.ok().body(body);
-    }
-
-    @GetMapping("/devices/groups/{id}/data")
-    public ResponseEntity<List<HashMap<String, Object>>> getDevicesWithDataByGroupId(@PathVariable(value = "id") Long groupId) throws ResourceNotFoundException {
-
-        //Gets the Customer ID from the current logged customer
-        Long customerId = getLoggedCustomerId();
-
-        //Checks if devices are found of current customer and in requested group
-        List<Device> customerDevices = deviceRepo.findDevicesByCustomerAndGroup(customerId, groupId).orElseThrow(
-            () -> new ResourceNotFoundException(String.format("No devices of current user in groud %d", groupId))
-        );
-
-        List<HashMap<String, Object>> body = getDeviceAndDataList(customerDevices);
-
-        return ResponseEntity.ok().body(body);
-    }
-
-    private List<HashMap<String, Object>> getDeviceAndDataList(List<Device> customerDevices) {
-
-        List<HashMap<String, Object>> outputs = new ArrayList<>();
-
-        for (Device customerDevice : customerDevices) {
-            Optional<List<SensorData>> sensorDataOpts = sensorDataRepo.getLastDeviceDataByDeviceId(customerDevice.getId());
-            List<SensorData> sensorDatas = sensorDataOpts.get();
-
-            Map<String, Float> deviceData = new HashMap<>();
-            for (SensorData sensorData : sensorDatas) {
-                String sensorType = sensorData.getDataType().getTypeName();
-                Float sensorValue = sensorData.getValue();
-                deviceData.put(sensorType, sensorValue);
-            }
-            
-            Map<String, Object> output = new HashMap<>();
-            output.put("device", customerDevice);
-            output.put("data", deviceData);
-
-            outputs.add((HashMap<String, Object>) output);
-        }
-
-        return outputs;
     }
 
     public Long getLoggedCustomerId() {

@@ -15,7 +15,6 @@ import java.util.*;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/v1")
 public class DeviceController {
 
     @Autowired
@@ -27,7 +26,7 @@ public class DeviceController {
     private final TokenGenerator tokenGenerator = new TokenGenerator();
 
 
-    @GetMapping("/device")
+    @GetMapping("/devices")
     public List<HashMap<String, Object>> getAllDevices(@RequestParam(defaultValue = "false") boolean includeLastData)
             throws ResourceNotFoundException{
         Customer loggedCustomer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -63,7 +62,7 @@ public class DeviceController {
         return deviceData;
     }
 
-    @GetMapping("/device/{id}")
+    @GetMapping("/devices/{id}")
     public ResponseEntity<Device> getDeviceById(@PathVariable(value = "id") long deviceId)
             throws ResourceNotFoundException {
         log.info("getDeviceById");
@@ -73,7 +72,7 @@ public class DeviceController {
         return ResponseEntity.ok().body(device);
     }
 
-    @PutMapping("/device/{id}/config")
+    @PutMapping("/devices/{id}/config")
     public ResponseEntity<ClientMessage> updateDeviceConfig(
             @PathVariable(value = "id") long deviceId,
             @RequestParam long updateFrequency,
@@ -90,7 +89,7 @@ public class DeviceController {
         return ResponseEntity.ok(clientMessage);
     }
 
-    @GetMapping("/device/{id}/generatetoken")
+    @GetMapping("/devices/{id}/generatetoken")
     public ResponseEntity<ClientMessage> generateNewToken(@PathVariable(value = "id") long deviceId)
             throws ResourceNotFoundException {
         Customer loggedCustomer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -103,7 +102,7 @@ public class DeviceController {
         return ResponseEntity.ok(clientMessage);
     }
 
-    @PostMapping("/device")
+    @PostMapping("/devices")
     public ResponseEntity<ClientMessage> addDevice(
             @RequestParam long productId,
             @RequestParam long updateFrequency,
@@ -134,7 +133,7 @@ public class DeviceController {
         return ResponseEntity.ok(clientMessage);
     }
 
-    @DeleteMapping("/device/{id}")
+    @DeleteMapping("/devices/{id}")
     public ResponseEntity<ClientMessage> deleteDeviceById(@PathVariable(value = "id") long deviceId)
             throws ResourceNotFoundException {
         log.info("deleteDeviceById");
