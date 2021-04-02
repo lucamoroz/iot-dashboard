@@ -10,8 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @Slf4j
@@ -21,14 +20,43 @@ public class DeviceController {
     @Autowired
     private DeviceRepository repository;
 
+    @Autowired
+    private SensorDataRepository sensorDataRepo;
+
     private final TokenGenerator tokenGenerator = new TokenGenerator();
 
 
     @GetMapping("/device")
-    public List<Device> getAllDevices() {
-        log.info("getAllDevices");
+    public List<HashMap<String, Object>> getAllDevices(@RequestParam(defaultValue = "false") boolean includeData) {
         Customer loggedCustomer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return repository.findDevicesByCustomerId(loggedCustomer.getId());
+        List<Device> devices = repository.findDevicesByCustomerId(loggedCustomer.getId());
+
+        List<HashMap<String, Object>> outputs = new ArrayList<>();
+        for (Device device : devices) {
+            HashMap<String, Object> output = new HashMap<>();
+            output.put("device", device);
+
+            if (includeData) {
+                Map<String, Float> deviceData = getLastDeviceData(device);
+                output.put("data", deviceData);
+            }
+
+            outputs.add(output);
+        }
+        return outputs;
+    }
+
+    private Map<String, Float> getLastDeviceData(Device device) {
+        Optional<List<SensorData>> sensorDataOpts = sensorDataRepo.getLastDeviceDataByDeviceId(device.getId());
+        Map<String, Float> deviceData = new HashMap<>();
+        if (sensorDataOpts.isPresent()) {
+            for (SensorData data : sensorDataOpts.get()) {
+                String sensorType = data.getDataType().getTypeName();
+                Float sensorValue = data.getValue();
+                deviceData.put(sensorType, sensorValue);
+            }
+        }
+        return deviceData;
     }
 
     @GetMapping("/device/{id}")
