@@ -3,6 +3,7 @@ package it.unipd.webapp.devicemanagement.controller;
 import it.unipd.webapp.devicemanagement.exception.ResourceNotFoundException;
 import it.unipd.webapp.devicemanagement.model.*;
 import it.unipd.webapp.devicemanagement.repository.DeviceRepository;
+import it.unipd.webapp.devicemanagement.repository.SensorDataRepository;
 import it.unipd.webapp.devicemanagement.security.TokenGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,16 +28,19 @@ public class DeviceController {
 
 
     @GetMapping("/device")
-    public List<HashMap<String, Object>> getAllDevices(@RequestParam(defaultValue = "false") boolean includeData) {
+    public List<HashMap<String, Object>> getAllDevices(@RequestParam(defaultValue = "false") boolean includeLastData)
+            throws ResourceNotFoundException{
         Customer loggedCustomer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<Device> devices = repository.findDevicesByCustomerId(loggedCustomer.getId());
+        List<Device> devices = repository.findDevicesByCustomer(loggedCustomer.getId()).orElseThrow(
+                () -> new ResourceNotFoundException("No devices of current user")
+        );
 
         List<HashMap<String, Object>> outputs = new ArrayList<>();
         for (Device device : devices) {
             HashMap<String, Object> output = new HashMap<>();
             output.put("device", device);
 
-            if (includeData) {
+            if (includeLastData) {
                 Map<String, Float> deviceData = getLastDeviceData(device);
                 output.put("data", deviceData);
             }
