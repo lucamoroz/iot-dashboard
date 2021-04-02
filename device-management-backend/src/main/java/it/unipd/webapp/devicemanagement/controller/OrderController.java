@@ -12,6 +12,7 @@ import it.unipd.webapp.devicemanagement.model.Product;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -274,8 +275,21 @@ public class OrderController {
     ) throws ResourceNotFoundException {
         log.debug("getProductsOfOrder");
 
-        //TODO:......
+        String queryText="SELECT p.id, op.order_id, op.quantity, p.name, p.description, p.price "
+                + "FROM orders_products AS op "
+                + "INNER JOIN product AS p "
+                + "ON product_id=p.id "
+                + "WHERE op.order_id="+orderId;
 
+        /*List<Object[]> rows = createQuery(queryText).list();
+
+
+        for (Object[] row: rows) {
+            System.out.println(" ------- ");
+            System.out.println("Address object: " + row[0]);
+            System.out.println("Photo object: " + row[1]);
+        }*/
+        return ResponseEntity.ok().build();
     }
 
 }
