@@ -1,11 +1,16 @@
 package it.unipd.webapp.devicemanagement.controller;
 
+import it.unipd.webapp.devicemanagement.exception.ResourceNotFoundException;
+import it.unipd.webapp.devicemanagement.model.Customer;
 import it.unipd.webapp.devicemanagement.model.Device;
 import it.unipd.webapp.devicemanagement.model.SensorData;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -18,12 +23,13 @@ import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import it.unipd.webapp.devicemanagement.repository.CustomerRepository;
 import it.unipd.webapp.devicemanagement.repository.DeviceRepository;
 import it.unipd.webapp.devicemanagement.repository.SensorDataRepository;
+import it.unipd.webapp.devicemanagement.security.DeviceAuthenticationToken;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/v1")
 public class SensorDataController {
 
     @Autowired
@@ -32,26 +38,29 @@ public class SensorDataController {
     @Autowired
     private SensorDataRepository sensorDataRepo;
 
+    @Autowired
+    private CustomerRepository customerRepo;
 
-    @PostMapping("/sensordata")
-    public ResponseEntity<List<SensorData>> addSensorData(@RequestHeader("Authorization") String token, @RequestBody SensorData[] sensorDatas) {
-        //Parses the token
-        token = token.split(" ")[1];
 
-        //Finds the device with the token above
-        Optional<Device> deviceOpt = deviceRepo.findByToken(token);
-        if (deviceOpt.isEmpty()) {
-            //Error: token not found //TODO
-            log.info("Token not found");
-            return ResponseEntity.notFound().build();
-        }
+    @Secured("ROLE_DEVICE")
+    @PostMapping("/device/sensordata")
+    public ResponseEntity<List<SensorData>> addSensorData(@RequestBody SensorData[] sensorDatas) throws ResourceNotFoundException {
+        
+        //Gets the authentified Device from SecurityContextHolder
+        DeviceAuthenticationToken deviceAuth = (DeviceAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        String token = deviceAuth.getCredentials().toString();
 
-        Device device = deviceOpt.get();
+        Device device = deviceRepo.findDeviceByToken(token).orElseThrow(
+            () -> new BadCredentialsException(String.format("Device with token %s not found!", token))
+        );
+
+        //Checks that the Device is enabled
         if (!device.getConfig().isEnabled()) {
-            //Error: device not enabled //TODO
-            log.info("Device not enabled");
-            return ResponseEntity.notFound().build();
+            throw new ResourceNotFoundException(String.format("Device with id=%d is disabled", device.getId()));
         }
+
+        //Increments the Customer calls count by 1
+        customerRepo.incrementCallsCount(device.getCustomer().getId());
         
         List<SensorData> sensorDataOutputs = new ArrayList<>();
         Date timestamp = new Date();
@@ -72,23 +81,24 @@ public class SensorDataController {
     public ResponseEntity<Map<Date, Map<String, Float>>> getDeviceData(
         @PathVariable(value = "id") Long deviceId,
         @RequestParam(value = "limit", defaultValue = "50") int limit,
-        @RequestParam(value = "lastLast", defaultValue = "true") boolean lastLast) {
-         
-        Optional<List<SensorData>> sensorDataOpts = sensorDataRepo.getDeviceDataByDeviceId(deviceId, limit);
-        if (sensorDataOpts.isEmpty()) {
-            //Error: device not found //TODO
-            log.info("Device not found");
-            return ResponseEntity.notFound().build();
-        }
+        @RequestParam(value = "lastLast", defaultValue = "true") boolean lastLast) throws ResourceNotFoundException {
 
-        //TODO
-        //checks if the device is of the current user
+        Long customerId = getLoggedCustomerId();
+
+        //Checks if there is a device with id=deviceId of a the current Customer with id=customerId
+        deviceRepo.isDeviceOfCustomer(deviceId, customerId).orElseThrow(
+            () -> new ResourceNotFoundException(String.format("Device with id=%d of current user not found", deviceId))
+        );
+         
+        //Returns the list of SensorData, thow exception if the id is not found (this is already checked before)
+        List<SensorData> sensorDatas = sensorDataRepo.getDeviceDataByDeviceId(deviceId, limit).orElseThrow(
+            () -> new ResourceNotFoundException(String.format("Device with id=%d not found", deviceId))
+        );
 
         //Creates a TreeMap depending on the order we want
         SortedMap<Date, Map<String, Float>> deviceDatas;
         deviceDatas = lastLast ? new TreeMap<>() : new TreeMap<>(Collections.reverseOrder());
 
-        List<SensorData> sensorDatas = sensorDataOpts.get();
         for (SensorData sensorData : sensorDatas) {
             Date timestamp = sensorData.getTimestamp();
 
@@ -110,48 +120,41 @@ public class SensorDataController {
     }
 
     @GetMapping("/devices/data")
-    public ResponseEntity<List<HashMap<String, Object>>> getDevicesWithData() {
+    public ResponseEntity<List<HashMap<String, Object>>> getDevicesWithData() throws ResourceNotFoundException {
 
-        //TODO
-        //I have to substitute it with the current customer
-        Long customerId = 1l; 
+        //Gets the Customer ID from the current logged customer
+        Long customerId = getLoggedCustomerId();
 
-        Optional<List<Device>> customerDeviceOpts = deviceRepo.findDevicesByCustomer(customerId);
-        if (customerDeviceOpts.isEmpty()) {
-             //Error: devices not found //TODO
-             log.info("Devices not found");
-             return ResponseEntity.notFound().build();
-        }
+        //Checks if devices are found of current customer
+        List<Device> customerDevices = deviceRepo.findDevicesByCustomer(customerId).orElseThrow(
+            () -> new ResourceNotFoundException("No devices of current user")
+        );
 
-        List<HashMap<String, Object>> body = getDeviceAndDataList(customerDeviceOpts);
+        List<HashMap<String, Object>> body = getDeviceAndDataList(customerDevices);
 
         return ResponseEntity.ok().body(body);
     }
 
     @GetMapping("/devices/groups/{id}/data")
-    public ResponseEntity<List<HashMap<String, Object>>> getDevicesWithDataByGroupId(@PathVariable(value = "id") Long groupId) {
+    public ResponseEntity<List<HashMap<String, Object>>> getDevicesWithDataByGroupId(@PathVariable(value = "id") Long groupId) throws ResourceNotFoundException {
 
-        //TODO
-        //I have to substitute it with the current customer
-        Long customerId = 1l; 
+        //Gets the Customer ID from the current logged customer
+        Long customerId = getLoggedCustomerId();
 
-        Optional<List<Device>> customerDeviceOpts = deviceRepo.findDevicesByCustomerAndGroup(customerId, groupId);
-        if (customerDeviceOpts.isEmpty()) {
-             //Error: devices not found //TODO
-             log.info("Devices not found");
-             return ResponseEntity.notFound().build();
-        }
+        //Checks if devices are found of current customer and in requested group
+        List<Device> customerDevices = deviceRepo.findDevicesByCustomerAndGroup(customerId, groupId).orElseThrow(
+            () -> new ResourceNotFoundException(String.format("No devices of current user in groud %d", groupId))
+        );
 
-        List<HashMap<String, Object>> body = getDeviceAndDataList(customerDeviceOpts);
+        List<HashMap<String, Object>> body = getDeviceAndDataList(customerDevices);
 
         return ResponseEntity.ok().body(body);
     }
 
-    private List<HashMap<String, Object>> getDeviceAndDataList(Optional<List<Device>> customerDeviceOpts) {
+    private List<HashMap<String, Object>> getDeviceAndDataList(List<Device> customerDevices) {
 
         List<HashMap<String, Object>> outputs = new ArrayList<>();
 
-        List<Device> customerDevices = customerDeviceOpts.get();
         for (Device customerDevice : customerDevices) {
             Optional<List<SensorData>> sensorDataOpts = sensorDataRepo.getLastDeviceDataByDeviceId(customerDevice.getId());
             List<SensorData> sensorDatas = sensorDataOpts.get();
@@ -171,6 +174,11 @@ public class SensorDataController {
         }
 
         return outputs;
+    }
+
+    public Long getLoggedCustomerId() {
+        Customer customer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return customer.getId();
     }
 
 }
