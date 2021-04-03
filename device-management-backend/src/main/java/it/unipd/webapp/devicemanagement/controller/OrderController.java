@@ -284,4 +284,59 @@ public class OrderController {
         return ResponseEntity.ok(orderProduct);
     }
 
+    //Buy all products on the cart
+    @GetMapping("/buyCart")
+    public ResponseEntity<List<OrderProduct>> buyCart(
+            @RequestParam(value = "orderId") long orderId,
+            @RequestParam(value = "orderAddress") String orderAddress
+    ) throws ResourceNotFoundException {
+
+        //Address must not be empty
+        if (orderAddress==""){
+            return ResponseEntity.notFound().build();
+        }
+
+        //get customerId
+        long customerId=getLoggedCustomer().getId();
+
+        //check if really the order is the cart and is owned by the customer
+        OrderDetail order= orderRepo.checkOrderCustomerMatch(customerId,orderId).orElseThrow(() -> new ResourceNotFoundException("Customer "+customerId+" doesn't own the Order " +orderId));
+        if (order.isCompleted()){
+            return ResponseEntity.notFound().build();
+        }
+
+        //check if the cart is empty...
+        List<OrderProduct> orderProductsCart = order_productRepo.getByOrderId(orderId);
+        if (orderProductsCart.size()<1){
+            return ResponseEntity.notFound().build();
+        }
+
+        //update from non-completed to completed, update timestamp, update address.
+        order.setAddress(orderAddress);
+        order.setCompleted(true);
+        Date date = new Date();
+        date.setTime(date.getTime());
+        order.setTimestamp(date);
+
+        //create new empty, non-completed order
+        OrderDetail newCart=new OrderDetail();
+        newCart.setAddress(orderAddress);
+        newCart.setCustomer(getLoggedCustomer());
+        date.setTime(date.getTime());
+        newCart.setTimestamp(date);
+        orderRepo.save(newCart);
+
+        //for each product on the completed order, for each quantity: create device
+        for (OrderProduct op: orderProductsCart) {
+            for (int q=0; q<op.getQuantity();q++){
+                Product prod=op.getProduct();
+                Customer cust=getLoggedCustomer();
+                OrderDetail ord = op.getOrder();
+                //TODO:Add new device
+            }
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
 }
