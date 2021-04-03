@@ -12,15 +12,10 @@ import it.unipd.webapp.devicemanagement.model.Product;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.server.Session;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.*;
 
 @RestController
@@ -270,16 +265,19 @@ public class OrderController {
 
     //Query list of products of order with order_Id=1234
     @GetMapping("/getProductsOfOrder")
-    public ResponseEntity<HashMap<String,Object>> getProductsOfOrder(
+    public ResponseEntity<List<OrderProduct>> getProductsOfOrder(
             @RequestParam(value = "orderId") long orderId
     ) throws ResourceNotFoundException {
         log.debug("getProductsOfOrder");
 
-        String queryText="SELECT p.id, op.order_id, op.quantity, p.name, p.description, p.price "
+        /*String queryText="SELECT p.id, op.order_id, op.quantity, p.name, p.description, p.price "
                 + "FROM orders_products AS op "
                 + "INNER JOIN product AS p "
                 + "ON product_id=p.id "
-                + "WHERE op.order_id="+orderId;
+                + "WHERE op.order_id="+orderId;*/
+        // We can avoid to retrieve the order. However we would like know whether the order exists or not and show a message when the order does not exist
+        orderRepo.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Order " +orderId+ " not found"));
+        List<OrderProduct> orderProduct = order_productRepo.getByOrderId(orderId);
 
         /*List<Object[]> rows = createQuery(queryText).list();
 
@@ -289,7 +287,7 @@ public class OrderController {
             System.out.println("Address object: " + row[0]);
             System.out.println("Photo object: " + row[1]);
         }*/
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(orderProduct);
     }
 
 }
