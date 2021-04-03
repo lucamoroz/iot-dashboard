@@ -20,8 +20,9 @@ public interface OrderRepository extends JpaRepository<OrderDetail, Long>{
     @Query(value="SELECT DISTINCT * FROM order_detail WHERE customer_id=:customerId AND completed=FALSE", nativeQuery = true)
     Optional<OrderDetail> notcompletedOrders(long customerId);
 
-    //Query list of products of order with id=1234
-    //Join....
+    //Check if the order with order_id=1234 is of customer with id=1234
+    @Query(value="SELECT DISTINCT * FROM order_detail WHERE customer_id=:customerId AND id=:orderId", nativeQuery = true)
+    Optional<OrderDetail> checkOrderCustomerMatch(long customerId,long orderId);
 
 
 

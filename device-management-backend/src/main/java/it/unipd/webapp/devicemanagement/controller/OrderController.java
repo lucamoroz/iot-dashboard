@@ -270,23 +270,17 @@ public class OrderController {
     ) throws ResourceNotFoundException {
         log.debug("getProductsOfOrder");
 
-        /*String queryText="SELECT p.id, op.order_id, op.quantity, p.name, p.description, p.price "
-                + "FROM orders_products AS op "
-                + "INNER JOIN product AS p "
-                + "ON product_id=p.id "
-                + "WHERE op.order_id="+orderId;*/
+        //get customerId
+        long customerId=getLoggedCustomer().getId();
+
         // We can avoid to retrieve the order. However we would like know whether the order exists or not and show a message when the order does not exist
         orderRepo.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Order " +orderId+ " not found"));
+
+        //check if the Customer owns that order
+        orderRepo.checkOrderCustomerMatch(customerId,orderId).orElseThrow(() -> new ResourceNotFoundException("Customer "+customerId+" doesn't own the Order " +orderId));
         List<OrderProduct> orderProduct = order_productRepo.getByOrderId(orderId);
 
-        /*List<Object[]> rows = createQuery(queryText).list();
 
-
-        for (Object[] row: rows) {
-            System.out.println(" ------- ");
-            System.out.println("Address object: " + row[0]);
-            System.out.println("Photo object: " + row[1]);
-        }*/
         return ResponseEntity.ok(orderProduct);
     }
 
