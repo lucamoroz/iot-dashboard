@@ -326,13 +326,19 @@ public class OrderController {
         newCart.setTimestamp(date);
         orderRepo.save(newCart);
 
+
+
         //for each product on the completed order, for each quantity: create device
+        DeviceController deviceController = new DeviceController();
         for (OrderProduct op: orderProductsCart) {
             for (int q=0; q<op.getQuantity();q++){
                 Product prod=op.getProduct();
                 Customer cust=getLoggedCustomer();
                 OrderDetail ord = op.getOrder();
                 //TODO:Add new device
+                log.debug("Buy Cart: adding device");
+                ResponseEntity r =deviceController.addDevice(prod.getId(),1,false,0,0);
+
             }
         }
 
