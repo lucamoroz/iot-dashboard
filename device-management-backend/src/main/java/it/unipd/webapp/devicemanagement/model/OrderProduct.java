@@ -23,9 +23,9 @@ public class OrderProduct implements Serializable {
     @JsonIgnore
     private OrderDetail order;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER) // With lazy crashes
     @JoinColumn(name = "product_id", referencedColumnName = "id")
-    @JsonIgnore
+    //@JsonIgnore
     private Product product;
 
 }

@@ -3,6 +3,7 @@ package it.unipd.webapp.devicemanagement.controller;
 import it.unipd.webapp.devicemanagement.exception.ResourceNotFoundException;
 import it.unipd.webapp.devicemanagement.model.*;
 import it.unipd.webapp.devicemanagement.repository.DeviceRepository;
+import it.unipd.webapp.devicemanagement.repository.ProductRepository;
 import it.unipd.webapp.devicemanagement.repository.SensorDataRepository;
 import it.unipd.webapp.devicemanagement.security.TokenGenerator;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,9 @@ public class DeviceController {
 
     @Autowired
     private SensorDataRepository sensorDataRepo;
+
+    @Autowired
+    private ProductRepository prodRepo;
 
     private final TokenGenerator tokenGenerator = new TokenGenerator();
 
@@ -119,7 +123,9 @@ public class DeviceController {
             @RequestParam long updateFrequency,
             @RequestParam boolean enabled,
             @RequestParam float latitude,
-            @RequestParam float longitude) {
+            @RequestParam float longitude
+    )throws ResourceNotFoundException {
+        log.debug("addDevice");
 
         DeviceConfig deviceConfig = new DeviceConfig();
         deviceConfig.setToken(tokenGenerator.nextToken());
@@ -137,7 +143,11 @@ public class DeviceController {
         Customer loggedCustomer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         device.setCustomer(loggedCustomer);
         device.setConfig(deviceConfig);
-        // TODO: add setProduct when ProductRepository will be merged
+
+        //Get product by product_id
+        Product product = prodRepo.getInfo(productId).orElseThrow(() -> new ResourceNotFoundException("Product "+productId+" doesn't exist"));
+        device.setProduct(product);
+        log.debug("going to .save");
 
         repository.save(device);
         ClientMessage clientMessage = new ClientMessage("New device added");
