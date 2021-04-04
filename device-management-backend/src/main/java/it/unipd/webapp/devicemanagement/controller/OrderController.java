@@ -1,15 +1,10 @@
 package it.unipd.webapp.devicemanagement.controller;
 
 import it.unipd.webapp.devicemanagement.exception.ResourceNotFoundException;
-import it.unipd.webapp.devicemanagement.model.Customer;
-import it.unipd.webapp.devicemanagement.model.OrderDetail;
-import it.unipd.webapp.devicemanagement.model.OrderProduct;
-import it.unipd.webapp.devicemanagement.repository.CustomerRepository;
-import it.unipd.webapp.devicemanagement.repository.OrderProductRepository;
-import it.unipd.webapp.devicemanagement.repository.OrderRepository;
-import it.unipd.webapp.devicemanagement.repository.ProductRepository;
-import it.unipd.webapp.devicemanagement.model.Product;
+import it.unipd.webapp.devicemanagement.model.*;
+import it.unipd.webapp.devicemanagement.repository.*;
 
+import it.unipd.webapp.devicemanagement.security.TokenGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +29,11 @@ public class OrderController {
 
     @Autowired
     private OrderProductRepository order_productRepo;
+
+    @Autowired
+    private DeviceRepository deviceRepo;
+
+    private final TokenGenerator tokenGenerator = new TokenGenerator();
 
     // This method can be replaced by a Customer static method
     private Customer getLoggedCustomer() {
@@ -336,9 +336,30 @@ public class OrderController {
                 Customer cust=getLoggedCustomer();
                 OrderDetail ord = op.getOrder();
                 //TODO:Add new device
-                log.debug("Buy Cart: adding device");
-                ResponseEntity r =deviceController.addDevice(prod.getId(),1,false,0,0);
+                log.debug("Buy Cart: trying to add device "+prod.getId());
+                //ResponseEntity r =deviceController.addDevice(prod.getId(),1,false,0,0);
 
+                DeviceConfig deviceConfig = new DeviceConfig();
+                deviceConfig.setToken(tokenGenerator.nextToken());
+                deviceConfig.setUpdate_frequency(1);
+                deviceConfig.setEnabled(false);
+                deviceConfig.setLatitude(0);
+                deviceConfig.setLongitude(0);
+
+                DeviceStatus deviceStatus = new DeviceStatus();
+                deviceStatus.setBattery((byte)100);
+                deviceStatus.setVersion("x.y.z");
+                deviceStatus.setLast_update(new Date());
+
+                Device device = new Device();
+                device.setCustomer(cust);
+                device.setConfig(deviceConfig);
+                device.setDeviceStatus(deviceStatus);
+
+                device.setProduct(prod);
+
+                deviceRepo.save(device);
+                log.debug("Device added");
             }
         }
 
