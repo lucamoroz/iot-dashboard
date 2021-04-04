@@ -5,10 +5,13 @@ import it.unipd.webapp.devicemanagement.model.*;
 import it.unipd.webapp.devicemanagement.repository.DeviceRepository;
 import it.unipd.webapp.devicemanagement.repository.ProductRepository;
 import it.unipd.webapp.devicemanagement.repository.SensorDataRepository;
+import it.unipd.webapp.devicemanagement.security.DeviceAuthenticationToken;
 import it.unipd.webapp.devicemanagement.security.TokenGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,6 +65,29 @@ public class DeviceController {
             outputs.add(output);
         }
         return outputs;
+    }
+
+    @Secured("ROLE_DEVICE")
+    @PostMapping("/devices/status")
+    public ResponseEntity<ClientMessage> updateDeviceStatus(
+            @RequestParam byte battery,
+            @RequestParam String version
+    ) throws ResourceNotFoundException {
+        log.debug("update status");
+        DeviceAuthenticationToken deviceAuth = (DeviceAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        String token = deviceAuth.getCredentials().toString();
+
+        Device device = repository.findDeviceByToken(token).orElseThrow(
+                () -> new BadCredentialsException(String.format("Device with token %s not found!", token))
+        );
+
+        DeviceStatus deviceStatus = device.getDeviceStatus();
+        deviceStatus.setBattery(battery);
+        deviceStatus.setVersion(version);
+        repository.save(device);
+
+        ClientMessage clientMessage = new ClientMessage("Device status updated");
+        return ResponseEntity.ok(clientMessage);
     }
 
     private Map<String, Float> getLastDeviceData(Device device) {
