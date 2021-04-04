@@ -25,7 +25,7 @@ public class DeviceController {
     private SensorDataRepository sensorDataRepo;
 
     @Autowired
-    private ProductRepository prodRepo;
+    private ProductRepository productRepo;
 
     private final TokenGenerator tokenGenerator = new TokenGenerator();
 
@@ -143,11 +143,10 @@ public class DeviceController {
         Customer loggedCustomer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         device.setCustomer(loggedCustomer);
         device.setConfig(deviceConfig);
+        device.setDeviceStatus(deviceStatus);
 
-        //Get product by product_id
-        Product product = prodRepo.getInfo(productId).orElseThrow(() -> new ResourceNotFoundException("Product "+productId+" doesn't exist"));
+        Product product = productRepo.getInfo(productId).orElseThrow(() -> new ResourceNotFoundException("Product "+productId+" doesn't exist"));
         device.setProduct(product);
-        log.debug("going to .save");
 
         repository.save(device);
         ClientMessage clientMessage = new ClientMessage("New device added");
