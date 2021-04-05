@@ -3,6 +3,7 @@ package it.unipd.webapp.devicemanagement.controller;
 import it.unipd.webapp.devicemanagement.exception.ResourceNotFoundException;
 import it.unipd.webapp.devicemanagement.model.Customer;
 import it.unipd.webapp.devicemanagement.model.Device;
+import it.unipd.webapp.devicemanagement.model.DeviceStatus;
 import it.unipd.webapp.devicemanagement.model.SensorData;
 import lombok.extern.slf4j.Slf4j;
 
@@ -73,6 +74,10 @@ public class SensorDataController {
             SensorData sensorDataOutput = sensorDataRepo.save(sensorData);
             sensorDataOutputs.add(sensorDataOutput);
         }
+
+        //Update last update timestamp
+        device.getDeviceStatus().setLast_update(timestamp);
+        deviceRepo.save(device);
 
         return ResponseEntity.ok().body(sensorDataOutputs);
     }

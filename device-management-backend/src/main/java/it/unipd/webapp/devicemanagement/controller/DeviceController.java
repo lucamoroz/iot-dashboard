@@ -68,7 +68,7 @@ public class DeviceController {
     }
 
     @Secured("ROLE_DEVICE")
-    @PostMapping("/devices/status")
+    @PostMapping("/device/status")
     public ResponseEntity<ClientMessage> updateDeviceStatus(
             @RequestParam byte battery,
             @RequestParam String version
