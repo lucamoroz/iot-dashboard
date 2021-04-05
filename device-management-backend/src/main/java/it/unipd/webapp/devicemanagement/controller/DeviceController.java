@@ -178,17 +178,4 @@ public class DeviceController {
         ClientMessage clientMessage = new ClientMessage("New device added");
         return ResponseEntity.ok(clientMessage);
     }
-
-    @DeleteMapping("/devices/{id}")
-    public ResponseEntity<ClientMessage> deleteDeviceById(@PathVariable(value = "id") long deviceId)
-            throws ResourceNotFoundException {
-        log.info("deleteDeviceById");
-        Customer loggedCustomer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Device device = repository.findCustomerDeviceById(loggedCustomer.getId(), deviceId).
-                orElseThrow(() -> new ResourceNotFoundException("user's device not found for id: " + deviceId));
-        repository.delete(device);
-        // TODO: remove references of this device in other tables
-        ClientMessage clientMessage = new ClientMessage("Deleted device id: "+ deviceId);
-        return ResponseEntity.ok(clientMessage);
-    }
 }
