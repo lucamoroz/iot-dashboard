@@ -67,6 +67,19 @@ public class DeviceController {
         return outputs;
     }
 
+    private Map<String, Float> getLastDeviceData(Device device) {
+        Optional<List<SensorData>> sensorDataOpts = sensorDataRepo.getLastDeviceDataByDeviceId(device.getId());
+        Map<String, Float> deviceData = new HashMap<>();
+        if (sensorDataOpts.isPresent()) {
+            for (SensorData data : sensorDataOpts.get()) {
+                String sensorType = data.getDataType().getTypeName();
+                Float sensorValue = data.getValue();
+                deviceData.put(sensorType, sensorValue);
+            }
+        }
+        return deviceData;
+    }
+
     @Secured("ROLE_DEVICE")
     @PostMapping("/device/status")
     public ResponseEntity<ClientMessage> updateDeviceStatus(
@@ -88,19 +101,6 @@ public class DeviceController {
 
         ClientMessage clientMessage = new ClientMessage("Device status updated");
         return ResponseEntity.ok(clientMessage);
-    }
-
-    private Map<String, Float> getLastDeviceData(Device device) {
-        Optional<List<SensorData>> sensorDataOpts = sensorDataRepo.getLastDeviceDataByDeviceId(device.getId());
-        Map<String, Float> deviceData = new HashMap<>();
-        if (sensorDataOpts.isPresent()) {
-            for (SensorData data : sensorDataOpts.get()) {
-                String sensorType = data.getDataType().getTypeName();
-                Float sensorValue = data.getValue();
-                deviceData.put(sensorType, sensorValue);
-            }
-        }
-        return deviceData;
     }
 
     @GetMapping("/devices/{id}")
