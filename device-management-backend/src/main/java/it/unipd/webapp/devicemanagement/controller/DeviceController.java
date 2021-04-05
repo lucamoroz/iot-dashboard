@@ -32,7 +32,13 @@ public class DeviceController {
 
     private final TokenGenerator tokenGenerator = new TokenGenerator();
 
-
+    /**
+     * Gets all devices owned by the logged user.
+     * @param includeLastData Include last data received from each device if true
+     * @param groupId Filter by group if this parameter is set
+     * @return List of devices with data optionally
+     * @throws ResourceNotFoundException
+     */
     @GetMapping("/devices")
     public List<HashMap<String, Object>> getAllDevices(
             @RequestParam(defaultValue = "false") boolean includeLastData,
@@ -67,6 +73,11 @@ public class DeviceController {
         return outputs;
     }
 
+    /**
+     * Get the last data received from a device
+     * @param device The device whose last data we are looking for
+     * @return Last data mapped as key->data
+     */
     private Map<String, Float> getLastDeviceData(Device device) {
         Optional<List<SensorData>> sensorDataOpts = sensorDataRepo.getLastDeviceDataByDeviceId(device.getId());
         Map<String, Float> deviceData = new HashMap<>();
@@ -80,6 +91,13 @@ public class DeviceController {
         return deviceData;
     }
 
+    /**
+     * Update device status with data received from a device
+     * @param battery Battery info
+     * @param version Version info
+     * @return a ResponseEntity message
+     * @throws ResourceNotFoundException In case no device is associated with the recived token
+     */
     @Secured("ROLE_DEVICE")
     @PostMapping("/device/status")
     public ResponseEntity<ClientMessage> updateDeviceStatus(
@@ -103,6 +121,12 @@ public class DeviceController {
         return ResponseEntity.ok(clientMessage);
     }
 
+    /**
+     * Get a single device with status and config
+     * @param deviceId Id of the device
+     * @return Response with device info
+     * @throws ResourceNotFoundException In case no device with specified id is owned by the user
+     */
     @GetMapping("/devices/{id}")
     public ResponseEntity<Device> getDeviceById(@PathVariable(value = "id") long deviceId)
             throws ResourceNotFoundException {
@@ -113,6 +137,14 @@ public class DeviceController {
         return ResponseEntity.ok().body(device);
     }
 
+    /**
+     * Update a device's config
+     * @param deviceId Id of the device we want to config
+     * @param updateFrequency New update frequency
+     * @param enabled Enable/disable the device
+     * @return A ResponseEntity with message
+     * @throws ResourceNotFoundException In case no device with specified id is owned by the user
+     */
     @PutMapping("/devices/{id}/config")
     public ResponseEntity<ClientMessage> updateDeviceConfig(
             @PathVariable(value = "id") long deviceId,
@@ -130,6 +162,12 @@ public class DeviceController {
         return ResponseEntity.ok(clientMessage);
     }
 
+    /**
+     * Generate a new token for a device
+     * @param deviceId Id of the device
+     * @return A ResponseEntity with message
+     * @throws ResourceNotFoundException In case no device with specified id is owned by the user
+     */
     @GetMapping("/devices/{id}/generatetoken")
     public ResponseEntity<ClientMessage> generateNewToken(@PathVariable(value = "id") long deviceId)
             throws ResourceNotFoundException {
@@ -143,6 +181,16 @@ public class DeviceController {
         return ResponseEntity.ok(clientMessage);
     }
 
+    /**
+     * Add a new device
+     * @param productId id of the product of the device
+     * @param updateFrequency initial update frequency
+     * @param enabled initial enabled/disabled
+     * @param latitude initial latitude
+     * @param longitude initial longitude
+     * @return A ResponseEntity with message
+     * @throws ResourceNotFoundException In case no product with specified id exists
+     */
     @PostMapping("/devices")
     public ResponseEntity<ClientMessage> addDevice(
             @RequestParam long productId,
