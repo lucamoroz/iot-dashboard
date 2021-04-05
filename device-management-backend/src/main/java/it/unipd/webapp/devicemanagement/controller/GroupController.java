@@ -45,8 +45,8 @@ public class GroupController {
      * @param name The name given for the group
      * @return The 200 ok response message is always returned
      */
-    @PutMapping("/add")
-    public ResponseEntity<ClientMessage> addGroup(@RequestParam String name) {
+    @PostMapping("/add/{name}")
+    public ResponseEntity<ClientMessage> addGroup(@PathVariable("name") String name) {
         CustomerGroup groupToAdd = new CustomerGroup();
         Customer customer = getLoggedCustomer();
         groupToAdd.setName(name);
@@ -63,10 +63,9 @@ public class GroupController {
      * @param groupId The group id whose the user want to delete
      * @return A response message if the operation is completed successfully
      * @throws ResourceNotFoundException When no group with specified id is found
-     * @throws ForbiddenException When an user tries to delete a group that he doesn't own
      */
     @DeleteMapping("/{id}/delete")
-    public ResponseEntity<ClientMessage> deleteGroup(@PathVariable("id") long groupId) throws ResourceNotFoundException, ForbiddenException {
+    public ResponseEntity<ClientMessage> deleteGroup(@PathVariable("id") long groupId) throws ResourceNotFoundException {
 
         Customer customer = getLoggedCustomer();
         List<CustomerGroup> groups = groupRepository.findGroupsByCustomerId(customer.getId());
@@ -76,9 +75,16 @@ public class GroupController {
         CustomerGroup groupToDelete = groups.stream().filter(g -> g.getId() == groupId).findAny().orElse(null);
         if (groupToDelete == null) {
             // If the group is found here, it means that the group belongs to another customer where the id != customerId.
-            // So when this happen, we have to send an error to the client
+            // So when this happen, we have to send an error to the client or at least show a debug message which tells us
+            // what's going on
             CustomerGroup cg = groupRepository.findById(groupId).orElse(null);
-            if (cg != null) throw new ForbiddenException("Customer " +customer.getId()+ " is not allowed to delete group " +groupId);
+
+            if (cg != null) {
+                log.debug("Customer " +customer.getId()+ " is not allowed to delete group " +groupId);
+                // Show this message only for debugging purposes. In production the user shouldn't know that he passed
+                // the group id of another user
+                throw new ResourceNotFoundException("Customer " +customer.getId()+ " is not allowed to delete group " +groupId);
+            }
 
             // The group is not found so we are sure that the groupId does not exist in the database
             throw new ResourceNotFoundException("Group " +groupId+ " not found");
