@@ -1,5 +1,8 @@
 package it.unipd.webapp.devicemanagement.security;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
 import java.security.SecureRandom;
 import java.util.Locale;
 import java.util.Objects;
@@ -9,6 +12,8 @@ import java.util.Random;
  * Random token generator
  * Source: https://stackoverflow.com/questions/41107/how-to-generate-a-random-alpha-numeric-string
  */
+@Component
+@Slf4j
 public class TokenGenerator {
     /**
      * Generate a random token.
