@@ -54,7 +54,7 @@ public class DeviceController {
             devices = repository.findDevicesByCustomer(loggedCustomer.getId());
         }
 
-        if (devices.isEmpty() || devices.get().isEmpty()) {
+        if (devices.isEmpty()) {
             throw new ResourceNotFoundException("No devices found");
         }
 
