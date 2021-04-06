@@ -5,6 +5,7 @@ import it.unipd.webapp.devicemanagement.model.*;
 import it.unipd.webapp.devicemanagement.repository.*;
 
 import it.unipd.webapp.devicemanagement.security.TokenGenerator;
+import it.unipd.webapp.devicemanagement.service.DeviceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,7 @@ public class OrderController {
     private OrderProductRepository order_productRepo;
 
     @Autowired
-    private DeviceRepository deviceRepo;
+    private DeviceService deviceService;
 
     private final TokenGenerator tokenGenerator = new TokenGenerator();
 
@@ -339,26 +340,7 @@ public class OrderController {
                 log.debug("Buy Cart: trying to add device "+prod.getId());
                 //ResponseEntity r =deviceController.addDevice(prod.getId(),1,false,0,0);
 
-                DeviceConfig deviceConfig = new DeviceConfig();
-                deviceConfig.setToken(tokenGenerator.nextToken());
-                deviceConfig.setUpdate_frequency(1);
-                deviceConfig.setEnabled(false);
-                deviceConfig.setLatitude(0);
-                deviceConfig.setLongitude(0);
-
-                DeviceStatus deviceStatus = new DeviceStatus();
-                deviceStatus.setBattery((byte)100);
-                deviceStatus.setVersion("x.y.z");
-                deviceStatus.setLast_update(new Date());
-
-                Device device = new Device();
-                device.setCustomer(cust);
-                device.setConfig(deviceConfig);
-                device.setDeviceStatus(deviceStatus);
-
-                device.setProduct(prod);
-
-                deviceRepo.save(device);
+                deviceService.addDevice(cust, prod);
                 log.debug("Device added");
             }
         }
