@@ -13,7 +13,6 @@ import java.util.List;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/v1")
 public class ProductController {
 
     @Autowired

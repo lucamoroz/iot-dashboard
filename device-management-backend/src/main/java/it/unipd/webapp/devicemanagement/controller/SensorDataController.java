@@ -1,5 +1,6 @@
 package it.unipd.webapp.devicemanagement.controller;
 
+import it.unipd.webapp.devicemanagement.exception.ForbiddenException;
 import it.unipd.webapp.devicemanagement.exception.ResourceNotFoundException;
 import it.unipd.webapp.devicemanagement.model.Customer;
 import it.unipd.webapp.devicemanagement.model.CustomerPlan;
@@ -48,28 +49,28 @@ public class SensorDataController {
 
     @Secured("ROLE_DEVICE")
     @PostMapping("/device/sensordata")
-    public ResponseEntity<List<SensorData>> addSensorData(@RequestBody SensorData[] sensorDatas) throws ResourceNotFoundException {
+    public ResponseEntity<List<SensorData>> addSensorData(@RequestBody SensorData[] sensorDatas) throws ResourceNotFoundException, ForbiddenException {
         
         //Gets the authentified Device from SecurityContextHolder
         DeviceAuthenticationToken deviceAuth = (DeviceAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         String token = deviceAuth.getCredentials().toString();
 
         Device device = deviceRepo.findDeviceByToken(token).orElseThrow(
-            () -> new BadCredentialsException(String.format("Device with token %s not found!", token))
+            () -> new IllegalStateException(String.format("Device with token %s not found!", token))
         );
 
         //Checks that the Device is enabled
         if (!device.getConfig().isEnabled()) {
-            throw new ResourceNotFoundException(String.format("Device with id=%d is disabled", device.getId()));
+            throw new ForbiddenException(String.format("Device with id=%d is disabled", device.getId()));
         }
 
         //Checks if the Customer has calls available
         Customer customer = device.getCustomer();
         CustomerPlan plan = customer.getPlan();
         Long currentCalls = customer.getCallsCount();
-        int maxCalls = (plan == CustomerPlan.FREE) ? 100 : 10000;
+        int maxCalls = (plan == CustomerPlan.FREE) ? 1000 : 10000;
         if (currentCalls >= maxCalls) {
-            throw new ResourceNotFoundException("Run out of calls");
+            throw new ForbiddenException("Run out of calls");
         }
 
         //Increments the Customer calls count by 1
