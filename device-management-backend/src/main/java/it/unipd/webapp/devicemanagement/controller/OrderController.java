@@ -203,7 +203,7 @@ public class OrderController {
 
 
     //Change quantity of a product of the cart (non-completed order)
-    @PutMapping("/editProductQuantity")
+    @PostMapping("/editProductQuantity")
     public ResponseEntity<OrderProduct> editProductQuantity(
             @RequestParam(value = "productId") long productId,
             @RequestParam(value = "newQuantity") int newQuantity) throws ResourceNotFoundException {
