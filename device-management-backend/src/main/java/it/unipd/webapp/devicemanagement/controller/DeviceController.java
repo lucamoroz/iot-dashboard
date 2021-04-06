@@ -105,11 +105,7 @@ public class DeviceController {
     ) throws ResourceNotFoundException {
         log.debug(newDeviceStatus.getVersion());
         DeviceAuthenticationToken deviceAuth = (DeviceAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-        String token = deviceAuth.getCredentials().toString();
-
-        Device device = repository.findDeviceByToken(token).orElseThrow(
-                () -> new BadCredentialsException(String.format("Device with token %s not found!", token))
-        );
+        Device device = deviceAuth.getDevice();
 
         DeviceStatus deviceStatus = device.getDeviceStatus();
         deviceStatus.setVersion(newDeviceStatus.getVersion());

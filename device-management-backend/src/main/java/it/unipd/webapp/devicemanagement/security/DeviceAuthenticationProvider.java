@@ -34,17 +34,16 @@ public class DeviceAuthenticationProvider implements AuthenticationProvider {
             () -> new BadCredentialsException(String.format("Device with token %s not found!", token))
         );
 
-        String deviceId = Long.toString(device.getId());
-
         DeviceAuthenticationToken authenticatedDevice = new DeviceAuthenticationToken(
-                deviceId,
+                device.getId(),
                 token,
-                List.of(new SimpleGrantedAuthority("ROLE_DEVICE")
-        ));
+                List.of(new SimpleGrantedAuthority("ROLE_DEVICE")),
+                device
+        );
 
         authenticatedDevice.setDetails(authenticationToken.getDetails());
 
-        log.debug(String.format("authenticated device: %s", deviceId));
+        log.debug(String.format("authenticated device: %d", device.getId()));
         return authenticatedDevice;
     }
 

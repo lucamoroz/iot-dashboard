@@ -60,18 +60,6 @@ public class GlobalRestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(ForbiddenException.class)
-    public ResponseEntity<CustomErrorResponse> forbiddenHandler(Exception ex, WebRequest request) {
-
-        var errors = CustomErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .error(ex.getMessage())
-                .status(HttpStatus.FORBIDDEN.value())
-                .build();
-
-        return new ResponseEntity<>(errors, HttpStatus.FORBIDDEN);
-    }
-
     @ExceptionHandler(PSQLException.class)
     public ResponseEntity<CustomErrorResponse> pgExceptionHandler(PSQLException ex, WebRequest request) {
 

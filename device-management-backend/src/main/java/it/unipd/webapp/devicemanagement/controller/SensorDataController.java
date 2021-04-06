@@ -53,11 +53,7 @@ public class SensorDataController {
         
         //Gets the authentified Device from SecurityContextHolder
         DeviceAuthenticationToken deviceAuth = (DeviceAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-        String token = deviceAuth.getCredentials().toString();
-
-        Device device = deviceRepo.findDeviceByToken(token).orElseThrow(
-            () -> new IllegalStateException(String.format("Device with token %s not found!", token))
-        );
+        Device device = deviceAuth.getDevice();
 
         //Checks that the Device is enabled
         if (!device.getConfig().isEnabled()) {
