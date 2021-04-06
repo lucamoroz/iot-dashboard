@@ -41,4 +41,10 @@ public class DeviceService {
 
         deviceRepo.save(device);
     }
+
+    public void generateNewToken(Device device) {
+        DeviceConfig deviceConfig = device.getConfig();
+        deviceConfig.setToken(tokenGenerator.nextToken());
+        deviceRepo.save(device);
+    }
 }
