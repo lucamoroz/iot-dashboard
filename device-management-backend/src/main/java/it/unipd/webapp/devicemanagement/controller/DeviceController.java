@@ -30,6 +30,7 @@ public class DeviceController {
     @Autowired
     private ProductRepository productRepo;
 
+    @Autowired
     private final TokenGenerator tokenGenerator = new TokenGenerator();
 
     /**
@@ -93,18 +94,16 @@ public class DeviceController {
 
     /**
      * Update device status with data received from a device
-     * @param battery Battery info
-     * @param version Version info
+     * @param newDeviceStatus New device status containing battery and version
      * @return a ResponseEntity message
      * @throws ResourceNotFoundException In case no device is associated with the recived token
      */
     @Secured("ROLE_DEVICE")
     @PostMapping("/device/status")
     public ResponseEntity<ClientMessage> updateDeviceStatus(
-            @RequestParam byte battery,
-            @RequestParam String version
+            @RequestBody DeviceStatus newDeviceStatus
     ) throws ResourceNotFoundException {
-        log.debug("update status");
+        log.debug(newDeviceStatus.getVersion());
         DeviceAuthenticationToken deviceAuth = (DeviceAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         String token = deviceAuth.getCredentials().toString();
 
@@ -113,8 +112,8 @@ public class DeviceController {
         );
 
         DeviceStatus deviceStatus = device.getDeviceStatus();
-        deviceStatus.setBattery(battery);
-        deviceStatus.setVersion(version);
+        deviceStatus.setVersion(newDeviceStatus.getVersion());
+        deviceStatus.setBattery(newDeviceStatus.getBattery());
         repository.save(device);
 
         ClientMessage clientMessage = new ClientMessage("Device status updated");
@@ -178,52 +177,6 @@ public class DeviceController {
         deviceConfig.setToken(tokenGenerator.nextToken());
         repository.save(device);
         ClientMessage clientMessage = new ClientMessage("New token generated for device id: "+ deviceId);
-        return ResponseEntity.ok(clientMessage);
-    }
-
-    /**
-     * Add a new device
-     * @param productId id of the product of the device
-     * @param updateFrequency initial update frequency
-     * @param enabled initial enabled/disabled
-     * @param latitude initial latitude
-     * @param longitude initial longitude
-     * @return A ResponseEntity with message
-     * @throws ResourceNotFoundException In case no product with specified id exists
-     */
-    @PostMapping("/devices")
-    public ResponseEntity<ClientMessage> addDevice(
-            @RequestParam long productId,
-            @RequestParam long updateFrequency,
-            @RequestParam boolean enabled,
-            @RequestParam float latitude,
-            @RequestParam float longitude
-    )throws ResourceNotFoundException {
-        log.debug("addDevice");
-
-        DeviceConfig deviceConfig = new DeviceConfig();
-        deviceConfig.setToken(tokenGenerator.nextToken());
-        deviceConfig.setUpdate_frequency(updateFrequency);
-        deviceConfig.setEnabled(enabled);
-        deviceConfig.setLatitude(latitude);
-        deviceConfig.setLongitude(longitude);
-
-        DeviceStatus deviceStatus = new DeviceStatus();
-        deviceStatus.setBattery((byte)100);
-        deviceStatus.setVersion("x.y.z");
-        deviceStatus.setLast_update(new Date());
-
-        Device device = new Device();
-        Customer loggedCustomer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        device.setCustomer(loggedCustomer);
-        device.setConfig(deviceConfig);
-        device.setDeviceStatus(deviceStatus);
-
-        Product product = productRepo.getInfo(productId).orElseThrow(() -> new ResourceNotFoundException("Product "+productId+" doesn't exist"));
-        device.setProduct(product);
-
-        repository.save(device);
-        ClientMessage clientMessage = new ClientMessage("New device added");
         return ResponseEntity.ok(clientMessage);
     }
 }

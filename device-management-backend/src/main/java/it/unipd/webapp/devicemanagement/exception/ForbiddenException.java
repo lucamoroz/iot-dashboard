@@ -1,9 +1,8 @@
 package it.unipd.webapp.devicemanagement.exception;
 
-public class ForbiddenException extends Exception {
-    private static final long serialVersionUID = 2;
+public class ForbiddenException extends Exception{
 
-    public ForbiddenException(String message){
+    public ForbiddenException(String message) {
         super(message);
     }
 }

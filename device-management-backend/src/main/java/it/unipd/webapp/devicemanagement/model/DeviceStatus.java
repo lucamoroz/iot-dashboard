@@ -1,5 +1,6 @@
 package it.unipd.webapp.devicemanagement.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -20,5 +21,6 @@ public class DeviceStatus implements Serializable {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_update", nullable = true)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Date last_update;
 }
