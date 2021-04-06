@@ -43,8 +43,7 @@ public class DeviceController {
     public List<HashMap<String, Object>> getAllDevices(
             @RequestParam(defaultValue = "false") boolean includeLastData,
             @RequestParam(required = false) Long groupId
-    )
-            throws ResourceNotFoundException{
+    ) {
         Customer loggedCustomer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         List<Device> devices;
