@@ -47,19 +47,15 @@ public class DeviceController {
             throws ResourceNotFoundException{
         Customer loggedCustomer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        Optional<List<Device>> devices;
+        List<Device> devices;
         if (groupId != null){
             devices = repository.findDevicesByCustomerAndGroup(loggedCustomer.getId(), groupId);
         } else {
             devices = repository.findDevicesByCustomer(loggedCustomer.getId());
         }
 
-        if (devices.isEmpty()) {
-            throw new ResourceNotFoundException("No devices found");
-        }
-
         List<HashMap<String, Object>> outputs = new ArrayList<>();
-        for (Device device : devices.get()) {
+        for (Device device : devices) {
             HashMap<String, Object> output = new HashMap<>();
             output.put("device", device);
 
@@ -95,13 +91,12 @@ public class DeviceController {
      * Update device status with data received from a device
      * @param newDeviceStatus New device status containing battery and version
      * @return a ResponseEntity message
-     * @throws ResourceNotFoundException In case no device is associated with the recived token
      */
     @Secured("ROLE_DEVICE")
     @PostMapping("/device/status")
     public ResponseEntity<ClientMessage> updateDeviceStatus(
             @RequestBody DeviceStatus newDeviceStatus
-    ) throws ResourceNotFoundException {
+    ) {
         log.debug(newDeviceStatus.getVersion());
         DeviceAuthenticationToken deviceAuth = (DeviceAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         Device device = deviceAuth.getDevice();
