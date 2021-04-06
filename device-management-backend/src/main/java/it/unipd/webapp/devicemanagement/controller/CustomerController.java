@@ -1,5 +1,6 @@
 package it.unipd.webapp.devicemanagement.controller;
 
+import it.unipd.webapp.devicemanagement.exception.ConflictException;
 import it.unipd.webapp.devicemanagement.exception.ResourceNotFoundException;
 import it.unipd.webapp.devicemanagement.model.ClientMessage;
 import it.unipd.webapp.devicemanagement.model.Customer;
@@ -57,7 +58,7 @@ public class CustomerController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Customer> createCustomer(@Valid @RequestBody Customer customer) {
+    public ResponseEntity<Customer> createCustomer(@Valid @RequestBody Customer customer) throws ConflictException {
         log.debug("register");
         var createdCustomer = service.registerCustomer(customer);
 
