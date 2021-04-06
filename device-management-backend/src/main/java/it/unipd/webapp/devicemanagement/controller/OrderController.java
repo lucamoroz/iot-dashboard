@@ -33,9 +33,7 @@ public class OrderController {
 
     @Autowired
     private DeviceService deviceService;
-
-    private final TokenGenerator tokenGenerator = new TokenGenerator();
-
+    
     // This method can be replaced by a Customer static method
     private Customer getLoggedCustomer() {
         return (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
