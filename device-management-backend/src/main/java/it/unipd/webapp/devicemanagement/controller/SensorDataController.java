@@ -2,6 +2,7 @@ package it.unipd.webapp.devicemanagement.controller;
 
 import it.unipd.webapp.devicemanagement.exception.ResourceNotFoundException;
 import it.unipd.webapp.devicemanagement.model.Customer;
+import it.unipd.webapp.devicemanagement.model.CustomerPlan;
 import it.unipd.webapp.devicemanagement.model.Device;
 import it.unipd.webapp.devicemanagement.model.DeviceStatus;
 import it.unipd.webapp.devicemanagement.model.SensorData;
@@ -15,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -23,6 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import it.unipd.webapp.devicemanagement.repository.CustomerRepository;
 import it.unipd.webapp.devicemanagement.repository.DeviceRepository;
@@ -60,20 +63,29 @@ public class SensorDataController {
             throw new ResourceNotFoundException(String.format("Device with id=%d is disabled", device.getId()));
         }
 
+        //Checks if the Customer has calls available
+        Customer customer = device.getCustomer();
+        CustomerPlan plan = customer.getPlan();
+        Long currentCalls = customer.getCallsCount();
+        int maxCalls = (plan == CustomerPlan.FREE) ? 100 : 10000;
+        if (currentCalls >= maxCalls) {
+            throw new ResourceNotFoundException("Run out of calls");
+        }
+
         //Increments the Customer calls count by 1
         customerRepo.incrementCallsCount(device.getCustomer().getId());
         
         List<SensorData> sensorDataOutputs = new ArrayList<>();
         Date timestamp = new Date();
         //Saves in the db every data received in the JSON
-        for (SensorData sensorData : sensorDatas) {
+        sensorDataOutputs = Arrays.stream(sensorDatas).map(sensorData -> {
             //Sets current timestamp and device corresponding to the token
             sensorData.setTimestamp(timestamp);
             sensorData.setDevice(device);
-            //Saves the sensor data to the DB
-            SensorData sensorDataOutput = sensorDataRepo.save(sensorData);
-            sensorDataOutputs.add(sensorDataOutput);
-        }
+            return sensorData;
+        }).collect(Collectors.toList());
+        //Saves all the sensor data to the DB
+        sensorDataRepo.saveAll(sensorDataOutputs);
 
         //Update last update timestamp
         device.getDeviceStatus().setLast_update(timestamp);
