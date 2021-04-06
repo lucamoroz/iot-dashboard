@@ -13,8 +13,9 @@ import java.util.Optional;
 public interface OrderRepository extends JpaRepository<OrderDetail, Long>{
 
     //Query List of all completed orders of customer with id=1234
-    @Query(value="SELECT DISTINCT * FROM order_detail WHERE customer_id=:customerId AND completed=TRUE", nativeQuery = true)
-    Optional<List<OrderDetail>> completedOrders(long customerId);
+    //@Query(value="SELECT DISTINCT * FROM order_detail WHERE customer_id=:customerId AND completed=TRUE", nativeQuery = true)
+    @Query("SELECT od FROM order_detail od WHERE od.customer.id=:customerId AND od.completed=TRUE")
+    List<OrderDetail> completedOrders(long customerId);
 
     //Cart information: Query the unique non completed order of customer with id=1234.
     @Query(value="SELECT DISTINCT * FROM order_detail WHERE customer_id=:customerId AND completed=FALSE", nativeQuery = true)

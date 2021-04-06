@@ -1,10 +1,12 @@
 package it.unipd.webapp.devicemanagement.controller;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import it.unipd.webapp.devicemanagement.exception.ResourceNotFoundException;
 import it.unipd.webapp.devicemanagement.model.*;
 import it.unipd.webapp.devicemanagement.repository.*;
 
 import it.unipd.webapp.devicemanagement.security.TokenGenerator;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +19,6 @@ import java.util.*;
 @Slf4j
 @RequestMapping("/order")
 public class OrderController {
-
-    @Autowired
-    private CustomerRepository customerRepository;
 
     @Autowired
     private OrderRepository orderRepo;
@@ -40,32 +39,39 @@ public class OrderController {
         return (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
-    //Cart information: Query the unique non completed order of customer with id=1234.
+    // TODO: evaluate whether is useful to send also the order detail in the cart. If it's decided to remove order detail, the cart should return the products and the class CartDetail should be deleted
+    /**
+     * Gets the information of an order
+     *
+     * @return A response of CartDetail which wraps the order and the list of products associated
+     * with that order
+     */
     @GetMapping("/cartInfo")
-    public ResponseEntity<OrderDetail> chartInfo(){
+    public ResponseEntity<CartDetail> chartInfo(){
         log.debug("getNotcompletedOrders");
         //get customerId
         long customerId=getLoggedCustomer().getId();
 
         //get the unique not completed order
-        Optional<OrderDetail> order=orderRepo.notcompletedOrders(customerId);
+        Optional<OrderDetail> order = orderRepo.notcompletedOrders(customerId);
 
-        // if the there are no not-completed orders, create one
-        if(order.isEmpty()){
-            log.debug("not-completed Order does not exist! This shouldn happen.");
-            OrderDetail orderToAdd=new OrderDetail();
-            orderToAdd.setAddress("");
-            orderToAdd.setCustomer(getLoggedCustomer());
-            Date date = new Date();
-            date.setTime(date.getTime());   //???
-            orderToAdd.setTimestamp(date);
+        // Here we store the information needed for the cart
+        CartDetail cartDetail = new CartDetail();
 
-            orderRepo.save(orderToAdd);
-            return ResponseEntity.ok().body(orderToAdd);
-
+        // Order does not exist, we want return an empty list of products
+        if (order.isEmpty()) {
+            List<OrderProduct> emptyOrderProduct = new ArrayList<>(); // We want to send an empty list of products
+            cartDetail.setOrder(null);
+            cartDetail.setOrderProducts(emptyOrderProduct);
+            return ResponseEntity.ok().body(cartDetail);
         }
 
-        return ResponseEntity.ok().body(order.get());
+        List<OrderProduct> orderProducts = order_productRepo.getByOrderId(order.get().getId());
+
+        cartDetail.setOrder(order.get());
+        cartDetail.setOrderProducts(orderProducts);
+
+        return ResponseEntity.ok().body(cartDetail);
     }
 
 
@@ -78,20 +84,20 @@ public class OrderController {
         long customerId=getLoggedCustomer().getId();
 
         //get the list of completed order of the user with id = customerId
-        Optional<List<OrderDetail>> orders=orderRepo.completedOrders(customerId);
+        List<OrderDetail> orders = orderRepo.completedOrders(customerId);
 
-        return ResponseEntity.ok().body(orders.get());
+        return ResponseEntity.ok().body(orders);
     }
 
     //Add product to cart
-    @GetMapping("/addProductToCart/{id}")
-    public ResponseEntity<OrderProduct> addProductToCart(@PathVariable(value = "id") long productId){
+    @PostMapping("/addProductToCart")
+    public ResponseEntity<OrderProduct> addProductToCart(@RequestParam long productId){
         log.debug("addProductToCart");
 
         // to execute this query we need get the product and the order(cart) entities.
 
         //get customerId
-        long customerId=getLoggedCustomer().getId();
+        long customerId = getLoggedCustomer().getId();
 
         //get non-complete order info (cart)
         OrderDetail cart;
@@ -113,7 +119,7 @@ public class OrderController {
         }
 
         //get the product corresponding to the id given or return an error.
-        Optional<Product> prodData = productRepo.getInfo(productId);
+        Optional<Product> prodData = productRepo.findById(productId);
         if (prodData.isEmpty()) {
             // Error: product not found
             log.debug("The product does not exists");
@@ -146,7 +152,7 @@ public class OrderController {
     }
 
     //Remove item from the cart
-    @GetMapping("/removeProductFromCart/{id}")
+    @DeleteMapping("/removeProductFromCart/{id}")
     public ResponseEntity<OrderProduct> removeProductFromCart(@PathVariable(value = "id") long productId) {
         log.debug("removeProductFromCart");
 
@@ -200,8 +206,8 @@ public class OrderController {
 
 
     //Change quantity of a product of the cart (non-completed order)
-    @GetMapping("/editProductQuanity")
-    public ResponseEntity<OrderProduct> editProductQuanity(
+    @PutMapping("/editProductQuantity")
+    public ResponseEntity<OrderProduct> editProductQuantity(
             @RequestParam(value = "productId") long productId,
             @RequestParam(value = "newQuantity") int newQuantity) throws ResourceNotFoundException {
         log.debug("editProductQuanity");
@@ -285,14 +291,14 @@ public class OrderController {
     }
 
     //Buy all products on the cart
-    @GetMapping("/buyCart")
+    @PostMapping("/buyCart")
     public ResponseEntity<List<OrderProduct>> buyCart(
             @RequestParam(value = "orderId") long orderId,
             @RequestParam(value = "orderAddress") String orderAddress
     ) throws ResourceNotFoundException {
 
         //Address must not be empty
-        if (orderAddress==""){
+        if (orderAddress.isBlank()){
             return ResponseEntity.notFound().build();
         }
 
