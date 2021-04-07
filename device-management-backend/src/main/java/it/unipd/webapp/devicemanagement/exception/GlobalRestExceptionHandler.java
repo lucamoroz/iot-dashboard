@@ -87,4 +87,16 @@ public class GlobalRestExceptionHandler extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(errors, HttpStatus.FORBIDDEN);
     }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<CustomErrorResponse> conflictExceptionHandler(Exception ex, WebRequest request) {
+        var error = CustomErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .error("Conflict")
+                .message(ex.getMessage())
+                .status(HttpStatus.CONFLICT.value())
+                .build();
+
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
 }

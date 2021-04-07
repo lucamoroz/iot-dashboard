@@ -1,5 +1,6 @@
 package it.unipd.webapp.devicemanagement.service;
 
+import it.unipd.webapp.devicemanagement.exception.ConflictException;
 import it.unipd.webapp.devicemanagement.exception.ResourceNotFoundException;
 import it.unipd.webapp.devicemanagement.model.Customer;
 import it.unipd.webapp.devicemanagement.model.CustomerPlan;
@@ -30,12 +31,8 @@ public class CustomerService implements UserDetailsService {
         log.debug("loading user " + s);
         var customer =  repository.findByUsername(s);
 
-        if (customer == null) {
-            log.debug("user not found!");
-            throw new UsernameNotFoundException("user " + s + "does not exist");
-        } else {
-            return customer;
-        }
+        return customer
+                .orElseThrow(() -> new UsernameNotFoundException("user " + s + "does not exist"));
     }
 
     /**
@@ -43,8 +40,18 @@ public class CustomerService implements UserDetailsService {
      * The password will be encrypted, the Role will be set to Customer and the plan will be set to Free.
      * @param customer input data
      * @return new customer
+     * @throws ConflictException if a customer with the given email or username already exists
      */
-    public Customer registerCustomer(Customer customer) {
+    public Customer registerCustomer(Customer customer) throws ConflictException {
+
+        if (repository.findByUsername(customer.getUsername()).isPresent()) {
+            throw new ConflictException(String.format("Customer with username %s already exists", customer.getUsername()));
+        }
+
+        if (repository.findByEmail(customer.getEmail()).isPresent()) {
+            throw new ConflictException(String.format("Customer with email %s already exists", customer.getEmail()));
+        }
+
         customer.setRole(CustomerRole.ROLE_CUSTOMER);
         customer.setPlan(CustomerPlan.FREE);
         customer.setCallsCount(0);
