@@ -6,12 +6,11 @@ import it.unipd.webapp.devicemanagement.repository.DeviceRepository;
 import it.unipd.webapp.devicemanagement.repository.ProductRepository;
 import it.unipd.webapp.devicemanagement.repository.SensorDataRepository;
 import it.unipd.webapp.devicemanagement.security.DeviceAuthenticationToken;
-import it.unipd.webapp.devicemanagement.security.TokenGenerator;
+import it.unipd.webapp.devicemanagement.service.DeviceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +30,7 @@ public class DeviceController {
     private ProductRepository productRepo;
 
     @Autowired
-    private final TokenGenerator tokenGenerator = new TokenGenerator();
+    private DeviceService deviceService;
 
     /**
      * Gets all devices owned by the logged user.
@@ -44,23 +43,18 @@ public class DeviceController {
     public List<HashMap<String, Object>> getAllDevices(
             @RequestParam(defaultValue = "false") boolean includeLastData,
             @RequestParam(required = false) Long groupId
-    )
-            throws ResourceNotFoundException{
+    ) {
         Customer loggedCustomer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        Optional<List<Device>> devices;
+        List<Device> devices;
         if (groupId != null){
             devices = repository.findDevicesByCustomerAndGroup(loggedCustomer.getId(), groupId);
         } else {
             devices = repository.findDevicesByCustomer(loggedCustomer.getId());
         }
 
-        if (devices.isEmpty() || devices.get().isEmpty()) {
-            throw new ResourceNotFoundException("No devices found");
-        }
-
         List<HashMap<String, Object>> outputs = new ArrayList<>();
-        for (Device device : devices.get()) {
+        for (Device device : devices) {
             HashMap<String, Object> output = new HashMap<>();
             output.put("device", device);
 
@@ -96,13 +90,12 @@ public class DeviceController {
      * Update device status with data received from a device
      * @param newDeviceStatus New device status containing battery and version
      * @return a ResponseEntity message
-     * @throws ResourceNotFoundException In case no device is associated with the recived token
      */
     @Secured("ROLE_DEVICE")
     @PostMapping("/device/status")
     public ResponseEntity<ClientMessage> updateDeviceStatus(
             @RequestBody DeviceStatus newDeviceStatus
-    ) throws ResourceNotFoundException {
+    ) {
         log.debug(newDeviceStatus.getVersion());
         DeviceAuthenticationToken deviceAuth = (DeviceAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         Device device = deviceAuth.getDevice();
@@ -163,15 +156,13 @@ public class DeviceController {
      * @return A ResponseEntity with message
      * @throws ResourceNotFoundException In case no device with specified id is owned by the user
      */
-    @GetMapping("/devices/{id}/generatetoken")
+    @PutMapping("/devices/{id}/generatetoken")
     public ResponseEntity<ClientMessage> generateNewToken(@PathVariable(value = "id") long deviceId)
             throws ResourceNotFoundException {
         Customer loggedCustomer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Device device = repository.findCustomerDeviceById(loggedCustomer.getId(), deviceId).
                 orElseThrow(() -> new ResourceNotFoundException("user's device not found for id: " + deviceId));
-        DeviceConfig deviceConfig = device.getConfig();
-        deviceConfig.setToken(tokenGenerator.nextToken());
-        repository.save(device);
+        deviceService.generateNewToken(device);
         ClientMessage clientMessage = new ClientMessage("New token generated for device id: "+ deviceId);
         return ResponseEntity.ok(clientMessage);
     }
