@@ -1,6 +1,7 @@
 package it.unipd.webapp.devicemanagement.service;
 
 import it.unipd.webapp.devicemanagement.exception.ConflictException;
+import it.unipd.webapp.devicemanagement.exception.ForbiddenException;
 import it.unipd.webapp.devicemanagement.exception.ResourceNotFoundException;
 import it.unipd.webapp.devicemanagement.model.Customer;
 import it.unipd.webapp.devicemanagement.model.CustomerPlan;
@@ -95,6 +96,22 @@ public class CustomerService implements UserDetailsService {
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Couldn't find customer with id: %d", customerId)));
         customerToUpgrade.setPlan(CustomerPlan.PREMIUM);
         repository.save(customerToUpgrade);
+    }
+
+    /**
+     * Try to increment by one the number of calls performed by the customer.
+     * @throws ForbiddenException if the customer exceeded the call's limit
+     */
+    public void incrementCallsCount(Customer customer) throws ForbiddenException {
+        log.debug(String.format("Incrementing calls of customer: %s", customer.getUsername()));
+        CustomerPlan plan = customer.getPlan();
+        long currentCalls = customer.getCallsCount();
+        int maxCalls = (plan == CustomerPlan.FREE) ? 1000 : 10000;
+        if (currentCalls >= maxCalls) {
+            throw new ForbiddenException(String.format("No more calls available for customer %s", customer.getUsername()));
+        }
+
+        repository.incrementCallsCount(customer.getId());
     }
 
 }
