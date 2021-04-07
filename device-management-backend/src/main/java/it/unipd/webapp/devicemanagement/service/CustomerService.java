@@ -9,6 +9,7 @@ import it.unipd.webapp.devicemanagement.model.CustomerRole;
 import it.unipd.webapp.devicemanagement.repository.CustomerRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,6 +20,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 public class CustomerService implements UserDetailsService {
+
+    final String FREE_PLAN_CALLS_ENV_NAME = "FREE_PLAN_CALLS";
+    final String PREMIUM_PLAN_CALLS_ENV_NAME = "PREMIUM_PLAN_CALLS";
+
+    @Autowired
+    private Environment environment;
 
     @Autowired
     CustomerRepository repository;
@@ -106,7 +113,11 @@ public class CustomerService implements UserDetailsService {
         log.debug(String.format("Incrementing calls of customer: %s", customer.getUsername()));
         CustomerPlan plan = customer.getPlan();
         long currentCalls = customer.getCallsCount();
-        int maxCalls = (plan == CustomerPlan.FREE) ? 1000 : 10000;
+
+        long freeCallsNumber = Long.parseLong(environment.getRequiredProperty(FREE_PLAN_CALLS_ENV_NAME));
+        long premiumCallsNumber= Long.parseLong(environment.getRequiredProperty(PREMIUM_PLAN_CALLS_ENV_NAME));
+
+        long maxCalls = (plan == CustomerPlan.FREE) ? freeCallsNumber : premiumCallsNumber;
         if (currentCalls >= maxCalls) {
             throw new ForbiddenException(String.format("No more calls available for customer %s", customer.getUsername()));
         }
