@@ -64,4 +64,14 @@ public class CustomerController {
 
         return ResponseEntity.ok().body(createdCustomer);
     }
+
+    @PostMapping("/login")
+    public void login() {
+        // Nothing to do, authentication performed by filters
+    }
+
+    @PostMapping("/logout")
+    public void logout() {
+        // Nothing to do, logout performed by spring security
+    }
 }
