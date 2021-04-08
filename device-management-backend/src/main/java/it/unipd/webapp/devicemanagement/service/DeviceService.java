@@ -32,7 +32,7 @@ public class DeviceService {
         deviceConfig.setLongitude(0);
 
         DeviceStatus deviceStatus = new DeviceStatus();
-        deviceStatus.setBattery((byte)100); // TODO: this will be NULL
+        deviceStatus.setBattery(null);
         deviceStatus.setVersion("1.0.0");
         deviceStatus.setLast_update(new Date());
 
