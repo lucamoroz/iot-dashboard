@@ -1,10 +1,10 @@
 package it.unipd.webapp.devicemanagement.controller;
 
+import it.unipd.webapp.devicemanagement.exception.ForbiddenException;
 import it.unipd.webapp.devicemanagement.exception.ResourceNotFoundException;
 import it.unipd.webapp.devicemanagement.model.*;
 import it.unipd.webapp.devicemanagement.repository.*;
 
-import it.unipd.webapp.devicemanagement.security.TokenGenerator;
 import it.unipd.webapp.devicemanagement.service.DeviceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ public class OrderController {
     private ProductRepository productRepo;
 
     @Autowired
-    private OrderProductRepository order_productRepo;
+    private OrderProductRepository orderProductRepo;
 
     @Autowired
     private DeviceService deviceService;
@@ -44,7 +44,7 @@ public class OrderController {
      * with that order
      */
     @GetMapping("/cartInfo")
-    public ResponseEntity<CartDetail> chartInfo(){
+    public ResponseEntity<CartDetail> cartInfo(){
         log.debug("getNotcompletedOrders");
         //get customerId
         long customerId=getLoggedCustomer().getId();
@@ -63,7 +63,7 @@ public class OrderController {
             return ResponseEntity.ok().body(cartDetail);
         }
 
-        List<OrderProduct> orderProducts = order_productRepo.getByOrderId(order.get().getId());
+        List<OrderProduct> orderProducts = orderProductRepo.getByOrderId(order.get().getId());
 
         cartDetail.setOrder(order.get());
         cartDetail.setOrderProducts(orderProducts);
@@ -73,6 +73,12 @@ public class OrderController {
 
 
     //Query List of all completed orders of customer with id=1234
+
+    /**
+     * Queries a list of all completed orders of customer.
+     *
+     * @return The completed order list
+     */
     @GetMapping("/completedOrders")
     public ResponseEntity<List<OrderDetail>> completedOrders(){
         log.debug("getCompletedOrders");
@@ -87,8 +93,16 @@ public class OrderController {
     }
 
     //Add product to cart
+
+    /**
+     * Adds the specified product to cart. The products in cart are the ones that are going to be bought by user
+     *
+     * @param productId The product's id to add in the cart
+     * @return The response which shows the association between product and order. i.e. in which order the product is added
+     * @throws ResourceNotFoundException When the product's id passed is doesn't exist
+     */
     @PostMapping("/addProductToCart")
-    public ResponseEntity<OrderProduct> addProductToCart(@RequestParam long productId){
+    public ResponseEntity<OrderProduct> addProductToCart(@RequestParam long productId) throws ResourceNotFoundException {
         log.debug("addProductToCart");
 
         // to execute this query we need get the product and the order(cart) entities.
@@ -97,43 +111,31 @@ public class OrderController {
         long customerId = getLoggedCustomer().getId();
 
         //get non-complete order info (cart)
-        OrderDetail cart;
         //get the unique not completed order
-        Optional<OrderDetail> order=orderRepo.notcompletedOrders(customerId);
-        // if the there are no not-completed orders, create one
-        if(order.isEmpty()){
-            log.debug("not-completed Order does not exist! This should not happen.");
-            OrderDetail orderToAdd=new OrderDetail();
+        OrderDetail cart = orderRepo.notcompletedOrders(customerId).orElseGet(() -> {
+            // if the there are no not-completed orders, create one
+            OrderDetail orderToAdd = new OrderDetail();
             orderToAdd.setAddress("");
             orderToAdd.setCustomer(getLoggedCustomer());
             Date date = new Date();
-            date.setTime(date.getTime());   //???
             orderToAdd.setTimestamp(date);
             orderRepo.save(orderToAdd);
-            cart=orderToAdd;
-        }else{
-            cart=order.get();
-        }
+            return orderToAdd;
+        });
 
         //get the product corresponding to the id given or return an error.
-        Optional<Product> prodData = productRepo.findById(productId);
-        if (prodData.isEmpty()) {
-            // Error: product not found
-            log.debug("The product does not exists");
-            return ResponseEntity.notFound().build();
-        }
-
+        Product prodData = productRepo.findById(productId).orElseThrow(() -> new ResourceNotFoundException("The product does not exists"));
 
         //check if the pair (order_id,product_id) already present in the orders_products table. (That mean there was already some quantity of that product in the cart)
-        Optional<OrderProduct> ordprod=order_productRepo.getQuantity(cart.getId(), prodData.get().getId());
+        Optional<OrderProduct> ordprod = orderProductRepo.getQuantity(cart.getId(), prodData.getId());
         if(ordprod.isEmpty()){
             log.debug("The product was not in the cart, so we add it");
             //that product wasn't in the cart, so insert 1 unit of it
             OrderProduct order_product = new OrderProduct();
             order_product.setQuantity(1);
             order_product.setOrder(cart);
-            order_product.setProduct(prodData.get());
-            order_productRepo.save(order_product);
+            order_product.setProduct(prodData);
+            orderProductRepo.save(order_product);
             //return
             return ResponseEntity.ok(order_product);
         }else{
@@ -141,7 +143,7 @@ public class OrderController {
             // there was already some quantity of that product, so just add +1
             OrderProduct order_product=ordprod.get();
             order_product.setQuantity(order_product.getQuantity()+1);
-            order_productRepo.save(order_product);
+            orderProductRepo.save(order_product);
             //return
             return ResponseEntity.ok(order_product);
         }
@@ -149,124 +151,103 @@ public class OrderController {
     }
 
     //Remove item from the cart
+
+    /**
+     * Removes a product from the cart if the user decided that he's not more interested on this product
+     *
+     * @param productId The product id to remove from cart
+     * @return The order product association that was removed by this call
+     * @throws ResourceNotFoundException When user doesn't have a non-completed order, when the product passed is not
+     * found or the product is not in the cart
+     */
     @DeleteMapping("/removeProductFromCart/{id}")
-    public ResponseEntity<OrderProduct> removeProductFromCart(@PathVariable(value = "id") long productId) {
+    public ResponseEntity<OrderProduct> removeProductFromCart(@PathVariable(value = "id") long productId) throws ResourceNotFoundException {
         log.debug("removeProductFromCart");
 
         //get customerId
         long customerId=getLoggedCustomer().getId();
 
         //get non-complete order info (cart)
-        OrderDetail cart;
         //get the unique not completed order
-        Optional<OrderDetail> order=orderRepo.notcompletedOrders(customerId);
-        // if the there are no not-completed orders, create one
-        if(order.isEmpty()){
-            log.debug("not-completed Order does not exist! This should not happen.");
-            OrderDetail orderToAdd=new OrderDetail();
-            orderToAdd.setAddress("");
-            orderToAdd.setCustomer(getLoggedCustomer());
-            Date date = new Date();
-            date.setTime(date.getTime());   //???
-            orderToAdd.setTimestamp(date);
-            orderRepo.save(orderToAdd);
-            cart=orderToAdd;
-        }else{
-            cart=order.get();
-        }
+        OrderDetail cart=orderRepo.notcompletedOrders(customerId).orElseThrow(() -> new ResourceNotFoundException("Not completed orders not found"));
+
 
         //get the product corresponding to the id given or return an error.
-        Optional<Product> prodData = productRepo.getInfo(productId);
-        if (prodData.isEmpty()) {
-            // Error: product not found
-            log.debug("The product does not exists");
-            return ResponseEntity.notFound().build();
-        }
+        Product prodData = productRepo.getInfo(productId).orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
-        //delete, if the product or the cart does not exist doesn't matter.
         //check if the pair (order_id,product_id) is present in the orders_products table.
-        Optional<OrderProduct> ordprod=order_productRepo.getQuantity(cart.getId(), prodData.get().getId());
-        if(ordprod.isEmpty()){
-            log.debug("The product was not in the cart");
-            //that product wasn't in the cart
-            //return
-            return ResponseEntity.notFound().build();
-        }else{
-            log.debug("The product was in the cart, so we delete it");
-            // The product was in the cart, so we delete it
-            order_productRepo.delete(ordprod.get());
-            //return
-            return ResponseEntity.ok().build();
+        OrderProduct ordprod= orderProductRepo.getQuantity(cart.getId(), prodData.getId()).orElseThrow(() -> new ResourceNotFoundException("The product was not in the cart"));
+
+        log.debug("The product was in the cart, so we delete it");
+        // The product was in the cart, so we delete it
+        orderProductRepo.delete(ordprod);
+
+        // An order without any product associated is useless. So we should delete the order
+        List<OrderProduct> prods = orderProductRepo.getByOrderId(cart.getId());
+        if (prods.isEmpty()) {
+            orderRepo.delete(cart);
         }
+        return ResponseEntity.ok(ordprod);
 
     }
 
 
     //Change quantity of a product of the cart (non-completed order)
+
+    /**
+     * Edits the quantity of a certain product in the cart.
+     *
+     * @param productId The product's id where the quantity is going to be modified
+     * @param newQuantity The desired new quantity for the product
+     * @return The order product association updated with the newest product quantity
+     * @throws ResourceNotFoundException When no pending orders are found, when the product does not exist or
+     * when the product selected is not in the cart
+     * @throws ForbiddenException When the quantity passed is < 1
+     */
     @PostMapping("/editProductQuantity")
     public ResponseEntity<OrderProduct> editProductQuantity(
             @RequestParam(value = "productId") long productId,
-            @RequestParam(value = "newQuantity") int newQuantity) throws ResourceNotFoundException {
+            @RequestParam(value = "newQuantity") int newQuantity) throws ResourceNotFoundException, ForbiddenException {
         log.debug("editProductQuanity");
 
         if(newQuantity<1){
-            return ResponseEntity.badRequest().build();
+            // Should it be badRequest error rather than Forbidden?
+            throw new ForbiddenException("You cannot add less than one quantity");
+            //return ResponseEntity.badRequest().build();
         }
 
         //get customerId
         long customerId=getLoggedCustomer().getId();
 
         //get non-complete order info (cart)
-        OrderDetail cart;
         //get the unique not completed order
-        Optional<OrderDetail> order=orderRepo.notcompletedOrders(customerId);
-        // if the there are no not-completed orders, create one
-        if(order.isEmpty()){
-            log.debug("not-completed Order does not exist! This should not happen.");
-            OrderDetail orderToAdd=new OrderDetail();
-            orderToAdd.setAddress("");
-            orderToAdd.setCustomer(getLoggedCustomer());
-            Date date = new Date();
-            date.setTime(date.getTime());   //???
-            orderToAdd.setTimestamp(date);
-            orderRepo.save(orderToAdd);
-            cart=orderToAdd;
-        }else{
-            cart=order.get();
-        }
+        OrderDetail cart=orderRepo.notcompletedOrders(customerId).orElseThrow(() -> new ResourceNotFoundException("Non-completed orders not found"));
 
         //get the product corresponding to the id given or return an error.
-        Optional<Product> prodData = productRepo.getInfo(productId);
-        if (prodData.isEmpty()) {
-            // Error: product not found
-            log.debug("The product does not exists");
-            return ResponseEntity.notFound().build();
-        }
+        Product prodData = productRepo.getInfo(productId).orElseThrow(() -> new ResourceNotFoundException("The product does not exists"));
 
         //Update, if the product is in the cart
         //check if the pair (order_id,product_id) is present in the orders_products table.
-        Optional<OrderProduct> ordprod=order_productRepo.getQuantity(cart.getId(), prodData.get().getId());
-        if(ordprod.isEmpty()){
-            log.debug("The product was not in the cart");
-            //that product wasn't in the cart
-            //return
-            return ResponseEntity.notFound().build();
-        }else{
-            log.debug("The product was in the cart, so we update the quantity");
-            // The product was in the cart, so we update the quanity
-            OrderProduct order_product=ordprod.get();
-            order_product.setQuantity(newQuantity);
-            order_productRepo.save(order_product);
-            //return
-            return ResponseEntity.ok(order_product);
-        }
+        OrderProduct orderProduct= orderProductRepo.getQuantity(cart.getId(), prodData.getId()).orElseThrow(() -> new ResourceNotFoundException("The product was not in the cart"));
+
+        log.debug("The product was in the cart, so we update the quantity");
+        // The product was in the cart, so we update the quantity
+        orderProduct.setQuantity(newQuantity);
+        orderProductRepo.save(orderProduct);
+        //return
+        return ResponseEntity.ok(orderProduct);
 
     }
 
-
-
-
     //Query list of products of order with order_Id=1234
+
+    /**
+     * Returns the products that belongs to an order
+     *
+     * @param orderId The order interested
+     * @return The list of product which belongs to the specified order
+     * @throws ResourceNotFoundException When the order is not found, when the customer doesn't own the order passed
+     */
     @GetMapping("/getProductsOfOrder")
     public ResponseEntity<List<OrderProduct>> getProductsOfOrder(
             @RequestParam(value = "orderId") long orderId
@@ -281,13 +262,23 @@ public class OrderController {
 
         //check if the Customer owns that order
         orderRepo.checkOrderCustomerMatch(customerId,orderId).orElseThrow(() -> new ResourceNotFoundException("Customer "+customerId+" doesn't own the Order " +orderId));
-        List<OrderProduct> orderProduct = order_productRepo.getByOrderId(orderId);
+        List<OrderProduct> orderProduct = orderProductRepo.getByOrderId(orderId);
 
 
         return ResponseEntity.ok(orderProduct);
     }
 
     //Buy all products on the cart
+
+    /**
+     * Completes the pending order and add the devices associated with the products in the order
+     *
+     * @param orderId The order's id that user is buying
+     * @param orderAddress The living address of the customer where to send the product
+     * @return The list of ordered products
+     * @throws ResourceNotFoundException When an address passed is empty, when the cart is not owned by the user or when
+     * the cart is empty
+     */
     @PostMapping("/buyCart")
     public ResponseEntity<List<OrderProduct>> buyCart(
             @RequestParam(value = "orderId") long orderId,
@@ -296,7 +287,8 @@ public class OrderController {
 
         //Address must not be empty
         if (orderAddress.isBlank()){
-            return ResponseEntity.notFound().build();
+            // Should be thrown a specific error for this
+            throw new ResourceNotFoundException("Address must not be empty");
         }
 
         //get customerId
@@ -305,44 +297,42 @@ public class OrderController {
         //check if really the order is the cart and is owned by the customer
         OrderDetail order= orderRepo.checkOrderCustomerMatch(customerId,orderId).orElseThrow(() -> new ResourceNotFoundException("Customer "+customerId+" doesn't own the Order " +orderId));
         if (order.isCompleted()){
-            return ResponseEntity.notFound().build();
+            //return ResponseEntity.notFound().build();
+            throw new ResourceNotFoundException("The cart is not owned by the user");
         }
 
         //check if the cart is empty...
-        List<OrderProduct> orderProductsCart = order_productRepo.getByOrderId(orderId);
+        List<OrderProduct> orderProductsCart = orderProductRepo.getByOrderId(orderId);
         if (orderProductsCart.size()<1){
-            return ResponseEntity.notFound().build();
+            //return ResponseEntity.notFound().build();
+            throw new ResourceNotFoundException("The cart is empty");
         }
 
         //update from non-completed to completed, update timestamp, update address.
         order.setAddress(orderAddress);
         order.setCompleted(true);
         Date date = new Date();
-        date.setTime(date.getTime());
         order.setTimestamp(date);
+        // Store the completed order in database.
+        orderRepo.save(order); // Is it necessary this step or is it sufficient to edit the field desired of the entity and the database is updated accordingly?
 
         //create new empty, non-completed order
-        OrderDetail newCart=new OrderDetail();
+        /*OrderDetail newCart=new OrderDetail();
         newCart.setAddress(orderAddress);
         newCart.setCustomer(getLoggedCustomer());
-        date.setTime(date.getTime());
         newCart.setTimestamp(date);
-        orderRepo.save(newCart);
+        orderRepo.save(newCart);*/
 
 
 
+        Customer customer = getLoggedCustomer();
         //for each product on the completed order, for each quantity: create device
-        DeviceController deviceController = new DeviceController();
+        //TODO: It's better to add all the devices directly in one shot using deviceService. It should be deviceService.addDevices(customer, listofproducts)
         for (OrderProduct op: orderProductsCart) {
             for (int q=0; q<op.getQuantity();q++){
-                Product prod=op.getProduct();
-                Customer cust=getLoggedCustomer();
-                OrderDetail ord = op.getOrder();
-                //TODO:Add new device
-                log.debug("Buy Cart: trying to add device "+prod.getId());
-                //ResponseEntity r =deviceController.addDevice(prod.getId(),1,false,0,0);
-
-                deviceService.addDevice(cust, prod);
+                Product product = op.getProduct();
+                log.debug("Buy Cart: trying to add device "+product.getId());
+                deviceService.addDevice(customer, product);
                 log.debug("Device added");
             }
         }
