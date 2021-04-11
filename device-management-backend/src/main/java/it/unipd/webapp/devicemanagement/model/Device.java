@@ -22,7 +22,7 @@ public class Device {
     private DeviceConfig config;
 
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
     @JsonIgnore
     private Customer customer;

@@ -1,5 +1,7 @@
 package it.unipd.webapp.devicemanagement.service;
 
+import it.unipd.webapp.devicemanagement.exception.ConflictException;
+import it.unipd.webapp.devicemanagement.exception.ForbiddenException;
 import it.unipd.webapp.devicemanagement.exception.ResourceNotFoundException;
 import it.unipd.webapp.devicemanagement.model.Customer;
 import it.unipd.webapp.devicemanagement.model.CustomerPlan;
@@ -7,6 +9,7 @@ import it.unipd.webapp.devicemanagement.model.CustomerRole;
 import it.unipd.webapp.devicemanagement.repository.CustomerRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,6 +20,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 public class CustomerService implements UserDetailsService {
+
+    final String FREE_PLAN_CALLS_ENV_NAME = "FREE_PLAN_CALLS";
+    final String PREMIUM_PLAN_CALLS_ENV_NAME = "PREMIUM_PLAN_CALLS";
+
+    @Autowired
+    private Environment environment;
 
     @Autowired
     CustomerRepository repository;
@@ -30,12 +39,8 @@ public class CustomerService implements UserDetailsService {
         log.debug("loading user " + s);
         var customer =  repository.findByUsername(s);
 
-        if (customer == null) {
-            log.debug("user not found!");
-            throw new UsernameNotFoundException("user " + s + "does not exist");
-        } else {
-            return customer;
-        }
+        return customer
+                .orElseThrow(() -> new UsernameNotFoundException("user " + s + "does not exist"));
     }
 
     /**
@@ -43,8 +48,18 @@ public class CustomerService implements UserDetailsService {
      * The password will be encrypted, the Role will be set to Customer and the plan will be set to Free.
      * @param customer input data
      * @return new customer
+     * @throws ConflictException if a customer with the given email or username already exists
      */
-    public Customer registerCustomer(Customer customer) {
+    public Customer registerCustomer(Customer customer) throws ConflictException {
+
+        if (repository.findByUsername(customer.getUsername()).isPresent()) {
+            throw new ConflictException(String.format("Customer with username %s already exists", customer.getUsername()));
+        }
+
+        if (repository.findByEmail(customer.getEmail()).isPresent()) {
+            throw new ConflictException(String.format("Customer with email %s already exists", customer.getEmail()));
+        }
+
         customer.setRole(CustomerRole.ROLE_CUSTOMER);
         customer.setPlan(CustomerPlan.FREE);
         customer.setCallsCount(0);
@@ -88,6 +103,26 @@ public class CustomerService implements UserDetailsService {
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Couldn't find customer with id: %d", customerId)));
         customerToUpgrade.setPlan(CustomerPlan.PREMIUM);
         repository.save(customerToUpgrade);
+    }
+
+    /**
+     * Try to increment by one the number of calls performed by the customer.
+     * @throws ForbiddenException if the customer exceeded the call's limit
+     */
+    public void incrementCallsCount(Customer customer) throws ForbiddenException {
+        log.debug(String.format("Incrementing calls of customer: %s", customer.getUsername()));
+        CustomerPlan plan = customer.getPlan();
+        long currentCalls = customer.getCallsCount();
+
+        long freeCallsNumber = Long.parseLong(environment.getRequiredProperty(FREE_PLAN_CALLS_ENV_NAME));
+        long premiumCallsNumber= Long.parseLong(environment.getRequiredProperty(PREMIUM_PLAN_CALLS_ENV_NAME));
+
+        long maxCalls = (plan == CustomerPlan.FREE) ? freeCallsNumber : premiumCallsNumber;
+        if (currentCalls >= maxCalls) {
+            throw new ForbiddenException(String.format("No more calls available for customer %s", customer.getUsername()));
+        }
+
+        repository.incrementCallsCount(customer.getId());
     }
 
 }

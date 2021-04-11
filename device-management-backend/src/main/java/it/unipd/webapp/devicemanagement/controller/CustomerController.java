@@ -1,5 +1,6 @@
 package it.unipd.webapp.devicemanagement.controller;
 
+import it.unipd.webapp.devicemanagement.exception.ConflictException;
 import it.unipd.webapp.devicemanagement.exception.ResourceNotFoundException;
 import it.unipd.webapp.devicemanagement.model.ClientMessage;
 import it.unipd.webapp.devicemanagement.model.Customer;
@@ -57,10 +58,20 @@ public class CustomerController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Customer> createCustomer(@Valid @RequestBody Customer customer) {
+    public ResponseEntity<Customer> createCustomer(@Valid @RequestBody Customer customer) throws ConflictException {
         log.debug("register");
         var createdCustomer = service.registerCustomer(customer);
 
         return ResponseEntity.ok().body(createdCustomer);
+    }
+
+    @PostMapping("/login")
+    public void login() {
+        // Nothing to do, authentication performed by filters
+    }
+
+    @PostMapping("/logout")
+    public void logout() {
+        // Nothing to do, logout performed by spring security
     }
 }

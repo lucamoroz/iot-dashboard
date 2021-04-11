@@ -16,9 +16,13 @@ public class DeviceService {
     private DeviceRepository deviceRepo;
 
     @Autowired
-    private final TokenGenerator tokenGenerator = new TokenGenerator();
+    private TokenGenerator tokenGenerator;
 
-
+    /**
+     * Create a new device with default config values
+     * @param customer The customer who owns the new device
+     * @param product The device product
+     */
     public void addDevice(Customer customer, Product product) {
         DeviceConfig deviceConfig = new DeviceConfig();
         deviceConfig.setToken(tokenGenerator.nextToken());
@@ -28,7 +32,7 @@ public class DeviceService {
         deviceConfig.setLongitude(0);
 
         DeviceStatus deviceStatus = new DeviceStatus();
-        deviceStatus.setBattery((byte)100); // TODO: this will be NULL
+        deviceStatus.setBattery(null);
         deviceStatus.setVersion("1.0.0");
         deviceStatus.setLast_update(new Date());
 
@@ -39,6 +43,16 @@ public class DeviceService {
 
         device.setProduct(product);
 
+        deviceRepo.save(device);
+    }
+
+    /**
+     * Generate a new random alphanumeric token for a device
+     * @param device The device whose token we want to update
+     */
+    public void generateNewToken(Device device) {
+        DeviceConfig deviceConfig = device.getConfig();
+        deviceConfig.setToken(tokenGenerator.nextToken());
         deviceRepo.save(device);
     }
 }
