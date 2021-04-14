@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Data;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.time.LocalDateTime;
 
 @Data
@@ -15,7 +17,10 @@ public class CustomErrorResponse {
 
     private int status;
 
-    private String error;
+    private String reason;
 
-    private String message;
+    private String description;
+
+    @Enumerated(EnumType.STRING)
+    private ErrorCode errorCode;
 }
