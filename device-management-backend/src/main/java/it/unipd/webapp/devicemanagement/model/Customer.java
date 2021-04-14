@@ -29,16 +29,13 @@ public class Customer implements UserDetails {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private long id;
 
-    @NotBlank(message = "Email is mandatory")
     @Column(name = "email", length = 127, nullable = false, unique = true)
     private String email;
 
-    @NotBlank(message = "Password is mandatory")
     @Column(name = "password", length = 255, nullable = false)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @NotBlank(message = "Username is mandatory")
     @Column(name = "username", length = 127, nullable = false, unique = true)
     private String username;
 
