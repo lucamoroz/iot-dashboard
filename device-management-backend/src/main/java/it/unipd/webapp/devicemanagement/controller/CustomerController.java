@@ -37,7 +37,7 @@ public class CustomerController {
         var customer = repository.findById(loggedCustomer.getId())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         String.format("Couldn't find customer with id %d", loggedCustomer.getId()),
-                        ErrorCode.NONE));
+                        ErrorCode.ECUS1));
         return ResponseEntity.ok().body(customer);
     }
 
