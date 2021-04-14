@@ -173,6 +173,7 @@ public class DeviceController {
      * @throws ResourceNotFoundException In case no product with specified id exists
      */
     @PostMapping("/devices")
+    @Secured("ROLE_ADMIN")
     public ResponseEntity<ClientMessage> addDevice(
             @RequestParam long productId
     )throws ResourceNotFoundException {
