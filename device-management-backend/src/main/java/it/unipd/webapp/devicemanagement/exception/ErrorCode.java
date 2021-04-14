@@ -23,4 +23,8 @@ public enum ErrorCode {
     ELOG1,
     /** Invalid device authentication */
     EAUT1,
+    /** Invalid customer authentication */
+    EAUT2,
+    /** Access denied */
+    EAUT3,
 }
