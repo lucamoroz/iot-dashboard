@@ -13,10 +13,14 @@ public enum ErrorCode {
     ECUS3,
     /** Customer exceeded the available number of API calls */
     ECUS4,
-    /** Customer input doesn't contain email **/
+    /** Customer input doesn't contain email */
     ECUS5,
-    /** Customer input doesn't contain username **/
+    /** Customer input doesn't contain username */
     ECUS6,
-    /** Customer input doesn't contain password **/
+    /** Customer input doesn't contain password */
     ECUS7,
+    /** Invalid login operation */
+    ELOG1,
+    /** Invalid device authentication */
+    EAUT1,
 }
