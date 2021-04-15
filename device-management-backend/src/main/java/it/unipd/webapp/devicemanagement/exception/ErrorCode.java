@@ -27,4 +27,8 @@ public enum ErrorCode {
     EAUT2,
     /** Access denied */
     EAUT3,
+    /** Device is disabled */
+    ESDA1,
+    /** Device of current user not found */
+    ESDA2,
 }
