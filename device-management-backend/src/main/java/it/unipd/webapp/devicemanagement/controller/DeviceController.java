@@ -1,5 +1,6 @@
 package it.unipd.webapp.devicemanagement.controller;
 
+import it.unipd.webapp.devicemanagement.exception.ErrorCode;
 import it.unipd.webapp.devicemanagement.exception.ResourceNotFoundException;
 import it.unipd.webapp.devicemanagement.model.*;
 import it.unipd.webapp.devicemanagement.repository.DeviceRepository;
@@ -119,8 +120,11 @@ public class DeviceController {
             throws ResourceNotFoundException {
         log.info("getDeviceById");
         Customer customer = currentLoggedUser();
-        Device device = repository.findCustomerDeviceById(customer.getId(), deviceId).
-                orElseThrow(() -> new ResourceNotFoundException("user's device not found for id: " + deviceId));
+        Device device = repository.findCustomerDeviceById(customer.getId(), deviceId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "user's device not found for id: " + deviceId,
+                        ErrorCode.EDEV1
+                ));
         return ResponseEntity.ok().body(device);
     }
 
@@ -139,8 +143,11 @@ public class DeviceController {
             @RequestParam boolean enabled)
             throws ResourceNotFoundException {
         Customer customer = currentLoggedUser();
-        Device device = repository.findCustomerDeviceById(customer.getId(), deviceId).
-                orElseThrow(() -> new ResourceNotFoundException("user's device not found for id: " + deviceId));
+        Device device = repository.findCustomerDeviceById(customer.getId(), deviceId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "user's device not found for id: " + deviceId,
+                        ErrorCode.EDEV1
+                ));
         DeviceConfig deviceConfig = device.getConfig();
         deviceConfig.setEnabled(enabled);
         deviceConfig.setUpdate_frequency(updateFrequency);
@@ -159,8 +166,11 @@ public class DeviceController {
     public ResponseEntity<ClientMessage> generateNewToken(@PathVariable(value = "id") long deviceId)
             throws ResourceNotFoundException {
         Customer customer = currentLoggedUser();
-        Device device = repository.findCustomerDeviceById(customer.getId(), deviceId).
-                orElseThrow(() -> new ResourceNotFoundException("user's device not found for id: " + deviceId));
+        Device device = repository.findCustomerDeviceById(customer.getId(), deviceId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "user's device not found for id: " + deviceId,
+                        ErrorCode.EDEV1
+                ));
         deviceService.generateNewToken(device);
         ClientMessage clientMessage = new ClientMessage("New token generated for device id: "+ deviceId);
         return ResponseEntity.ok(clientMessage);
@@ -179,8 +189,11 @@ public class DeviceController {
     )throws ResourceNotFoundException {
         log.debug("addDevice");
         Customer customer = currentLoggedUser();
-        Product product = productRepo.getInfo(productId).orElseThrow(()
-                -> new ResourceNotFoundException("Product "+productId+" doesn't exist"));
+        Product product = productRepo.getInfo(productId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Product "+productId+" doesn't exist",
+                        ErrorCode.EDEV2
+                ));
         deviceService.addDevice(customer, product);
         ClientMessage clientMessage = new ClientMessage("New device added");
         return ResponseEntity.ok(clientMessage);
