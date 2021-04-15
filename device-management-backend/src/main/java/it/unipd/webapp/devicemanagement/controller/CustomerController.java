@@ -1,6 +1,8 @@
 package it.unipd.webapp.devicemanagement.controller;
 
+import it.unipd.webapp.devicemanagement.exception.BadRequestException;
 import it.unipd.webapp.devicemanagement.exception.ConflictException;
+import it.unipd.webapp.devicemanagement.exception.ErrorCode;
 import it.unipd.webapp.devicemanagement.exception.ResourceNotFoundException;
 import it.unipd.webapp.devicemanagement.model.ClientMessage;
 import it.unipd.webapp.devicemanagement.model.Customer;
@@ -11,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 
 @RestController
 @Slf4j
@@ -31,14 +31,13 @@ public class CustomerController {
      * @throws ResourceNotFoundException if logged customer couldn't be found in the data source
      */
     @GetMapping("/me")
-    public ResponseEntity<Customer> currentLoggedUser() throws ResourceNotFoundException {
-        log.debug("currentLoggedUser");
+    public ResponseEntity<Customer> currentLoggedCustomer() throws ResourceNotFoundException {
+        log.debug("currentLoggedCustomer");
         var loggedCustomer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         var customer = repository.findById(loggedCustomer.getId())
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        String.format("Couldn't find customer with id %d", loggedCustomer.getId())
-        ));
-
+                        String.format("Couldn't find customer with id %d", loggedCustomer.getId()),
+                        ErrorCode.ECUS1));
         return ResponseEntity.ok().body(customer);
     }
 
@@ -58,14 +57,24 @@ public class CustomerController {
     }
 
     /**
-     * Update logged customer. Only password field is considered
+     * Update logged customer. Only username and password field are considered
      * @param updatedCustomer updated customer
      * @return the updated customer
      * @throws ResourceNotFoundException if logged customer is not found
      */
     @PutMapping("/me")
-    public ResponseEntity<Customer> updateLoggedUser(@Valid @RequestBody Customer updatedCustomer) throws ResourceNotFoundException {
-        log.debug("updateLoggedUser");
+    public ResponseEntity<Customer> updateLoggedCustomer(@RequestBody Customer updatedCustomer)
+            throws ResourceNotFoundException, BadRequestException {
+        log.debug("updateLoggedCustomer");
+
+        if (updatedCustomer.getUsername() == null || updatedCustomer.getUsername().isBlank()) {
+            throw new BadRequestException("Missing customer email", ErrorCode.ECUS6);
+        }
+
+        if (updatedCustomer.getPassword() == null || updatedCustomer.getPassword().isBlank()) {
+            throw new BadRequestException("Missing customer email", ErrorCode.ECUS7);
+        }
+
         var loggedCustomer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         var newCustomer = service.updateCustomer(loggedCustomer.getId(), updatedCustomer);
 
@@ -95,8 +104,22 @@ public class CustomerController {
      * @throws ConflictException if an uniqueness constraint is violated
      */
     @PostMapping(value = "/register")
-    public ResponseEntity<Customer> createCustomer(@Valid @RequestBody Customer customer) throws ConflictException {
+    public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer)
+            throws ConflictException, BadRequestException {
         log.debug("register");
+
+        if (customer.getEmail() == null || customer.getEmail().isBlank()) {
+            throw new BadRequestException("Missing customer email", ErrorCode.ECUS5);
+        }
+
+        if (customer.getUsername() == null || customer.getUsername().isBlank()) {
+            throw new BadRequestException("Missing customer email", ErrorCode.ECUS6);
+        }
+
+        if (customer.getPassword() == null || customer.getPassword().isBlank()) {
+            throw new BadRequestException("Missing customer email", ErrorCode.ECUS7);
+        }
+
         var createdCustomer = service.registerCustomer(customer);
 
         return ResponseEntity.ok().body(createdCustomer);
