@@ -40,37 +40,24 @@ public class GlobalRestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<CustomErrorResponse> resourceNotFoundHandler(BaseException ex, WebRequest request) {
-        var errors = buildErrorResponse(ex, "Resource not found", HttpStatus.NOT_FOUND);
-        return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(ForbiddenException.class)
-    public ResponseEntity<CustomErrorResponse> forbiddenExceptionHandler(BaseException ex, WebRequest request) {
-        var errors = buildErrorResponse(ex, "Forbidden", HttpStatus.FORBIDDEN);
-        return new ResponseEntity<>(errors, HttpStatus.FORBIDDEN);
-    }
-
-    @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<CustomErrorResponse> conflictExceptionHandler(BaseException ex, WebRequest request) {
-        var error = buildErrorResponse(ex, "Conflict", HttpStatus.CONFLICT);
-        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
-    }
-
-    @ExceptionHandler(BadRequestException.class)
+    @ExceptionHandler(value = {
+            BadRequestException.class,
+            ConflictException.class,
+            ForbiddenException.class,
+            ResourceNotFoundException.class
+    })
     public ResponseEntity<CustomErrorResponse> badExceptionHandler(BaseException ex, WebRequest request) {
-        var error = buildErrorResponse(ex, "Bad request", HttpStatus.BAD_REQUEST);
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        var error = buildErrorResponse(ex);
+        return new ResponseEntity<>(error, ex.getHttpStatus());
     }
 
-    private CustomErrorResponse buildErrorResponse(BaseException ex, String reason, HttpStatus status) {
+    private CustomErrorResponse buildErrorResponse(BaseException ex) {
         return CustomErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .errorCode(ex.getErrorCode())
-                .reason(reason)
+                .reason(ex.getHttpStatus().getReasonPhrase())
                 .description(ex.getMessage())
-                .status(status.value())
+                .status(ex.getHttpStatus().value())
                 .build();
     }
 }
