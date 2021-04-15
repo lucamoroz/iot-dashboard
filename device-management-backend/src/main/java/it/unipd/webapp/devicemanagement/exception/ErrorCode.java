@@ -27,4 +27,6 @@ public enum ErrorCode {
     EAUT2,
     /** Access denied */
     EAUT3,
+    /** Product not found */
+    EPRO1,
 }
