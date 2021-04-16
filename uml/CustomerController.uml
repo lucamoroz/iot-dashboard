@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>it.unipd.webapp.devicemanagement.controller.CustomerController</OriginalElement>
+  <nodes>
+    <node x="488.0" y="0.0">it.unipd.webapp.devicemanagement.model.Customer</node>
+    <node x="0.0" y="165.0">it.unipd.webapp.devicemanagement.model.CustomerPlan</node>
+    <node x="807.0" y="534.0">it.unipd.webapp.devicemanagement.controller.CustomerController</node>
+    <node x="228.0" y="165.0">it.unipd.webapp.devicemanagement.model.CustomerRole</node>
+    <node x="959.1190476190476" y="154.0">it.unipd.webapp.devicemanagement.model.ClientMessage</node>
+    <node x="495.0" y="600.5">it.unipd.webapp.devicemanagement.repository.CustomerRepository</node>
+    <node x="186.30952380952385" y="501.0">it.unipd.webapp.devicemanagement.service.CustomerService</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="it.unipd.webapp.devicemanagement.service.CustomerService" target="it.unipd.webapp.devicemanagement.model.CustomerRole">
+      <point x="0.0" y="-148.5" />
+      <point x="329.30952380952385" y="476.0" />
+      <point x="332.0" y="476.0" />
+      <point x="0.0" y="60.5" />
+    </edge>
+    <edge source="it.unipd.webapp.devicemanagement.service.CustomerService" target="it.unipd.webapp.devicemanagement.model.CustomerPlan">
+      <point x="-95.33333333333326" y="-148.5" />
+      <point x="233.9761904761906" y="476.0" />
+      <point x="104.0" y="476.0" />
+      <point x="0.0" y="60.5" />
+    </edge>
+    <edge source="it.unipd.webapp.devicemanagement.repository.CustomerRepository" target="it.unipd.webapp.devicemanagement.model.Customer">
+      <point x="0.0" y="-49.0" />
+      <point x="0.0" y="225.5" />
+    </edge>
+    <edge source="it.unipd.webapp.devicemanagement.service.CustomerService" target="it.unipd.webapp.devicemanagement.model.Customer">
+      <point x="95.33333333333337" y="-148.5" />
+      <point x="424.6428571428572" y="476.0" />
+      <point x="539.0" y="476.0" />
+      <point x="-102.0" y="225.5" />
+    </edge>
+    <edge source="it.unipd.webapp.devicemanagement.controller.CustomerController" target="it.unipd.webapp.devicemanagement.model.Customer">
+      <point x="-130.66666666666663" y="-115.5" />
+      <point x="872.3333333333334" y="476.0" />
+      <point x="743.0" y="476.0" />
+      <point x="102.0" y="225.5" />
+    </edge>
+    <edge source="it.unipd.webapp.devicemanagement.controller.CustomerController" target="it.unipd.webapp.devicemanagement.model.ClientMessage">
+      <point x="2.8421709430404007E-14" y="-115.5" />
+      <point x="1003.0" y="476.0" />
+      <point x="1005.6190476190476" y="476.0" />
+      <point x="-46.5" y="71.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="718.0" y="411.5" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Fields</Category>
+    <Category>Methods</Category>
+    <Category>Properties</Category>
+    <Category>Inner Classes</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
