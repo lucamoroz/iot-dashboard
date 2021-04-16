@@ -1,6 +1,7 @@
 package it.unipd.webapp.devicemanagement.service;
 
 import it.unipd.webapp.devicemanagement.exception.ConflictException;
+import it.unipd.webapp.devicemanagement.exception.ErrorCode;
 import it.unipd.webapp.devicemanagement.exception.ForbiddenException;
 import it.unipd.webapp.devicemanagement.exception.ResourceNotFoundException;
 import it.unipd.webapp.devicemanagement.model.Customer;
@@ -40,7 +41,7 @@ public class CustomerService implements UserDetailsService {
         var customer =  repository.findByUsername(s);
 
         return customer
-                .orElseThrow(() -> new UsernameNotFoundException("user " + s + "does not exist"));
+                .orElseThrow(() -> new UsernameNotFoundException(String.format("User %s does not exist", s)));
     }
 
     /**
@@ -53,11 +54,15 @@ public class CustomerService implements UserDetailsService {
     public Customer registerCustomer(Customer customer) throws ConflictException {
 
         if (repository.findByUsername(customer.getUsername()).isPresent()) {
-            throw new ConflictException(String.format("Customer with username %s already exists", customer.getUsername()));
+            throw new ConflictException(
+                    String.format("Customer with username %s already exists", customer.getUsername()),
+                    ErrorCode.ECUS2);
         }
 
         if (repository.findByEmail(customer.getEmail()).isPresent()) {
-            throw new ConflictException(String.format("Customer with email %s already exists", customer.getEmail()));
+            throw new ConflictException(
+                    String.format("Customer with email %s already exists", customer.getEmail()),
+                    ErrorCode.ECUS3);
         }
 
         customer.setRole(CustomerRole.ROLE_CUSTOMER);
@@ -68,7 +73,7 @@ public class CustomerService implements UserDetailsService {
     }
 
     /**
-     * Update customer data. Only password is considered.
+     * Update customer data. Only email and password are considered.
      * @param customerId ID of customer to update
      * @param newCustomerData new customer data
      * @return updated customer
@@ -76,8 +81,11 @@ public class CustomerService implements UserDetailsService {
      */
     public Customer updateCustomer(Long customerId, Customer newCustomerData) throws ResourceNotFoundException {
         Customer updatedCustomer = repository.findById(customerId)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Couldn't find customer with id: %d", customerId)));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format("Couldn't find customer with id: %d", customerId),
+                        ErrorCode.ECUS1));
 
+        updatedCustomer.setUsername(newCustomerData.getUsername());
         updatedCustomer.setPassword(passwordEncoder.encode(newCustomerData.getPassword()));
         return repository.save(updatedCustomer);
     }
@@ -89,7 +97,9 @@ public class CustomerService implements UserDetailsService {
      */
     public void deleteCustomer(Long customerId) throws ResourceNotFoundException {
         var customerToDelete = repository.findById(customerId)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Couldn't find customer with id: %d", customerId)));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format("Couldn't find customer with id: %d", customerId),
+                        ErrorCode.ECUS1));
         repository.delete(customerToDelete);
     }
 
@@ -100,7 +110,9 @@ public class CustomerService implements UserDetailsService {
      */
     public void upgradeCustomerPlan(Long customerId) throws ResourceNotFoundException {
         var customerToUpgrade = repository.findById(customerId)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Couldn't find customer with id: %d", customerId)));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        String.format("Couldn't find customer with id: %d", customerId),
+                        ErrorCode.ECUS1));
         customerToUpgrade.setPlan(CustomerPlan.PREMIUM);
         repository.save(customerToUpgrade);
     }
@@ -119,7 +131,9 @@ public class CustomerService implements UserDetailsService {
 
         long maxCalls = (plan == CustomerPlan.FREE) ? freeCallsNumber : premiumCallsNumber;
         if (currentCalls >= maxCalls) {
-            throw new ForbiddenException(String.format("No more calls available for customer %s", customer.getUsername()));
+            throw new ForbiddenException(
+                    String.format("No more calls available for customer %s", customer.getUsername()),
+                    ErrorCode.ECUS4);
         }
 
         repository.incrementCallsCount(customer.getId());

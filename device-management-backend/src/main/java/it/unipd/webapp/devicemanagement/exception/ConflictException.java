@@ -1,7 +1,18 @@
 package it.unipd.webapp.devicemanagement.exception;
 
-public class ConflictException extends Exception {
-    public ConflictException(String message){
-        super(message);
+import org.springframework.http.HttpStatus;
+
+public class ConflictException extends BaseException {
+    public ConflictException(String message, ErrorCode code) {
+        super(message, code);
+    }
+
+    public ConflictException(String message) {
+        super(message, ErrorCode.NONE);
+    }
+
+    @Override
+    public HttpStatus getHttpStatus() {
+        return HttpStatus.CONFLICT;
     }
 }
