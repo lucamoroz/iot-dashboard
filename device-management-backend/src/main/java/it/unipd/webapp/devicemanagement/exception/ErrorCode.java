@@ -27,6 +27,10 @@ public enum ErrorCode {
     EAUT2,
     /** Access denied */
     EAUT3,
+    /** Device of logged customer not found with specified id */
+    EDEV1,
+    /** Invalid product id */
+    EDEV2,
     /** Product not found */
     EPRO1,
 }
