@@ -1,5 +1,6 @@
 package it.unipd.webapp.devicemanagement.controller;
 
+import it.unipd.webapp.devicemanagement.exception.BadRequestException;
 import it.unipd.webapp.devicemanagement.exception.ErrorCode;
 import it.unipd.webapp.devicemanagement.exception.ForbiddenException;
 import it.unipd.webapp.devicemanagement.exception.ResourceNotFoundException;
@@ -203,17 +204,16 @@ public class OrderController {
      * @return The order product association updated with the newest product quantity
      * @throws ResourceNotFoundException When no pending orders are found, when the product does not exist or
      * when the product selected is not in the cart
-     * @throws ForbiddenException When the quantity passed is < 1
+     * @throws BadRequestException When the quantity passed is < 1
      */
     @PostMapping("/editProductQuantity")
     public ResponseEntity<OrderProduct> editProductQuantity(
             @RequestParam(value = "productId") long productId,
-            @RequestParam(value = "newQuantity") int newQuantity) throws ResourceNotFoundException, ForbiddenException {
+            @RequestParam(value = "newQuantity") int newQuantity) throws ResourceNotFoundException, BadRequestException {
         log.debug("editProductQuanity");
 
         if(newQuantity<1){
-            // Should it be badRequest error rather than Forbidden?
-            throw new ForbiddenException("You cannot add less than one quantity", ErrorCode.EPRD3);
+            throw new BadRequestException("You cannot add less than one quantity", ErrorCode.EPRD3);
         }
 
         //get customerId
@@ -276,19 +276,20 @@ public class OrderController {
      * @param orderId The order's id that user is buying
      * @param orderAddress The living address of the customer where to send the product
      * @return The list of ordered products
-     * @throws ResourceNotFoundException When an address passed is empty, when the cart is not owned by the user or when
+     * @throws ResourceNotFoundException When the cart is not owned by the user
+     * @throws BadRequestException When an address passed is empty or when
      * the cart is empty
      */
     @PostMapping("/buyCart")
     public ResponseEntity<List<OrderProduct>> buyCart(
             @RequestParam(value = "orderId") long orderId,
             @RequestParam(value = "orderAddress") String orderAddress
-    ) throws ResourceNotFoundException {
+    ) throws ResourceNotFoundException, BadRequestException {
 
         //Address must not be empty
         if (orderAddress.isBlank()){
             // Should be thrown a specific error for this
-            throw new ResourceNotFoundException("Address must not be empty", ErrorCode.EORD4);
+            throw new BadRequestException("Address must not be empty", ErrorCode.EORD4);
         }
 
         //get customerId
@@ -297,13 +298,13 @@ public class OrderController {
         //check if really the order is the cart and is owned by the customer
         OrderDetail order= orderRepo.checkOrderCustomerMatch(customerId,orderId).orElseThrow(() -> new ResourceNotFoundException("Customer "+customerId+" doesn't own the Order " +orderId, ErrorCode.EORD3));
         if (order.isCompleted()){
-            throw new ResourceNotFoundException("The selected order is already completed", ErrorCode.EORD5);
+            throw new BadRequestException("The selected order is already completed", ErrorCode.EORD5);
         }
 
         //check if the cart is empty...
         List<OrderProduct> orderProductsCart = orderProductRepo.getByOrderId(orderId);
         if (orderProductsCart.size()<1){
-            throw new ResourceNotFoundException("The cart is empty", ErrorCode.EORD6);
+            throw new BadRequestException("The cart is empty", ErrorCode.EORD6);
         }
 
         //update from non-completed to completed, update timestamp, update address.
@@ -314,18 +315,8 @@ public class OrderController {
         // Store the completed order in database.
         orderRepo.save(order); // Is it necessary this step or is it sufficient to edit the field desired of the entity and the database is updated accordingly?
 
-        //create new empty, non-completed order
-        /*OrderDetail newCart=new OrderDetail();
-        newCart.setAddress(orderAddress);
-        newCart.setCustomer(getLoggedCustomer());
-        newCart.setTimestamp(date);
-        orderRepo.save(newCart);*/
-
-
-
         Customer customer = getLoggedCustomer();
         //for each product on the completed order, for each quantity: create device
-        //TODO: It's better to add all the devices directly in one shot using deviceService. It should be deviceService.addDevices(customer, listofproducts)
         for (OrderProduct op: orderProductsCart) {
             for (int q=0; q<op.getQuantity();q++){
                 Product product = op.getProduct();
