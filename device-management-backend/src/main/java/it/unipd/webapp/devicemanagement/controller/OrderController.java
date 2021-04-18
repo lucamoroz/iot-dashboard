@@ -1,5 +1,6 @@
 package it.unipd.webapp.devicemanagement.controller;
 
+import it.unipd.webapp.devicemanagement.exception.ErrorCode;
 import it.unipd.webapp.devicemanagement.exception.ForbiddenException;
 import it.unipd.webapp.devicemanagement.exception.ResourceNotFoundException;
 import it.unipd.webapp.devicemanagement.model.*;
@@ -124,7 +125,7 @@ public class OrderController {
         });
 
         //get the product corresponding to the id given or return an error.
-        Product prodData = productRepo.findById(productId).orElseThrow(() -> new ResourceNotFoundException("The product does not exists"));
+        Product prodData = productRepo.findById(productId).orElseThrow(() -> new ResourceNotFoundException("The product does not exists", ErrorCode.EPRD1));
 
         //check if the pair (order_id,product_id) already present in the orders_products table. (That mean there was already some quantity of that product in the cart)
         Optional<OrderProduct> ordprod = orderProductRepo.getQuantity(cart.getId(), prodData.getId());
@@ -169,14 +170,14 @@ public class OrderController {
 
         //get non-complete order info (cart)
         //get the unique not completed order
-        OrderDetail cart=orderRepo.notcompletedOrders(customerId).orElseThrow(() -> new ResourceNotFoundException("Not completed orders not found"));
+        OrderDetail cart=orderRepo.notcompletedOrders(customerId).orElseThrow(() -> new ResourceNotFoundException("Non-completed order is not found", ErrorCode.EORD1));
 
 
         //get the product corresponding to the id given or return an error.
-        Product prodData = productRepo.getInfo(productId).orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+        Product prodData = productRepo.getInfo(productId).orElseThrow(() -> new ResourceNotFoundException("The product does not exists", ErrorCode.EPRD1));
 
         //check if the pair (order_id,product_id) is present in the orders_products table.
-        OrderProduct ordprod= orderProductRepo.getQuantity(cart.getId(), prodData.getId()).orElseThrow(() -> new ResourceNotFoundException("The product was not in the cart"));
+        OrderProduct ordprod= orderProductRepo.getQuantity(cart.getId(), prodData.getId()).orElseThrow(() -> new ResourceNotFoundException("The product was not in the cart", ErrorCode.EPRD2));
 
         log.debug("The product was in the cart, so we delete it");
         // The product was in the cart, so we delete it
@@ -212,8 +213,7 @@ public class OrderController {
 
         if(newQuantity<1){
             // Should it be badRequest error rather than Forbidden?
-            throw new ForbiddenException("You cannot add less than one quantity");
-            //return ResponseEntity.badRequest().build();
+            throw new ForbiddenException("You cannot add less than one quantity", ErrorCode.EPRD3);
         }
 
         //get customerId
@@ -221,14 +221,14 @@ public class OrderController {
 
         //get non-complete order info (cart)
         //get the unique not completed order
-        OrderDetail cart=orderRepo.notcompletedOrders(customerId).orElseThrow(() -> new ResourceNotFoundException("Non-completed orders not found"));
+        OrderDetail cart=orderRepo.notcompletedOrders(customerId).orElseThrow(() -> new ResourceNotFoundException("Non-completed order is not found", ErrorCode.EORD1));
 
         //get the product corresponding to the id given or return an error.
-        Product prodData = productRepo.getInfo(productId).orElseThrow(() -> new ResourceNotFoundException("The product does not exists"));
+        Product prodData = productRepo.getInfo(productId).orElseThrow(() -> new ResourceNotFoundException("The product does not exists", ErrorCode.EPRD1));
 
         //Update, if the product is in the cart
         //check if the pair (order_id,product_id) is present in the orders_products table.
-        OrderProduct orderProduct= orderProductRepo.getQuantity(cart.getId(), prodData.getId()).orElseThrow(() -> new ResourceNotFoundException("The product was not in the cart"));
+        OrderProduct orderProduct= orderProductRepo.getQuantity(cart.getId(), prodData.getId()).orElseThrow(() -> new ResourceNotFoundException("The product is not in the cart", ErrorCode.EPRD2));
 
         log.debug("The product was in the cart, so we update the quantity");
         // The product was in the cart, so we update the quantity
@@ -258,10 +258,10 @@ public class OrderController {
         long customerId=getLoggedCustomer().getId();
 
         // We can avoid to retrieve the order. However we would like know whether the order exists or not and show a message when the order does not exist
-        orderRepo.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Order " +orderId+ " not found"));
+        orderRepo.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Order " +orderId+ " not found", ErrorCode.EORD2));
 
         //check if the Customer owns that order
-        orderRepo.checkOrderCustomerMatch(customerId,orderId).orElseThrow(() -> new ResourceNotFoundException("Customer "+customerId+" doesn't own the Order " +orderId));
+        orderRepo.checkOrderCustomerMatch(customerId,orderId).orElseThrow(() -> new ResourceNotFoundException("Customer "+customerId+" doesn't own the Order " +orderId, ErrorCode.EORD3));
         List<OrderProduct> orderProduct = orderProductRepo.getByOrderId(orderId);
 
 
@@ -288,24 +288,22 @@ public class OrderController {
         //Address must not be empty
         if (orderAddress.isBlank()){
             // Should be thrown a specific error for this
-            throw new ResourceNotFoundException("Address must not be empty");
+            throw new ResourceNotFoundException("Address must not be empty", ErrorCode.EORD4);
         }
 
         //get customerId
         long customerId=getLoggedCustomer().getId();
 
         //check if really the order is the cart and is owned by the customer
-        OrderDetail order= orderRepo.checkOrderCustomerMatch(customerId,orderId).orElseThrow(() -> new ResourceNotFoundException("Customer "+customerId+" doesn't own the Order " +orderId));
+        OrderDetail order= orderRepo.checkOrderCustomerMatch(customerId,orderId).orElseThrow(() -> new ResourceNotFoundException("Customer "+customerId+" doesn't own the Order " +orderId, ErrorCode.EORD3));
         if (order.isCompleted()){
-            //return ResponseEntity.notFound().build();
-            throw new ResourceNotFoundException("The cart is not owned by the user");
+            throw new ResourceNotFoundException("The selected order is already completed", ErrorCode.EORD5);
         }
 
         //check if the cart is empty...
         List<OrderProduct> orderProductsCart = orderProductRepo.getByOrderId(orderId);
         if (orderProductsCart.size()<1){
-            //return ResponseEntity.notFound().build();
-            throw new ResourceNotFoundException("The cart is empty");
+            throw new ResourceNotFoundException("The cart is empty", ErrorCode.EORD6);
         }
 
         //update from non-completed to completed, update timestamp, update address.

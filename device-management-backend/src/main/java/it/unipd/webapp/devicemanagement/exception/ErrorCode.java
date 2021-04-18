@@ -35,6 +35,22 @@ public enum ErrorCode {
     ESDA1,
     /** Device of current user not found */
     ESDA2,
-    /** Product not found */
-    EPRO1,
+    /** The product specified does not exist **/
+    EPRD1,
+    /** The product specified does not belong in the cart **/
+    EPRD2,
+    /** A wrong quantity specified for the selected product in the cart **/
+    EPRD3,
+    /** A non-completed order (i.e. cart) is not found **/
+    EORD1,
+    /** The specified order does not exist (nor completed nor currently in the cart) **/
+    EORD2,
+    /** Customer does not own the specified order **/
+    EORD3,
+    /** A blank address is passed to the order **/
+    EORD4,
+    /** The user is trying to buy an already completed order **/
+    EORD5,
+    /** An user is trying to buy from an empty cart  **/
+    EORD6,
 }
