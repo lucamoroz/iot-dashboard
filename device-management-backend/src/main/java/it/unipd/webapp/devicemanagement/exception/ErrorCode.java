@@ -35,4 +35,6 @@ public enum ErrorCode {
     ESDA1,
     /** Device of current user not found */
     ESDA2,
+    /** Customer's group not found with specified id **/
+    ECGR1,
 }

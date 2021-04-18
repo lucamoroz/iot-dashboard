@@ -1,5 +1,6 @@
 package it.unipd.webapp.devicemanagement.controller;
 
+import it.unipd.webapp.devicemanagement.exception.ErrorCode;
 import it.unipd.webapp.devicemanagement.exception.ForbiddenException;
 import it.unipd.webapp.devicemanagement.exception.ResourceNotFoundException;
 import it.unipd.webapp.devicemanagement.model.ClientMessage;
@@ -83,11 +84,11 @@ public class GroupController {
                 log.debug("Customer " +customer.getId()+ " is not allowed to delete group " +groupId);
                 // Show this message only for debugging purposes. In production the user shouldn't know that he passed
                 // the group id of another user
-                throw new ResourceNotFoundException("Customer " +customer.getId()+ " is not allowed to delete group " +groupId);
+                throw new ResourceNotFoundException("Customer " +customer.getId()+ " is not allowed to delete group " +groupId, ErrorCode.ECGR1);
             }
 
             // The group is not found so we are sure that the groupId does not exist in the database
-            throw new ResourceNotFoundException("Group " +groupId+ " not found");
+            throw new ResourceNotFoundException("Group " +groupId+ " not found", ErrorCode.ECGR1);
         }
         groupRepository.delete(groupToDelete);
         ClientMessage clientMessage = new ClientMessage("Group deleted");
