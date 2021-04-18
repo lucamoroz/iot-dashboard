@@ -3,6 +3,7 @@ package it.unipd.webapp.devicemanagement.security;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
@@ -52,8 +53,9 @@ final class DeviceAuthenticationFilter extends AbstractAuthenticationProcessingF
             final FilterChain chain,
             final Authentication authResult) throws IOException, ServletException {
         super.successfulAuthentication(request, response, chain, authResult);
+        // No session for devices
+        request.getSession().invalidate();
         // Let the request reach the application if the request is authenticated
         chain.doFilter(request, response);
     }
-
 }
