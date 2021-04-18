@@ -39,7 +39,7 @@ public class ProductController {
     @GetMapping("/products/{id}")
     public ResponseEntity<Product> getProductInfo(@PathVariable(value = "id") Long productId) throws ResourceNotFoundException {
         Product product = productRepo.getInfo(productId).orElseThrow(
-            () -> new ResourceNotFoundException("Product with not found", ErrorCode.EPRO1)
+            () -> new ResourceNotFoundException("Product with not found", ErrorCode.EPRD1)
         );
         
         return ResponseEntity.ok().body(product);
