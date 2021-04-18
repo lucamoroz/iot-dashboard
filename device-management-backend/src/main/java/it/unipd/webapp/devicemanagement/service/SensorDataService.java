@@ -2,6 +2,7 @@ package it.unipd.webapp.devicemanagement.service;
 
 import it.unipd.webapp.devicemanagement.exception.ForbiddenException;
 import it.unipd.webapp.devicemanagement.exception.ResourceNotFoundException;
+import it.unipd.webapp.devicemanagement.exception.ErrorCode;
 import it.unipd.webapp.devicemanagement.model.*;
 import it.unipd.webapp.devicemanagement.repository.DeviceRepository;
 import it.unipd.webapp.devicemanagement.repository.SensorDataRepository;
@@ -38,7 +39,7 @@ public class SensorDataService {
     public void addSensorData(Device device, List<SensorData> data) throws ForbiddenException {
         //Checks that the Device is enabled
         if (!device.getConfig().isEnabled()) {
-            throw new ForbiddenException(String.format("Device with id=%d is disabled", device.getId()));
+            throw new ForbiddenException("Device is disabled", ErrorCode.ESDA1);
         }
 
         customerService.incrementCallsCount(device.getCustomer());
