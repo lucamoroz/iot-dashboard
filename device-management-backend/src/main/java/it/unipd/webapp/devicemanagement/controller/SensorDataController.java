@@ -2,6 +2,7 @@ package it.unipd.webapp.devicemanagement.controller;
 
 import it.unipd.webapp.devicemanagement.exception.ForbiddenException;
 import it.unipd.webapp.devicemanagement.exception.ResourceNotFoundException;
+import it.unipd.webapp.devicemanagement.exception.ErrorCode;
 import it.unipd.webapp.devicemanagement.model.*;
 import it.unipd.webapp.devicemanagement.service.SensorDataService;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +30,12 @@ public class SensorDataController {
     @Autowired
     private SensorDataService sensorDataService;
 
-
+    /**
+     * Adds new data from the phisical device
+     * @param sensorDatas
+     * @return A response with a message with the number of sensor data added
+     * @throws ForbiddenException
+     */
     @Secured("ROLE_DEVICE")
     @PostMapping("/device/sensordata")
     public ResponseEntity<ClientMessage> addSensorData(@RequestBody SensorData[] sensorDatas) throws ForbiddenException {
@@ -44,6 +50,14 @@ public class SensorDataController {
         return ResponseEntity.ok().body(message);
     }
 
+    /**
+     * Gets the all the data from a particular device
+     * @param deviceId
+     * @param limit is the maximum number of data sensor to retrive
+     * @param lastLast true if we want the last element to be put last in the response
+     * @return the list of all the sensor data as a map with key = timestamp and value = the map of data
+     * @throws ResourceNotFoundException
+     */
     @GetMapping("/devices/{id}/data")
     public ResponseEntity<Map<Date, Map<String, Float>>> getDeviceData(
         @PathVariable(value = "id") Long deviceId,
@@ -54,7 +68,7 @@ public class SensorDataController {
 
         //Checks if there is a device with id=deviceId of a the current Customer with id=customerId
         deviceRepo.findCustomerDeviceById(customerId, deviceId).orElseThrow(
-            () -> new ResourceNotFoundException(String.format("Device with id=%d of current user not found", deviceId))
+            () -> new ResourceNotFoundException("Device of current user not found", ErrorCode.ESDA2)
         );
 
         Map<Date, Map<String, Float>> deviceDatas = sensorDataService.getSensorData(deviceId, limit, lastLast);
@@ -62,7 +76,11 @@ public class SensorDataController {
         return ResponseEntity.ok().body(deviceDatas);
     }
 
-    public Long getLoggedCustomerId() {
+    /**
+     * Gets the logged customer
+     * @return the logged customer
+     */
+    public long getLoggedCustomerId() {
         Customer customer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return customer.getId();
     }
