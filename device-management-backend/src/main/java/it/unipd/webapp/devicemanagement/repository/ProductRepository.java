@@ -15,7 +15,7 @@ import it.unipd.webapp.devicemanagement.model.Product;
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query(value = "SELECT * FROM product", nativeQuery = true)
-    public Optional<List<Product>> getAll();
+    public List<Product> getAll();
 
     @Query(value="SELECT * FROM product WHERE id = :productId", nativeQuery = true)
     public Optional<Product> getInfo(Long productId);
