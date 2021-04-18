@@ -35,6 +35,8 @@ public enum ErrorCode {
     ESDA1,
     /** Device of current user not found */
     ESDA2,
+    /** Customer's group not found with specified id **/
+    ECGR1,
     /** The product specified does not exist **/
     EPRD1,
     /** The product specified does not belong in the cart **/
