@@ -76,7 +76,7 @@ class TestRequests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-        #check device status
+        #check device config
         response = requests.get(root+"/devices/1",auth=auth,params={})
         self.assertEqual(response.status_code, 200)
         json = response.json()
