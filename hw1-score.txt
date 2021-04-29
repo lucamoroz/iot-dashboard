@@ -1,0 +1,9 @@
+"Score: 10/10
+
+- Git OK, all group members contributed regularly. Good README.md
+- Good use of Spring
+- Good use of Docker!
+- Nice to test the service with a Python script
+- Very nice and accurate interface mockup
+- Good architecture explanation: good class diagrams and sequence diagrams
+- Good REST API and its documentation"
