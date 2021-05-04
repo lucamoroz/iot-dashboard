@@ -26,6 +26,9 @@ import org.springframework.security.web.authentication.session.NullAuthenticated
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +36,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -50,7 +54,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        http
+        http    .cors().and()
                 .requestCache().disable()
                 .httpBasic().and() // TODO remove this later - it helps for quicker testing (no need to set jsession cookie)
                 .addFilterBefore(createDeviceAuthenticationFilter(DEVICE_API_MATCHER), AnonymousAuthenticationFilter.class)
@@ -76,6 +80,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .invalidateHttpSession(true) // invalidate session on logout
                     .and()
                 .csrf().disable(); // TODO enable CSRF protection later (doesn't work with postman)
+    }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOriginPattern("*");
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"));
+        configuration.setAllowCredentials(true);
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     @Override
@@ -127,8 +143,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             HttpServletRequest request,
             HttpServletResponse response,
             Authentication authentication) {
-        log.debug(String.format("logout for user %s", authentication.getName()));
-        response.setStatus(HttpStatus.OK.value());
+        if (authentication != null) {
+            log.debug(String.format("logout for user %s", authentication.getName()));
+            response.setStatus(HttpStatus.OK.value());
+        } else {
+            log.debug("Logout without being logged in");
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+        }
     }
 
     private void deviceAuthFailureHandler(
