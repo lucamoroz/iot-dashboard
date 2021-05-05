@@ -44,7 +44,7 @@ const Main = () => (
         <Route exact path='/' component={Home} /> { /* Render component Home when the URL matches the path '/' */ }
         <Route exact path='/signup' component={Signup} /> { /* Note: removing 'exact' we could have a Rout with path='/device' that matches child paths e.g. '/device/status' */ }
         <Route exact path='/signin' component={Signin} />
-        <Route exact path='/device' component={Device} />
+        <Route exact path='/device/:id' component={Device} />
     </Switch>
 );
 

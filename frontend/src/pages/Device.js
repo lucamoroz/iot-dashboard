@@ -9,7 +9,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import {Grid, Typography} from "@material-ui/core";
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
-import { createMuiTheme } from '@material-ui/core/styles';
+import { useHistory, useParams } from 'react-router-dom'
 
 const axios = require('axios').default
 
@@ -24,6 +24,9 @@ class Device extends React.Component {
             deviceStatus: null,
             config: null,
         };
+
+
+        console.log();
     }
 
     timestampFormat(timestamp) {
@@ -31,7 +34,7 @@ class Device extends React.Component {
     }
 
     componentDidMount() {
-        axios.get('/devices/1/data')
+        axios.get('/devices/'+this.props.match.params.id+'/data')
             .then((res) => {
                 //Calculates the maximum number of different type of data types and the relative data
                 let maxSize = 0;
@@ -76,7 +79,7 @@ class Device extends React.Component {
                 })
             });
 
-        axios.get('devices/1')
+        axios.get('devices/'+this.props.match.params.id)
             .then((resp) => {
                 this.setState({
                     deviceStatus: resp.data.deviceStatus,
@@ -111,8 +114,8 @@ class Device extends React.Component {
                 <Grid container spacing={2}>
                     <Grid item key="left" md={6} >
                         <Paper>
-                            <Grid container spacing={3}>
-                                <Grid item container spacing={2}>
+                            <Grid container>
+                                <Grid item container>
                                     <Grid item md={1} >
                                         <FiberManualRecordIcon color={this.isEnabled()}/>
                                     </Grid>
@@ -126,7 +129,7 @@ class Device extends React.Component {
                                         <Typography variant="body1">Last update: {this.state.deviceStatus !== null ? this.timestampFormat(this.state.deviceStatus.last_update) : ''}</Typography>
                                     </Grid>
                                 </Grid>
-                                <Grid item container spacing={2}>
+                                <Grid item container>
                                     <Grid item xs={12}>
                                         <Typography variant="body1">Update frequency: {this.state.config !== null ? this.state.config.update_frequency : ''}</Typography>
                                     </Grid>
@@ -146,7 +149,7 @@ class Device extends React.Component {
                     </Grid>
                     <Grid item key="right" md={6} >
                         <Paper>
-                            <TableContainer >
+                            <TableContainer>
                                 <Table aria-label="simple table">
                                     <TableHead>
                                         <TableRow>
