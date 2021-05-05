@@ -7,7 +7,9 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import {Grid} from "@material-ui/core";
+import {Grid, Typography} from "@material-ui/core";
+import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
+import { createMuiTheme } from '@material-ui/core/styles';
 
 const axios = require('axios').default
 
@@ -19,7 +21,13 @@ class Device extends React.Component {
             error: false,
             dataLabels: [],
             tableRows: [],
+            deviceStatus: null,
+            config: null,
         };
+    }
+
+    timestampFormat(timestamp) {
+        return new Date(Date.parse(timestamp)).toLocaleString();
     }
 
     componentDidMount() {
@@ -42,10 +50,9 @@ class Device extends React.Component {
                     dataLabels.push(dataLabel);
                 }
 
-
                 for (let timestamp in res.data) {
                     let tableRow = [];
-                    tableRow.push(timestamp);
+                    tableRow.push(this.timestampFormat(timestamp));
 
                     let data = res.data[timestamp]
                     for (let i in dataLabels) {
@@ -56,12 +63,6 @@ class Device extends React.Component {
                     }
                     this.state.tableRows.push(tableRow);
                 }
-                console.log(this.state.tableRows);
-
-                console.log("Constructor " + dataLabels);
-                dataLabels.forEach((data) => {
-                    console.log(data);
-                })
 
                 this.setState({
                     dataLabels: dataLabels,
@@ -74,6 +75,30 @@ class Device extends React.Component {
                     error: true,
                 })
             });
+
+        axios.get('devices/1')
+            .then((resp) => {
+                this.setState({
+                    deviceStatus: resp.data.deviceStatus,
+                    config: resp.data.config,
+                })
+            })
+            .catch((error) => {
+                console.log(error.response);
+
+                this.setState({
+                    error: true,
+                })
+            })
+    }
+
+    isEnabled() {
+
+        if (this.state.config !== null && this.state.config.enabled === true) {
+            return "primary";
+        } else {
+            return "error"
+        }
     }
 
     render() {
@@ -83,28 +108,68 @@ class Device extends React.Component {
             );
         } else {
             return (
-                <Grid container>
-                    <TableContainer component={Paper}>
-                        <Table aria-label="simple table">
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>Timestamp</TableCell>
-                                    {this.state.dataLabels.map((data) => (
-                                        <TableCell key={data}>{data.charAt(0).toUpperCase() + data.slice(1)}</TableCell>
-                                    ))}
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {this.state.tableRows.map((tableRow) => (
-                                    <TableRow key={tableRow[0]}>
-                                        {tableRow.map((data) => (
-                                            <TableCell align="right">{data}</TableCell>
+                <Grid container spacing={2}>
+                    <Grid item key="left" md={6} >
+                        <Paper>
+                            <Grid container spacing={3}>
+                                <Grid item container spacing={2}>
+                                    <Grid item md={1} >
+                                        <FiberManualRecordIcon color={this.isEnabled()}/>
+                                    </Grid>
+                                    <Grid item md={3} >
+                                        <Typography variant="body1">Battery: {this.state.deviceStatus !== null ? this.state.deviceStatus.battery : ''}</Typography>
+                                    </Grid>
+                                    <Grid item md={3}>
+                                        <Typography variant="body1">Version: {this.state.deviceStatus !== null ? this.state.deviceStatus.version : ''}</Typography>
+                                    </Grid>
+                                    <Grid item md={5}>
+                                        <Typography variant="body1">Last update: {this.state.deviceStatus !== null ? this.timestampFormat(this.state.deviceStatus.last_update) : ''}</Typography>
+                                    </Grid>
+                                </Grid>
+                                <Grid item container spacing={2}>
+                                    <Grid item xs={12}>
+                                        <Typography variant="body1">Update frequency: {this.state.config !== null ? this.state.config.update_frequency : ''}</Typography>
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <Typography variant="body1">Token: {this.state.config !== null ? this.state.config.token : ''}</Typography>
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <Typography variant="body1">Latitude: {this.state.config !== null ? this.state.config.latitude : ''}</Typography>
+                                    </Grid>
+                                    <Grid item xs={12}>
+                                        <Typography variant="body1">Longitude: {this.state.config !== null ? this.state.config.longitude : ''}</Typography>
+                                    </Grid>
+                                </Grid>
+
+                            </Grid>
+                        </Paper>
+                    </Grid>
+                    <Grid item key="right" md={6} >
+                        <Paper>
+                            <TableContainer >
+                                <Table aria-label="simple table">
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>Timestamp</TableCell>
+                                            {this.state.dataLabels.map((data) => (
+                                                <TableCell key={data}>{data.charAt(0).toUpperCase() + data.slice(1)}</TableCell>
+                                            ))}
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {this.state.tableRows.map((tableRow) => (
+                                            <TableRow key={tableRow[0]}>
+                                                {tableRow.map((data, index) => (
+                                                    <TableCell key={tableRow+data} align={index === 0 ? "left" : "right"}>{data}</TableCell>
+                                                ))}
+                                            </TableRow>
                                         ))}
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </Paper>
+
+                    </Grid>
                 </Grid>
             );
         }
