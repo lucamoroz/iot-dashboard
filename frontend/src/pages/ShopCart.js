@@ -1,35 +1,43 @@
 import React from "react";
 
+//material UI imports
+import TextField from '@material-ui/core/TextField';
+import { makeStyles } from '@material-ui/core/styles';
 
 const axios = require('axios').default
 
 class ShopCart extends React.Component {
+
+    
     constructor(props) {
         super(props);
 
         this.state = {
             error:false,
-            data:"",
+            info:"",
+            products:[],
         };
 
         
     }
 
     componentDidMount() {
-        console.log("didmount");
+        
+        //GET request for cart informations
         axios.get('/order/cartInfo').then((res) => {
             console.log(res.data);
             this.setState({
                 error: false,
-                data:res.data,
+                info:res.data.order,
+                products:res.data.orderProducts,
             });
         })
         .catch((error) => {
             console.log(error.response);
 
             this.setState({
-                error: true,
-                data:"",
+                info:"",
+                products:[],
             });
         });
 
@@ -43,18 +51,20 @@ class ShopCart extends React.Component {
             );
         } else {
             
+
+
             
             if (this.state.data!==""){
-                const cartInfo=this.state.data.order;
+                const cartInfo=this.state.info;
 
                 const info = <p>Cart info:, {cartInfo.id}, {cartInfo.address}</p>;
 
-                const products=this.state.data.orderProducts;
+                const products=this.state.products;
                 
                 var prods="";
                 if (products){
                     products.forEach(prod => {
-                        prods=prods+"<p>"+prod.id+" "+prod.quantity+" ("+prod.product.id+" "+prod.product.description+" "+prod.product.image+" "+prod.product.name+" "+prod.product.price+")</p>"
+                        prods=prods+"aaa<p>"+prod.id+" "+prod.quantity+" ("+prod.product.id+" "+prod.product.description+" "+prod.product.image+" "+prod.product.name+" "+prod.product.price+")</p>"
                     });
                 }
                 return (
