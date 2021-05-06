@@ -106,61 +106,44 @@ function Device (props) {
     )
 }
 
-class Dashboard extends React.Component {
+function Dashboard(props) {
+    const [devices, setDevices] = React.useState([]);
 
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            devices: []
-        }
-    }
-
-    componentDidMount() {
+    React.useEffect(() => {
         const params = {
             includeLastData: true
         }
         axios.get("/devices", {params})
             .then(res => {
-                this.setState({
-                    devices: res.data
-                })
+                setDevices(res.data);
             })
-    }
+    }, []);
 
-    handleChange(event) {
-        console.log("changed")
-    }
+    return (
+        <div>
+            <FormControl>
+                <InputLabel id="group-select-label">Group</InputLabel>
+                <Select
+                    labelId="group-select-label"
+                    id="group-select"
+                    value=""
+                >
+                    <MenuItem value="">
+                        <em>None</em>
+                    </MenuItem>
+                    <MenuItem value={10}>Ten</MenuItem>
+                    <MenuItem value={20}>Twenty</MenuItem>
+                    <MenuItem value={30}>Thirty</MenuItem>
 
-    render() {
-        const { classes } = this.props;
-        return (
-            <div>
-                <FormControl>
-                    <InputLabel id="group-select-label">Group</InputLabel>
-                    <Select
-                        labelId="group-select-label"
-                        id="group-select"
-                        value=""
-                        onChange={this.handleChange}
-                    >
-                        <MenuItem value="">
-                            <em>None</em>
-                        </MenuItem>
-                        <MenuItem value={10}>Ten</MenuItem>
-                        <MenuItem value={20}>Twenty</MenuItem>
-                        <MenuItem value={30}>Thirty</MenuItem>
-
-                    </Select>
-                </FormControl>
-                {
-                    this.state.devices.map(device =>
-                        <Device key={device["device"]["id"]} deviceData={device}/>
-                    )
-                }
-            </div>
-        );
-    }
+                </Select>
+            </FormControl>
+            {
+                devices.map(device =>
+                    <Device key={device["device"]["id"]} deviceData={device}/>
+                )
+            }
+        </div>
+    );
 }
 
 export default Dashboard
