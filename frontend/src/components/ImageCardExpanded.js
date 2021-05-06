@@ -9,15 +9,16 @@ import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import CloseIcon from '@material-ui/icons/Close';
 
 const useStyles = makeStyles({
   root: {
-    maxWidth: 645,
+    maxWidth: 400,
     background: 'rgba(0,0,0,0.5)',
-    margin: '20px'
   },
   media: {
       height: 440,
+      display: 'flex',
   },
   title: {
       fontFamily: 'Nunito',
@@ -47,10 +48,13 @@ const useStyles = makeStyles({
     justifyContent: 'center',
     alignItems: 'center',
     width: '80%'
+  },
+  closeButton: {
+      color: 'white',
   }
 });
 
-export default function ImageCard( { sensor, checked, onAddToCart, onClick } ) {
+export default function ImageCardExpanded( { sensor, checked, onAddToCart, onClick, onClose } ) {
   const classes = useStyles();
   const [raiseState, setRaiseState] = useState({
     raised: false,
@@ -60,29 +64,45 @@ export default function ImageCard( { sensor, checked, onAddToCart, onClick } ) {
   const imageUrl = sensor.id == 1 ? process.env.PUBLIC_URL + '/assets/temp_sensor.jpg' : process.env.PUBLIC_URL + '/assets/wind_sensor.jpg';
   return (
       <Collapse in={checked}>
-        <Card className={classes.root} 
-        onMouseOver={() => setRaiseState({ raised:true, shadow:5 })} 
-        onMouseOut={()=>setRaiseState({ raised:false, shadow:1 })} 
-        raised= {raiseState.raised}
-        zdepth={raiseState.shadow}>
+        <Card className={classes.root} >
+
+
+            <CardContent className={classes.cardContent}>
+                <Typography className={classes.title}>
+                    {sensor.name}
+                </Typography>
+
+                <IconButton className={classes.closeButton} onClick={onClose}>
+                    <CloseIcon />
+                </IconButton>
+            </CardContent>
+
+            
+
             <CardMedia
                 className={classes.media}
                 component="img"
-                height="140"
+                height="80"
                 image={imageUrl}
                 onClick={onClick}
             />
+            
             <CardContent className={classes.cardContent}>
               <Typography 
                   gutterBottom 
                   variant="h5" 
                   component="h1" 
                   className={classes.title}>
-                      {sensor.name}
+                      {sensor.description}
               </Typography>
               <Button className={classes.addToCartButton} onClick={() => onAddToCart(sensor.id)}>
                 <Typography className={classes.buttonText}>
                   Add to cart
+                </Typography>
+              </Button>
+              <Button className={classes.addToCartButton}>
+                <Typography className={classes.buttonText}>
+                  Price {sensor.price}
                 </Typography>
               </Button>
             </CardContent>
