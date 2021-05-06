@@ -1,14 +1,7 @@
-import React, {useEffect, useState} from 'react';
-import {makeStyles} from '@material-ui/core/styles';
-import { CssBaseline, Drawer } from '@material-ui/core';
-import SensorsToBuy from '../components/SensorsToBuy';
+import React from 'react';
 
-const useStyles = makeStyles((theme) => ({
-  
-}));
 
 export default function Cart() {
-  const classes = useStyles();
   return (
     <div >
         Welcome to Cart

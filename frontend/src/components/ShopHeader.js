@@ -1,9 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {makeStyles} from '@material-ui/core/styles';
-import { AppBar, Badge, Collapse, CssBaseline, IconButton, Toolbar } from '@material-ui/core';
+import { AppBar, Badge, Toolbar } from '@material-ui/core';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
-import { Link as Scroll } from 'react-scroll'
 import { Link as RouterLink } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
@@ -49,10 +47,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ShopHeader() {
     const classes = useStyles();
-    const [checked, setChecked] = useState(false);
-    useEffect(() => {
-        setChecked(true);
-    }, [])
     return (
         <div className={classes.root} id='header'>
             <AppBar className={classes.appbar} elevation={0}>

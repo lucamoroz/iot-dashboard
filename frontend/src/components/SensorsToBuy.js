@@ -1,9 +1,6 @@
-import React, {useState} from 'react';
-import {makeStyles, withStyles} from '@material-ui/core/styles';
-import { CssBaseline } from '@material-ui/core';
+import React from 'react';
+import {withStyles} from '@material-ui/core/styles';
 import ImageCard from './ImageCard';
-import sensors from '../static/Sensors'
-import useWindowPosition from '../hook/useWindowPosition';
 import ImageCardExpanded from './ImageCardExpanded';
 
 const axios = require('axios').default
