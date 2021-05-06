@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import { AppBar, Badge, Toolbar } from '@material-ui/core';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
@@ -47,12 +47,23 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ShopHeader() {
     const classes = useStyles();
+    const axios = require('axios').default;
+    const [numProdInCart, setNumProdInCart] = useState(0);
+    axios.get("/order/cartInfo")
+        .then((res) => {
+            var numProducts = 0;
+            res.data.orderProducts.forEach((orderProd) => {
+                numProducts += orderProd.quantity
+            });
+            setNumProdInCart(numProducts);
+            
+        });
     return (
         <div className={classes.root} id='header'>
             <AppBar className={classes.appbar} elevation={0}>
                 <Toolbar className={classes.appBarWrapper}>
                     <h1 className={classes.appBarTitle}>IoT<span className={classes.colorText}>-Dash</span></h1>
-                    <Badge badgeContent={1} component={RouterLink} to="/cart" color="secondary">
+                    <Badge badgeContent={numProdInCart} component={RouterLink} to="/cart" color="secondary">
                         <ShoppingCartIcon className={classes.icon}/>
                     </Badge>
                 </Toolbar>

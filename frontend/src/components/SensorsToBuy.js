@@ -89,10 +89,23 @@ class SensorsToBuy extends React.Component {
     const {sensorToExpand} = this.state;
     if (sensorToExpand == null) {
       return (
-        <SensorCards className={classes.root} sensors={sensors} onAddToCart={this.onAddToCart} onSensorClicked={(sensor) => {this.setState({sensors: sensors, sensorToExpand: sensor})}}/>
+        <SensorCards 
+          className={classes.root} 
+          sensors={sensors} 
+          onAddToCart={this.onAddToCart} 
+          onSensorClicked={ (sensor) => {this.setState({sensors: sensors, sensorToExpand: sensor})} }
+        />
       );
     }
-    return (<ImageCardExpanded sensor={sensorToExpand} key={sensorToExpand.id} checked={true} onAddToCart={this.onAddToCart} onClose={() => {this.setState({sensors: sensors, sensorToExpand: null})}}/> );
+    return (
+      <ImageCardExpanded 
+        sensor={sensorToExpand} 
+        key={sensorToExpand.id} 
+        checked={true} 
+        onAddToCart={this.onAddToCart} 
+        onClose={() => {this.setState({sensors: sensors, sensorToExpand: null})}}
+        />
+      );
     
   }
 }
