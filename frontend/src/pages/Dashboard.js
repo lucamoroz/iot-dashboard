@@ -5,6 +5,10 @@ import {makeStyles} from "@material-ui/core/styles";
 import IconButton from '@material-ui/core/IconButton';
 import SettingsIcon from '@material-ui/icons/Settings';
 import { Link as RouterLink } from 'react-router-dom';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 
 const axios = require('axios').default
 
@@ -24,7 +28,11 @@ const useStyles = makeStyles((theme) => ({
     },
     divider: {
         margin: `${theme.spacing(2)}px 0`
-    }
+    },
+    formControl: {
+        margin: theme.spacing(1),
+        minWidth: 120,
+    },
 }));
 
 function DeviceEnabledIndicator(props) {
@@ -114,19 +122,42 @@ class Dashboard extends React.Component {
         }
         axios.get("/devices", {params})
             .then(res => {
-                const devices = res.data
                 this.setState({
-                    devices: devices.map(device =>
-                        <Device key={device["device"]["id"]} deviceData={device}/>
-                    )
+                    devices: res.data
                 })
             })
     }
 
+    handleChange(event) {
+        console.log("changed")
+    }
+
     render() {
+        const { classes } = this.props;
         return (
             <div>
-                {this.state.devices}
+                <FormControl>
+                    <InputLabel id="group-select-label">Group</InputLabel>
+                    <Select
+                        labelId="group-select-label"
+                        id="group-select"
+                        value=""
+                        onChange={this.handleChange}
+                    >
+                        <MenuItem value="">
+                            <em>None</em>
+                        </MenuItem>
+                        <MenuItem value={10}>Ten</MenuItem>
+                        <MenuItem value={20}>Twenty</MenuItem>
+                        <MenuItem value={30}>Thirty</MenuItem>
+
+                    </Select>
+                </FormControl>
+                {
+                    this.state.devices.map(device =>
+                        <Device key={device["device"]["id"]} deviceData={device}/>
+                    )
+                }
             </div>
         );
     }
