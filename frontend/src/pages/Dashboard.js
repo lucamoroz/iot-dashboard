@@ -67,7 +67,6 @@ function DeviceGroups(props) {
 
 function Device (props) {
     const classes = useStyles();
-    console.log(props.deviceData);
     const deviceId = props.deviceData["device"]["id"];
     const deviceData = props.deviceData["data"];
     const deviceConfig = props.deviceData["device"]["config"];
@@ -107,34 +106,51 @@ function Device (props) {
 }
 
 function Dashboard(props) {
+    const classes = useStyles();
+    const [group, setGroup] = React.useState(-1);
     const [devices, setDevices] = React.useState([]);
+    const [groups, setGroups] = React.useState([])
 
     React.useEffect(() => {
+        // get devices
         const params = {
-            includeLastData: true
+            includeLastData: true,
+        }
+        if (group !== -1) {
+            params["groupId"] = group;
         }
         axios.get("/devices", {params})
             .then(res => {
                 setDevices(res.data);
             })
-    }, []);
+
+        // get user's groups
+        axios.get("/groups")
+            .then(res => {
+                setGroups(res.data)
+            })
+    }, [group]);
 
     return (
         <div>
-            <FormControl>
+            <FormControl className={classes.formControl}>
                 <InputLabel id="group-select-label">Group</InputLabel>
                 <Select
                     labelId="group-select-label"
                     id="group-select"
-                    value=""
+                    value={group}
+                    onChange={(event) =>
+                        setGroup(event.target.value)
+                    }
                 >
-                    <MenuItem value="">
+                    <MenuItem value={-1}>
                         <em>None</em>
                     </MenuItem>
-                    <MenuItem value={10}>Ten</MenuItem>
-                    <MenuItem value={20}>Twenty</MenuItem>
-                    <MenuItem value={30}>Thirty</MenuItem>
-
+                    {
+                        groups.map(group =>
+                            <MenuItem value={group["id"]}>{group["name"]}</MenuItem>
+                        )
+                    }
                 </Select>
             </FormControl>
             {
