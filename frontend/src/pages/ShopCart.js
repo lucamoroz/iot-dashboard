@@ -52,27 +52,35 @@ class ShopCart extends React.Component {
         } else {
             
 
+            var cartInfo=this.state.info;
+            var address=""
+            if (cartInfo!==""){
+                address=String(cartInfo.address)
 
-            
-            if (this.state.data!==""){
-                const cartInfo=this.state.info;
-
-                const info = <p>Cart info:, {cartInfo.id}, {cartInfo.address}</p>;
-
-                const products=this.state.products;
-                
-                var prods="";
-                if (products){
-                    products.forEach(prod => {
-                        prods=prods+"aaa<p>"+prod.id+" "+prod.quantity+" ("+prod.product.id+" "+prod.product.description+" "+prod.product.image+" "+prod.product.name+" "+prod.product.price+")</p>"
-                    });
-                }
-                return (
-                    info,
-                    prods
-                );
             }
-            return(<h1>no data</h1>);
+
+            const info = <p>Cart info:, {cartInfo.id}, {cartInfo.address}</p>;
+
+            const products=this.state.products;
+            
+            var prods="";
+            if (products){
+                products.forEach(prod => {
+                    prods=prods+"abaa<p>"+prod.id+" "+prod.quantity+" ("+prod.product.id+" "+prod.product.description+" "+prod.product.image+" "+prod.product.name+" "+prod.product.price+")</p>"
+                });
+            }
+            
+            
+            return (
+                <form noValidate autoComplete="off">
+                    <div>
+                    <TextField required id="customer_address" label="Address" defaultValue={address}/>
+                    </div>
+                </form>
+            );
+
+                
+            
         }
     }
 }
