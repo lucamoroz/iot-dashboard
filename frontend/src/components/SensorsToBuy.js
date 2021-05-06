@@ -26,7 +26,7 @@ const styles = theme => ({
     [theme.breakpoints.down('md')]: {
         flexDirection: 'column',
     }
-  }
+  },
 });
 
 class SensorCards extends React.Component {
@@ -60,6 +60,7 @@ class SensorsToBuy extends React.Component {
     };
     //this.checked = useWindowPosition('header');
     this.onAddToCart = this.onAddToCart.bind(this);
+    this.onProductAdded = this.props.onProductAdded.bind(this);
     
   }
 
@@ -87,24 +88,28 @@ class SensorsToBuy extends React.Component {
     const {classes} = this.props;
     const {sensors} = this.state;
     const {sensorToExpand} = this.state;
+    const quantity = 1; // Use this field if in future the user can choose the quantity directly in the card
     if (sensorToExpand == null) {
       return (
         <SensorCards 
           className={classes.root} 
           sensors={sensors} 
-          onAddToCart={this.onAddToCart} 
+          onAddToCart={(id) => {this.onAddToCart(id); this.onProductAdded(quantity); }} 
           onSensorClicked={ (sensor) => {this.setState({sensors: sensors, sensorToExpand: sensor})} }
         />
       );
     }
     return (
-      <ImageCardExpanded 
-        sensor={sensorToExpand} 
-        key={sensorToExpand.id} 
-        checked={true} 
-        onAddToCart={this.onAddToCart} 
-        onClose={() => {this.setState({sensors: sensors, sensorToExpand: null})}}
-        />
+      <div className={classes.root} id='sensors-to-buy'>
+          <ImageCardExpanded
+            sensor={sensorToExpand} 
+            key={sensorToExpand.id} 
+            checked={true} 
+            onAddToCart={(id) => {this.onAddToCart(id); this.onProductAdded(quantity); }} 
+            onClose={() => {this.setState({sensors: sensors, sensorToExpand: null})}}
+          />
+      </div>
+      
       );
     
   }

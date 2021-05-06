@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import { AppBar, Badge, Toolbar } from '@material-ui/core';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
@@ -45,19 +45,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-export default function ShopHeader() {
+export default function ShopHeader({numProdInCart}) {
     const classes = useStyles();
-    const axios = require('axios').default;
-    const [numProdInCart, setNumProdInCart] = useState(0);
-    axios.get("/order/cartInfo")
-        .then((res) => {
-            var numProducts = 0;
-            res.data.orderProducts.forEach((orderProd) => {
-                numProducts += orderProd.quantity
-            });
-            setNumProdInCart(numProducts);
-            
-        });
+    
     return (
         <div className={classes.root} id='header'>
             <AppBar className={classes.appbar} elevation={0}>

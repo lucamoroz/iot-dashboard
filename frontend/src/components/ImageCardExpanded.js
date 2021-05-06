@@ -10,7 +10,9 @@ import CloseIcon from '@material-ui/icons/Close';
 
 const useStyles = makeStyles({
   root: {
-    maxWidth: 400,
+    maxWidth: 645,
+    justifyContent: 'center',
+    alignItems: 'center',
     background: 'rgba(0,0,0,0.5)',
   },
   media: {
@@ -88,16 +90,17 @@ export default function ImageCardExpanded( { sensor, checked, onAddToCart, onCli
                   className={classes.title}>
                       {sensor.description}
               </Typography>
-              <Button className={classes.addToCartButton} onClick={() => onAddToCart(sensor.id)}>
-                <Typography className={classes.buttonText}>
-                  Add to cart
-                </Typography>
-              </Button>
               <Button className={classes.addToCartButton}>
                 <Typography className={classes.buttonText}>
                   Price {sensor.price}
                 </Typography>
               </Button>
+              <Button className={classes.addToCartButton} onClick={() => onAddToCart(sensor.id)}>
+                <Typography className={classes.buttonText}>
+                  Add to cart
+                </Typography>
+              </Button>
+              
             </CardContent>
         </Card>
       </Collapse>
