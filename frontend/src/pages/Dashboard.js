@@ -39,8 +39,17 @@ function DeviceEnabledIndicator(props) {
 function DeviceData(props) {
     const classes = useStyles();
     return (
-        <Grid item xs={2}>
+        <Grid item>
             <Paper className={classes.paper}>{props.dataType}: {props.value}</Paper>
+        </Grid>
+    )
+}
+
+function DeviceGroups(props) {
+    const classes = useStyles();
+    return (
+        <Grid item>
+            <Paper className={classes.paper}>{props.groupName}</Paper>
         </Grid>
     )
 }
@@ -52,19 +61,29 @@ function Device (props) {
     const deviceData = props.deviceData["data"];
     const deviceConfig = props.deviceData["device"]["config"];
     const deviceStatus = props.deviceData["device"]["deviceStatus"];
+    const productName = props.deviceData["product_name"];
+    const groups = props.deviceData["groups"];
     return (
         <Grid container>
-            <Grid item xs={1}>
+            <Grid item>
                 <Paper className={classes.paper}>
                     <DeviceEnabledIndicator enabled={deviceConfig["enabled"]}/>
                 </Paper>
             </Grid>
-            <Grid item xs={2}>
+            <Grid item>
                 <Paper className={classes.paper}>ID: {deviceId}</Paper>
             </Grid>
             {
+                groups.map(group =>
+                    <DeviceGroups key={group["id"]} groupName={group["name"]}/>
+                )
+            }
+            <Grid item>
+                <Paper className={classes.paper}>{productName}</Paper>
+            </Grid>
+            {
                 Object.keys(deviceData).map(key =>
-                    <DeviceData dataType={key} value={deviceData[key]}/>
+                    <DeviceData key={key} dataType={key} value={deviceData[key]}/>
                 )
             }
         </Grid>
