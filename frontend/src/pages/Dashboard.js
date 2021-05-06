@@ -2,6 +2,9 @@ import React from "react";
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import {makeStyles} from "@material-ui/core/styles";
+import IconButton from '@material-ui/core/IconButton';
+import SettingsIcon from '@material-ui/icons/Settings';
+import { Link as RouterLink } from 'react-router-dom';
 
 const axios = require('axios').default
 
@@ -86,6 +89,11 @@ function Device (props) {
                     <DeviceData key={key} dataType={key} value={deviceData[key]}/>
                 )
             }
+            <Grid item>
+                <IconButton component={RouterLink} to={"/device/"+deviceId}>
+                    <SettingsIcon/>
+                </IconButton>
+            </Grid>
         </Grid>
     )
 }
