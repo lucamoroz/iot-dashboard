@@ -57,6 +57,8 @@ public class DeviceController {
         for (Device device : devices) {
             HashMap<String, Object> output = new HashMap<>();
             output.put("device", device);
+            output.put("product_name", device.getProduct().getName());
+            output.put("groups", device.getGroups());
 
             if (includeLastData) {
                 Map<String, Float> deviceData = getLastDeviceData(device);
