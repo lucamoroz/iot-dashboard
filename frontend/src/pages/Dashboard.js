@@ -9,6 +9,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
+import Card from '@material-ui/core/Card';
 import {
     BatteryAlert,
     Battery20,
@@ -23,18 +24,21 @@ import {
 const axios = require('axios').default
 
 const useStyles = makeStyles((theme) => ({
-    container: {
+    dashboard: {
+        marginLeft: 10,
+        marginRight: 10
+    },
+    deviceContainer: {
         display: "grid",
         gridTemplateColumns: "repeat(12, 1fr)",
-        gridGap: `${theme.spacing(3)}px`
     },
     paper: {
         padding: theme.spacing(1),
         textAlign: "center",
         color: theme.palette.text.secondary,
         whiteSpace: "nowrap",
-        marginBottom: theme.spacing(2),
-        marginRight: theme.spacing(1),
+        margin: theme.spacing(1),
+        backgroundColor: "#F6F6F6"
     },
     divider: {
         margin: `${theme.spacing(2)}px 0`
@@ -43,6 +47,13 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(1),
         minWidth: 120,
     },
+    deviceCard: {
+        backgroundColor: "#EAEAEA",
+        padding: 2
+    },
+    battery: {
+        padding: 10
+    }
 }));
 
 function DeviceEnabledIndicator(props) {
@@ -104,13 +115,13 @@ function Device (props) {
     const productName = props.deviceData["product_name"];
     const groups = props.deviceData["groups"];
     return (
-        <Grid container>
+        <Grid container className={classes.deviceContainer}>
             <Grid item>
                 <Paper className={classes.paper}>
                     <DeviceEnabledIndicator enabled={deviceConfig["enabled"]}/>
                 </Paper>
             </Grid>
-            <Grid item>
+            <Grid item className={classes.battery}>
                 <Battery percentage={deviceStatus["battery"]}/>
             </Grid>
             <Grid item>
@@ -180,7 +191,7 @@ function Dashboard(props) {
     }, [group, product]);
 
     return (
-        <div>
+        <div className={classes.dashboard}>
             <FormControl className={classes.formControl}>
                 <InputLabel id="group-select-label">Group</InputLabel>
                 <Select
@@ -221,11 +232,13 @@ function Dashboard(props) {
                     }
                 </Select>
             </FormControl>
-            {
-                devices.map(device =>
-                    <Device key={device["device"]["id"]} deviceData={device}/>
-                )
-            }
+                {
+                    devices.map(device =>
+                        <Card className={classes.deviceCard} key={device["device"]["id"]}>
+                                <Device deviceData={device}/>
+                        </Card>
+                    )
+                }
         </div>
     );
 }
