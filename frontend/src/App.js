@@ -9,7 +9,7 @@ import Cart from "./pages/Cart";
 import LandingPage from './pages/LandingPage';
 
 // Allow to customize theme (e.g. change primary, secondary colors, ... )
-const theme = createMuiTheme();
+const theme = createMuiTheme()
 
 const useStyles = makeStyles({
     root: {

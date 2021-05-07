@@ -1,9 +1,8 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import { CssBaseline } from '@material-ui/core';
 import LandingHeader from '../components/LandingHeader';
 
-const axios = require('axios').default
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -12,8 +11,22 @@ const useStyles = makeStyles((theme) => ({
     backgroundRepeat:"no-repeat",
     backgroundSize: 'cover',
     backgroundPosition: 'center',
+  },
+  nextSection: {
+    //minHeight: '100vh',
+    backgroundColor: 'red',
+    
   }
 }));
+
+function NextSection() {
+    const classes = useStyles();
+    return (
+        <div className={classes.nextSection}>
+            Welcome to the future!
+        </div>
+    );
+}
 
 //Not optimized for network calls. For every render it calls the axiom.get function. TODO: Solve this by using react component
 export default function LandingPage() {
@@ -23,7 +36,7 @@ export default function LandingPage() {
     <div className={classes.root}>
         <CssBaseline />
         <LandingHeader/>
-        
+        <NextSection />
     </div>
     
   );
