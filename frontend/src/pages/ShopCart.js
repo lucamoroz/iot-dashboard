@@ -1,11 +1,75 @@
-import React from "react";
+import React, {useState,useEffect} from "react";
 
 //material UI imports
-import TextField from '@material-ui/core/TextField';
-import { makeStyles } from '@material-ui/core/styles';
+import {Button, Container, TextField, Typography, Box} from "@material-ui/core";
+import {makeStyles} from "@material-ui/core/styles";
 
 const axios = require('axios').default
 
+
+const useStyles = makeStyles((theme) => ({
+    form: {
+        '& > *': {
+            padding: theme.spacing(1),
+        },
+    }
+}));
+
+export default function ShopCart(props) {
+    const classes = useStyles();
+    
+    const [address,setAddress]=useState("");
+    const [products,setProducts]=useState([]);
+    const [buy,setBuy]=useState(false); //Buy Cart button
+    const [error, setError] = useState("");
+    
+    useEffect(() => {
+        // code to run on component mount
+      
+        //GET request: cart informations
+        axios.get('/order/cartInfo').then((res) => {
+            console.log(res.data);
+
+            setAddress(res.data.order.address)
+            setProducts(res.data.orderProducts);
+            
+        })
+        .catch((error) => {
+            console.log(error.response);
+
+        });
+    }, [])
+
+
+    // If user clicked on buy button
+    if (buy){
+        //Check if all the text forms are filled
+        if (!address){
+            setError("Please fill the form.");
+        }else{
+            //TODO: BUY CART.....
+
+        }
+        
+
+        setBuy(false);
+    }
+
+    return(
+        <Container maxWidth={"sm"}>
+            <form className={classes.form}>
+                <TextField 
+                    label="Address"
+                    value={address}
+                    onChange={(e)=>setAddress(e.target.value)}
+                />
+            </form>
+        </Container>
+
+    );
+
+}
+/*
 class ShopCart extends React.Component {
 
     
@@ -87,7 +151,7 @@ class ShopCart extends React.Component {
     }
 }
 
-export default ShopCart
+export default ShopCart*/
 
 /*
 
