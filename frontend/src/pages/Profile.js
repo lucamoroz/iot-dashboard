@@ -1,9 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {Button, Container, Typography, Paper, Box} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
-import Snackbar from "@material-ui/core/Snackbar";
-import MuiAlert from "@material-ui/lab/Alert";
 import DeleteIcon from '@material-ui/icons/Delete';
+import SnackbarAlert from "../components/SnackbarAlert";
 
 const axios = require('axios').default
 
@@ -34,7 +33,11 @@ export default function Profile(props) {
             })
             .catch((err) => {
                 console.log(err.response);
-                setIsLoggedIn(false);
+                if (err.response) {
+                    setIsLoggedIn(false);
+                } else {
+                    setError("No response from backend");
+                }
             });
     }, []);
 
@@ -49,7 +52,8 @@ export default function Profile(props) {
                 props.history.push("/");
             })
             .catch((err) => {
-                setError(err.response);
+                const errorMsg = err.response ? err.response.data.description : "No response from backend";
+                setError(errorMsg);
             });
         setDeleteClicked(false);
     }
@@ -82,19 +86,13 @@ export default function Profile(props) {
                     Delete
                 </Button>
             </Box>
-            <Snackbar
+            <SnackbarAlert
                 open={error !== ""}
                 autoHideDuration={3000}
-                onClose={(e, r) => r === "timeout" && setError("")}
-            >
-                <Alert severity="error" onClick={() => setError("")}>
-                    {error}
-                </Alert>
-            </Snackbar>
+                onTimeout={() => setError("")}
+                severity="error"
+                message={error}
+            />
         </Container>
     );
-}
-
-function Alert(props) {
-    return <MuiAlert elevation={5} variant="filled" {...props} />;
 }

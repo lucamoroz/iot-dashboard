@@ -1,8 +1,7 @@
 import {Button, Container, TextField, Typography, Box} from "@material-ui/core";
 import React, {useEffect, useState} from "react";
-import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
 import {makeStyles} from "@material-ui/core/styles";
+import SnackbarAlert from "../components/SnackbarAlert";
 
 
 const axios = require('axios').default
@@ -34,7 +33,7 @@ export default function Signin(props) {
                 setIsLoggedIn(true);
             })
             .catch((err) => {
-                console.log(err.response);
+                // User not already logged in
             });
     }, []);
 
@@ -51,9 +50,10 @@ export default function Signin(props) {
                     console.log(res);
                     setIsLoggedIn(true);
                 })
-                .catch((error) => {
+                .catch((err) => {
                     console.log(error.response);
-                    setError(error.response.data.description);
+                    const errorMsg = err.response ? err.response.data.description : "No response from backend";
+                    setError(errorMsg);
                 });
         }
 
@@ -98,22 +98,14 @@ export default function Signin(props) {
                         Login
                     </Button>
                 </Box>
-
-                <Snackbar
+                <SnackbarAlert
                     open={error !== ""}
                     autoHideDuration={3000}
-                    onClose={(e, r) => r === "timeout" && setError("")}
-                >
-                    <Alert severity="error" onClick={() => setError("")}>
-                        {error}
-                    </Alert>
-                </Snackbar>
+                    onTimeout={() => setError("")}
+                    severity="error"
+                    message={error}
+                />
             </form>
         </Container>
     )
-
-}
-
-function Alert(props) {
-    return <MuiAlert elevation={5} variant="filled" {...props} />;
 }

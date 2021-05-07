@@ -1,9 +1,8 @@
 import {makeStyles} from "@material-ui/core/styles";
 import {Button, Container, TextField, Typography, Box} from "@material-ui/core";
-import Snackbar from "@material-ui/core/Snackbar";
 import React, {useState} from "react";
-import MuiAlert from "@material-ui/lab/Alert";
 import axios from "axios";
+import SnackbarAlert from "../components/SnackbarAlert";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -25,7 +24,11 @@ export default function Signup(props) {
     const [error, setError] = useState("");
 
     if (submit) {
-        if (password === passwordConfirm) {
+        if (password !== passwordConfirm) {
+            setError("Passwords don't match, please retry.");
+        } else if (!password || !username || !email) {
+            setError("Please fill the form.")
+        } else {
             const customer = {
                 email: email,
                 username: username,
@@ -49,11 +52,10 @@ export default function Signup(props) {
                         });
                 })
                 .catch((err) => {
-                    console.log(err.response)
-                    setError(err.response.data.description)
+                    console.log(err.response);
+                    const errorMsg = err.response ? err.response.data.description : "No response from backend";
+                    setError(errorMsg);
                 })
-        } else {
-            setError("Passwords don't match, please retry.");
         }
 
         setSubmit(false);
@@ -112,21 +114,15 @@ export default function Signup(props) {
                         Register
                     </Button>
                 </Box>
-                <Snackbar
+                <SnackbarAlert
                     open={error !== ""}
                     autoHideDuration={3000}
-                    onClose={(e, r) => r === "timeout" && setError("")}
-                >
-                    <Alert severity="error" onClick={() => setError("")}>
-                        {error}
-                    </Alert>
-                </Snackbar>
+                    onTimeout={() => setError("")}
+                    severity="error"
+                    message={error}
+                />
             </form>
         </Container>
 
     );
-}
-
-function Alert(props) {
-    return <MuiAlert elevation={5} variant="filled" {...props} />;
 }
