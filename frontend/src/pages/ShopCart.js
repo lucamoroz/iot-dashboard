@@ -1,8 +1,11 @@
 import React, {useState,useEffect} from "react";
 
 //material UI imports
-import {Button, Container, TextField, Typography, Box} from "@material-ui/core";
+import {Button,ButtonGroup, Container, TextField, Typography, Box} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
+
+import AddIcon from '@material-ui/icons/Add';
+import RemoveIcon from '@material-ui/icons/Remove';
 
 const axios = require('axios').default
 
@@ -22,16 +25,24 @@ export default function ShopCart(props) {
     const [products,setProducts]=useState([]);
     const [buy,setBuy]=useState(false); //Buy Cart button
     const [error, setError] = useState("");
+
+    const [count, setCount] = useState(1);  //just for testing the +/- buttons on cart
+
+
     
+    //Code run just once
     useEffect(() => {
-        // code to run on component mount
-      
         //GET request: cart informations
         axios.get('/order/cartInfo').then((res) => {
             console.log(res.data);
 
             setAddress(res.data.order.address)
             setProducts(res.data.orderProducts);
+
+            var q=[];
+            products.forEach(prod => {
+                q.push(prod.orderProducts.quantity);
+            });
             
         })
         .catch((error) => {
@@ -64,6 +75,40 @@ export default function ShopCart(props) {
                     onChange={(e)=>setAddress(e.target.value)}
                 />
             </form>
+
+            
+            {
+                products.map((prod,index)=>
+                    <p>product id: {prod["id"]}, product quantity: {prod["quantity"]}
+                    
+                        <ButtonGroup>
+                            <Button
+                                aria-label="reduce"
+                                onClick={() => {
+                                    let newarr=[...products];
+                                    newarr[index].quantity=Math.max(1,newarr[index].quantity-1);
+                                    setProducts(newarr);
+                                }}
+                            >
+                                <RemoveIcon fontSize="small" />
+                            </Button>
+                            <Button
+                                aria-label="increase"
+                                onClick={() => {
+                                    let newarr=[...products];
+                                    newarr[index].quantity++;
+                                    setProducts(newarr);
+                                }}
+                            >
+                                <AddIcon fontSize="small" />
+                            </Button>
+                        </ButtonGroup>
+                    </p>
+
+                )
+                
+            }
+            
         </Container>
 
     );
