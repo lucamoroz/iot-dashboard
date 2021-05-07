@@ -1,8 +1,9 @@
 import React from 'react';
 import {makeStyles} from '@material-ui/core/styles';
-import { AppBar, Badge, Toolbar } from '@material-ui/core';
+import { AppBar, Badge, IconButton, Toolbar } from '@material-ui/core';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import { Link as RouterLink } from 'react-router-dom';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -26,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     colorText: {
         color: '#5AFF3D'
     },
-    icon: {
+    cartIcon: {
         color: '#fff',
         fontSize:"2rem",
     },
@@ -41,6 +42,10 @@ const useStyles = makeStyles((theme) => ({
         color: '#5AFF3D',
         fontSize: '4rem'
     },
+    backArrowIcon: {
+        color: 'white',
+        fontSize: '2rem',
+    }
 
 }));
 
@@ -52,9 +57,12 @@ export default function ShopHeader({numProdInCart}) {
         <div className={classes.root} id='header'>
             <AppBar className={classes.appbar} elevation={0}>
                 <Toolbar className={classes.appBarWrapper}>
+                    <IconButton component={RouterLink} to="/">
+                        <ArrowBackIcon className={classes.backArrowIcon}/>
+                    </IconButton>
                     <h1 className={classes.appBarTitle}>IoT<span className={classes.colorText}>-Dash</span></h1>
                     <Badge badgeContent={numProdInCart} component={RouterLink} to="/cart" color="secondary">
-                        <ShoppingCartIcon className={classes.icon}/>
+                        <ShoppingCartIcon className={classes.cartIcon}/>
                     </Badge>
                 </Toolbar>
             </AppBar>
