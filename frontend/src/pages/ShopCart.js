@@ -43,6 +43,7 @@ class ShopCart extends React.Component {
 
     }
 
+    
 
     render() {
         if (this.state.error) {
@@ -72,14 +73,15 @@ class ShopCart extends React.Component {
             
             
             return (
+                
                 <form noValidate autoComplete="off">
                     <div>
-                    <TextField required id="customer_address" label="Address" defaultValue={address}/>
+                    <TextField required id="customer_address" label="Address" value={address} onChange={this.handleChange}/>
                     </div>
                 </form>
             );
 
-                
+            //
             
         }
     }
