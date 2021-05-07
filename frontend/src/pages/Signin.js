@@ -1,61 +1,119 @@
-import {Button, Typography} from "@material-ui/core";
-import React from "react";
+import {Button, Container, TextField, Typography, Box} from "@material-ui/core";
+import React, {useEffect, useState} from "react";
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+import {makeStyles} from "@material-ui/core/styles";
+
 
 const axios = require('axios').default
 
-class Signin extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.handleClickLogin = this.handleClickLogin.bind(this);
-        this.handleClickLogout = this.handleClickLogout.bind(this);
-        this.handleClickMe = this.handleClickMe.bind(this);
+const useStyles = makeStyles((theme) => ({
+    root: {
+        justifyContent: 'center'
+    },
+    form: {
+        '& > *': {
+            padding: theme.spacing(1),
+        },
     }
+}));
 
-    handleClickLogin() {
-        const params = new URLSearchParams();
-        params.append('username', 'username2');
-        params.append('password', 'password');
+export default function Signin(props) {
+    const classes = useStyles();
 
-        axios.post('/customer/login', params)
-            .then((res) => {
-                console.log(res);
-            })
-            .catch((error) => {
-                console.log(error.response);
-            });
-    }
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [submit, setSubmit] = useState(false);
 
-    handleClickLogout() {
-        axios.post('/customer/logout')
-            .then((res) => {
-                console.log(res);
-            })
-            .catch((error) => {
-                console.log(error.response);
-            });
-    }
-
-    handleClickMe() {
+    // todo read global user var and redirect if already logged in
+    useEffect(() => {
         axios.get('/customer/me')
             .then((res) => {
-                console.log(res.data);
+                setIsLoggedIn(true);
             })
             .catch((err) => {
                 console.log(err.response);
             });
+    }, []);
+
+    if (submit) {
+        if (!username || !password) {
+            setError("Please fill the form");
+        } else {
+            const params = new URLSearchParams();
+            params.append('username', username);
+            params.append('password', password);
+
+            axios.post('/customer/login', params)
+                .then((res) => {
+                    console.log(res);
+                    setIsLoggedIn(true);
+                })
+                .catch((error) => {
+                    console.log(error.response);
+                    setError(error.response.data.description);
+                });
+        }
+
+        setSubmit(false);
     }
 
-    render() {
-        return (
-            <div>
-                <Typography>Hey</Typography>
-                <Button variant="contained" color="primary" onClick={this.handleClickLogin}>Login</Button>
-                <Button variant="contained" color="primary" onClick={this.handleClickLogout}>Logout</Button>
-                <Button variant="contained" color="primary" onClick={this.handleClickMe}>Me</Button>
-            </div>
-        )
+    if (isLoggedIn) {
+        props.history.push("/profile");
     }
+
+    return (
+        <Container maxWidth={"sm"}>
+            <form  className={classes.form}>
+                <Typography variant="h5">Login</Typography>
+                <TextField
+                    label="Username"
+                    variant="outlined"
+                    fullWidth
+                    className="form-input"
+                    name="username"
+                    value={username}
+                    onChange={(e) => { setUsername(e.target.value)} }
+                />
+                <TextField
+                    label="Password"
+                    variant="outlined"
+                    fullWidth
+                    className="form-input"
+                    type="password"
+                    name="password"
+                    value={password}
+                    onChange={(e) => { setPassword(e.target.value)} }
+                />
+                <Box textAlign='center'>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        className="form-input"
+                        size="large"
+                        onClick={() => setSubmit(true)}
+                    >
+                        Login
+                    </Button>
+                </Box>
+
+                <Snackbar
+                    open={error !== ""}
+                    autoHideDuration={3000}
+                    onClose={(e, r) => r === "timeout" && setError("")}
+                >
+                    <Alert severity="error" onClick={() => setError("")}>
+                        {error}
+                    </Alert>
+                </Snackbar>
+            </form>
+        </Container>
+    )
+
 }
 
-export default Signin
+function Alert(props) {
+    return <MuiAlert elevation={5} variant="filled" {...props} />;
+}
