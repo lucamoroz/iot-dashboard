@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
@@ -42,15 +43,24 @@ public class DeviceController {
     @GetMapping("/devices")
     public List<HashMap<String, Object>> getAllDevices(
             @RequestParam(defaultValue = "false") boolean includeLastData,
-            @RequestParam(required = false) Long groupId
+            @RequestParam(required = false) Long groupId,
+            @RequestParam(required = false) Long productId
     ) {
         Customer customer = currentLoggedUser();
 
         List<Device> devices;
         if (groupId != null){
+            // filter by group
             devices = repository.findDevicesByCustomerAndGroup(customer.getId(), groupId);
         } else {
             devices = repository.findDevicesByCustomer(customer.getId());
+        }
+
+        if (productId != null) {
+            // filter by product
+            devices = devices.stream().filter(
+                    device -> device.getProduct().getId() == productId
+            ).collect(Collectors.toList());
         }
 
         List<HashMap<String, Object>> outputs = new ArrayList<>();

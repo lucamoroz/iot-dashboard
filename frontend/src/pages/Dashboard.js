@@ -170,14 +170,14 @@ function Dashboard(props) {
         if (group) {
             params["groupId"] = group;
         }
+        if (product) {
+            params["productId"] = product;
+        }
         axios.get("/devices", {params})
             .then(res => {
                 setDevices(res.data);
             })
-    }, [group]);
-
-    React.useEffect(() => {
-    }, [product]);
+    }, [group, product]);
 
     return (
         <div>
@@ -200,6 +200,9 @@ function Dashboard(props) {
                         )
                     }
                 </Select>
+            </FormControl>
+            <FormControl className={classes.formControl}>
+                <InputLabel id="product-select-label">Product</InputLabel>
                 <Select
                     labelId="product-select-label"
                     id="product-select"
