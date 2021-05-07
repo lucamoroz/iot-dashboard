@@ -9,6 +9,16 @@ import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
+import {
+    BatteryAlert,
+    Battery20,
+    Battery30,
+    Battery50,
+    Battery60,
+    Battery80,
+    Battery90,
+    BatteryFull
+} from "@material-ui/icons";
 
 const axios = require('axios').default
 
@@ -62,7 +72,27 @@ function DeviceGroups(props) {
         <Grid item>
             <Paper className={classes.paper}>{props.groupName}</Paper>
         </Grid>
-    )
+    );
+}
+
+function Battery(props) {
+    const percentage = props.percentage
+    if (percentage < 20)
+        return <BatteryAlert/>
+    else if (percentage < 30)
+        return <Battery20/>
+    else if (percentage < 50)
+        return <Battery30/>
+    else if (percentage < 60)
+        return <Battery50/>
+    else if (percentage < 80)
+        return <Battery60/>
+    else if (percentage < 90)
+        return <Battery80/>
+    else if (percentage < 95)
+        return <Battery90/>
+    else
+        return <BatteryFull/>
 }
 
 function Device (props) {
@@ -79,6 +109,9 @@ function Device (props) {
                 <Paper className={classes.paper}>
                     <DeviceEnabledIndicator enabled={deviceConfig["enabled"]}/>
                 </Paper>
+            </Grid>
+            <Grid item>
+                <Battery percentage={deviceStatus["battery"]}/>
             </Grid>
             <Grid item>
                 <Paper className={classes.paper}>ID: {deviceId}</Paper>
@@ -107,7 +140,7 @@ function Device (props) {
 
 function Dashboard(props) {
     const classes = useStyles();
-    const [group, setGroup] = React.useState(-1);
+    const [group, setGroup] = React.useState("");
     const [devices, setDevices] = React.useState([]);
     const [groups, setGroups] = React.useState([])
 
@@ -116,7 +149,7 @@ function Dashboard(props) {
         const params = {
             includeLastData: true,
         }
-        if (group !== -1) {
+        if (group) {
             params["groupId"] = group;
         }
         axios.get("/devices", {params})
@@ -143,12 +176,12 @@ function Dashboard(props) {
                         setGroup(event.target.value)
                     }
                 >
-                    <MenuItem value={-1}>
+                    <MenuItem value="">
                         <em>None</em>
                     </MenuItem>
                     {
                         groups.map(group =>
-                            <MenuItem value={group["id"]}>{group["name"]}</MenuItem>
+                            <MenuItem key={group["id"]} value={group["id"]}>{group["name"]}</MenuItem>
                         )
                     }
                 </Select>
