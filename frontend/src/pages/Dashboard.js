@@ -77,17 +77,17 @@ function DeviceGroups(props) {
 
 function Battery(props) {
     const percentage = props.percentage
-    if (percentage < 20)
+    if (percentage < 10)
         return <BatteryAlert/>
-    else if (percentage < 30)
+    else if (percentage < 25)
         return <Battery20/>
-    else if (percentage < 50)
+    else if (percentage < 40)
         return <Battery30/>
-    else if (percentage < 60)
+    else if (percentage < 55)
         return <Battery50/>
-    else if (percentage < 80)
+    else if (percentage < 70)
         return <Battery60/>
-    else if (percentage < 90)
+    else if (percentage < 85)
         return <Battery80/>
     else if (percentage < 95)
         return <Battery90/>
@@ -142,7 +142,25 @@ function Dashboard(props) {
     const classes = useStyles();
     const [group, setGroup] = React.useState("");
     const [devices, setDevices] = React.useState([]);
-    const [groups, setGroups] = React.useState([])
+    const [groups, setGroups] = React.useState([]);
+    const [product, setProduct] = React.useState([]);
+    const [products, setProducts] = React.useState([]);
+
+    React.useEffect(() => {
+        // get user's groups
+        axios.get("/groups")
+            .then(res => {
+                setGroups(res.data)
+            })
+    }, []);
+
+    React.useEffect(() => {
+        // get user's products
+        axios.get("/products")
+            .then(res => {
+                setProducts(res.data)
+            })
+    }, []);
 
     React.useEffect(() => {
         // get devices
@@ -156,13 +174,10 @@ function Dashboard(props) {
             .then(res => {
                 setDevices(res.data);
             })
-
-        // get user's groups
-        axios.get("/groups")
-            .then(res => {
-                setGroups(res.data)
-            })
     }, [group]);
+
+    React.useEffect(() => {
+    }, [product]);
 
     return (
         <div>
@@ -182,6 +197,23 @@ function Dashboard(props) {
                     {
                         groups.map(group =>
                             <MenuItem key={group["id"]} value={group["id"]}>{group["name"]}</MenuItem>
+                        )
+                    }
+                </Select>
+                <Select
+                    labelId="product-select-label"
+                    id="product-select"
+                    value={product}
+                    onChange={(event) =>
+                        setProduct(event.target.value)
+                    }
+                >
+                    <MenuItem value="">
+                        <em>None</em>
+                    </MenuItem>
+                    {
+                        products.map(prod =>
+                            <MenuItem key={prod["id"]} value={prod["id"]}>{prod["name"]}</MenuItem>
                         )
                     }
                 </Select>
