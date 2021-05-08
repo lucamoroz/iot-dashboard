@@ -15,6 +15,8 @@ import Paper from '@material-ui/core/Paper';
 
 import SearchIcon from '@material-ui/icons/Search';
 
+import { Link as RouterLink } from 'react-router-dom';
+
 const axios = require('axios').default
 
 
@@ -32,18 +34,44 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-export default function OrderList(prop){
+export default function OrderList(props){
     const classes = useStyles();
 
     const [orders,setOrders]=useState([]);
 
+    //GET requests: get products of a specific order
+    function productsOfOrder(id){
+        axios.get('/order/getProductsOfOrder?orderId='+id)
+            .then((res) => {
+                console.log(res.data);
+                return res.data
+            })
+            .catch((err) => {
+                console.log(err.response);
+            });
 
+        return [];
+    }
     //GET requests: completed orders of the current user
     function completedOrders(){
         axios.get('/order/completedOrders')
             .then((res) => {
                 console.log(res.data);
-                setOrders(res.data);
+
+                var ords=res.data;
+                ords.forEach(ord => {
+                    const prods= productsOfOrder(ord.id);
+                    console.log("prods of "+ord.id,prods);
+                    var total=0;
+                    prods.forEach(prod => {
+                        total+=prod.product.price*prod.quantity;
+                        console.log(prod.product.price,prod.quantity);
+                    });
+                    ord["total"]=total;
+                });
+
+                console.log("orders",ords);
+                setOrders(ords);
             })
             .catch((err) => {
                 console.log(err.response);
@@ -90,7 +118,7 @@ export default function OrderList(prop){
                             <TableCell align="right">{(9999).toFixed(2)} $</TableCell>
                             <TableCell align="center">
                                 <ButtonGroup  orientation="horizontal" fontSize="small">
-                                    <Button >
+                                    <Button component={RouterLink} to={"/shop/order/"+order.id}>
                                         <SearchIcon fontSize="small" />
                                     </Button>
                                     
