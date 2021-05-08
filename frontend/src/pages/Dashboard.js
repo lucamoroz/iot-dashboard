@@ -158,6 +158,7 @@ function Dashboard(props) {
     const [groups, setGroups] = React.useState([]);
     const [product, setProduct] = React.useState([]);
     const [products, setProducts] = React.useState([]);
+    const [sortby, setSortby] = React.useState(["id"]);
 
     React.useEffect(() => {
         // get user's groups
@@ -191,6 +192,12 @@ function Dashboard(props) {
                 setDevices(res.data);
             })
     }, [group, product]);
+
+    const sortByItems = {
+        "id": (a,b) => a["device"]["id"] - b["device"]["id"],
+        "battery": (a,b) => a["device"]["deviceStatus"]["battery"] - b["device"]["deviceStatus"]["battery"],
+        "enabled": (a,b) => a["device"]["config"]["enabled"] - b["device"]["config"]["enabled"]
+    };
 
     return (
         <div className={classes.dashboard}>
@@ -234,8 +241,26 @@ function Dashboard(props) {
                     }
                 </Select>
             </FormControl>
+            <FormControl className={classes.formControl}>
+                <InputLabel id="sortby-select-label">Sort by</InputLabel>
+                <Select
+                    labelId="sortby-select-label"
+                    id="sortby-select"
+                    value={sortby}
+                    onChange={(event) =>
+                        setSortby(event.target.value)
+                    }
+                >
+                    {
+                        Object.keys(sortByItems).map(item =>
+                            <MenuItem key={item} value={item}>{item}</MenuItem>
+                        )
+                    }
+                </Select>
+            </FormControl>
                 {
-                    devices.map(device =>
+                    devices.sort(sortByItems[sortby])
+                        .map(device =>
                         <Card className={classes.deviceCard} key={device["device"]["id"]}>
                                 <Device deviceData={device}/>
                         </Card>
