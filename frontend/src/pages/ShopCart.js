@@ -8,6 +8,7 @@ import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
+import Chip from '@material-ui/core/Chip';
 
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -52,13 +53,12 @@ export default function ShopCart(props) {
     const invoiceTotal = cartInvoiceTotal(products);
 
     
-    //Code run just once
-    useEffect(() => {
-        //GET request: cart informations
+    //GET request: cart informations
+    function cartInfo(){
         axios.get('/order/cartInfo').then((res) => {
             console.log(res.data);
 
-            setAddress(res.data.order.address)
+            setAddress(res.data.order.address);
             setProducts(res.data.orderProducts);
 
             var q=[];
@@ -71,6 +71,12 @@ export default function ShopCart(props) {
             console.log(error.response);
 
         });
+    }
+
+
+    //Code run just once
+    useEffect(() => {
+        cartInfo();
 
         //GET requests: user info
         axios.get('/customer/me')
@@ -98,6 +104,49 @@ export default function ShopCart(props) {
         setBuy(false);
     }
 
+    function increaseQuantity(index){
+        var newQuantity=products[index].quantity+=1;
+        var productId=products[index].product.id;
+        axios.post('/order/editProductQuantity?productId='+productId+"&newQuantity="+newQuantity)
+            .then((res) => {
+                console.log(res);
+
+                let newarr=[...products];
+                newarr[index].quantity=newQuantity;
+                setProducts(newarr);
+            })
+            .catch((error) => {
+                console.log(error.response);
+            });
+    }
+    function decreaseQuantity(index){
+        var newQuantity=Math.max(1,products[index].quantity-1);
+        var productId=products[index].product.id;
+        axios.post('/order/editProductQuantity?productId='+productId+"&newQuantity="+newQuantity)
+            .then((res) => {
+                console.log(res);
+
+                let newarr=[...products];
+                newarr[index].quantity=newQuantity;
+                setProducts(newarr);
+            })
+            .catch((error) => {
+                console.log(error.response);
+            });
+    }
+    function removeProduct(index){
+        var productId=products[index].product.id;
+        axios.delete('/order/removeProductFromCart/'+productId)
+            .then((res) =>{
+                console.log(res);
+                setProducts([]);
+                cartInfo();
+            })
+            .catch((error) =>{
+                console.log(error.response);
+            });
+    }
+    
     return(
         <Container maxWidth={"md"}>
             
@@ -117,32 +166,17 @@ export default function ShopCart(props) {
                         <TableRow>
                             <TableCell>{prod.product.name}</TableCell>
                             <TableCell align="right">{prod.quantity}</TableCell>
-                            <TableCell align="right">{prod.product.price} $</TableCell>
-                            <TableCell align="right">{prod.quantity*prod.product.price} $</TableCell>
+                            <TableCell align="right">{prod.product.price.toFixed(2)} $</TableCell>
+                            <TableCell align="right">{(prod.quantity*prod.product.price).toFixed(2)} $</TableCell>
                             <TableCell align="center">
-                                <ButtonGroup  orientation="horizzontal">
-                                    <Button
-                                        aria-label="increase"
-                                        onClick={() => {
-                                            let newarr=[...products];
-                                            newarr[index].quantity++;
-                                            setProducts(newarr);
-                                        }}
-                                    >
+                                <ButtonGroup  orientation="horizontal" fontSize="small">
+                                    <Button onClick={() => {increaseQuantity(index)}} >
                                         <AddIcon fontSize="small" />
                                     </Button>
-                                    <Button
-                                        aria-label="reduce"
-                                        onClick={() => {
-                                            let newarr=[...products];
-                                            newarr[index].quantity=Math.max(1,newarr[index].quantity-1);
-                                            setProducts(newarr);
-                                        }}
-                                    >
+                                    <Button onClick={()=>decreaseQuantity(index)} >
                                         <RemoveIcon fontSize="small" />
                                     </Button>
-
-                                    <Button>
+                                    <Button onClick={()=>removeProduct(index)}>
                                         <DeleteIcon fontSize="small" />
                                     </Button>
                                 </ButtonGroup>
@@ -155,7 +189,7 @@ export default function ShopCart(props) {
                     <TableCell></TableCell>
                     <TableCell></TableCell>
                     <TableCell align="right"><strong>Total</strong></TableCell>
-                    <TableCell align="right"><strong>{invoiceTotal} $</strong></TableCell>
+                    <TableCell align="right"><strong>{invoiceTotal.toFixed(2)} $</strong></TableCell>
                 </TableRow>
                 </TableBody>
             </Table>
