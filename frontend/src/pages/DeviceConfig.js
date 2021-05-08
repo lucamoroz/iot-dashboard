@@ -8,47 +8,33 @@ const DeviceId = (props) => (
 	</div>
 );
 
-class DeviceGroups extends React.Component {
+function DeviceGroups(props) {
+    const [groups, setGroups] = React.useState([]);
+    const [errorState, setErrorState] = React.useState(false);
+    const deviceId = props.id;
 
-    constructor(props) {
-        super(props);
+    React.useEffect(() => {
+        axios.get('devices/' + deviceId)
+            .then(resp => {
+                console.log(resp.data["groups"])
+                setGroups(resp.data["groups"]);
+            })
+            .catch((error) => {
+                setErrorState(true)
+            })
+    }, []);
 
-        this.state = {
-            errorState: false,
-            groups: [],
-        }
+    if (errorState) {
+        return (
+            <span>Error Loading data</span>
+        );
     }
-
-    getGroups() {
-        axios.get('devices/'+this.props.id)
-        .then((resp) => {
-            this.setState({
-                deviceGroups: resp.groups[0].name,
-            })
-        })
-        .catch((error) => {
-            //Sets error state
-            this.setState({
-                errorState: true,
-            })
-        })
-    } 
-
-    render() {
-        this.getGroups();
-        console.log("'devices/'+this.props.id");
-        if (this.state.errorState) {
-            return (
-                <span>Error Loading data</span>
-            );
-        }
-        else {
-            return (
-                <div>
-                    group1={this.state.groups}
-                </div>
-            );
-        }
+    else {
+        return (
+            <div>
+                {groups}
+            </div>
+        );
     }
 }
 
@@ -61,8 +47,8 @@ class DeviceConfig extends React.Component {
     render() {
         return (
             <div>
-                <DeviceId id="5" />
-                <DeviceGroups />
+                <DeviceId id="8" />
+                <DeviceGroups id="8"/>
             </div>        
         );
     }
