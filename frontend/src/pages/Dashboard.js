@@ -4,6 +4,9 @@ import Paper from '@material-ui/core/Paper';
 import {makeStyles} from "@material-ui/core/styles";
 import IconButton from '@material-ui/core/IconButton';
 import SettingsIcon from '@material-ui/icons/Settings';
+import PowerIcon from '@material-ui/icons/Power';
+import PowerOffIcon from '@material-ui/icons/PowerOff';
+import { green, red } from '@material-ui/core/colors';
 import { Link as RouterLink } from 'react-router-dom';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
@@ -30,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
     },
     deviceContainer: {
         display: "grid",
-        gridTemplateColumns: "repeat(12, 1fr)",
+        gridTemplateColumns: "repeat(12, 1fr)"
     },
     paper: {
         padding: theme.spacing(1),
@@ -49,7 +52,8 @@ const useStyles = makeStyles((theme) => ({
     },
     deviceCard: {
         backgroundColor: "#EAEAEA",
-        padding: 2
+        padding: 2,
+        margin: 4
     },
     battery: {
         padding: 10
@@ -59,11 +63,11 @@ const useStyles = makeStyles((theme) => ({
 function DeviceEnabledIndicator(props) {
     if (props.enabled) {
         return (
-            <div>On</div>
+            <PowerIcon style={{color: green[500]}}/>
         )
     } else {
         return (
-            <div>Off</div>
+            <PowerOffIcon style={{color: red[500]}}/>
         )
     }
 }
@@ -89,7 +93,7 @@ function DeviceGroups(props) {
 function Battery(props) {
     const percentage = props.percentage
     if (percentage < 10)
-        return <BatteryAlert/>
+        return <BatteryAlert style={{color: red[500]}}/>
     else if (percentage < 25)
         return <Battery20/>
     else if (percentage < 40)
@@ -119,10 +123,8 @@ function Device (props) {
             <Grid item>
                 <Paper className={classes.paper}>
                     <DeviceEnabledIndicator enabled={deviceConfig["enabled"]}/>
+                    <Battery percentage={deviceStatus["battery"]}/>
                 </Paper>
-            </Grid>
-            <Grid item className={classes.battery}>
-                <Battery percentage={deviceStatus["battery"]}/>
             </Grid>
             <Grid item>
                 <Paper className={classes.paper}>ID: {deviceId}</Paper>
