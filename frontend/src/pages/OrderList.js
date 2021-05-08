@@ -25,14 +25,14 @@ const useStyles = makeStyles((theme) => ({
         },
     },
     table: {
-        minWidth: 700,
+        minWidth: 400,
     },
 }));
 
 
 
 
-export default function OrderList(propd){
+export default function OrderList(prop){
     const classes = useStyles();
 
     const [orders,setOrders]=useState([]);
@@ -70,7 +70,7 @@ export default function OrderList(propd){
 
     // RENDER
     return (
-        <Container maxWidth={"md"}>
+        <Container maxWidth={"sm"}>
             <h1>Order History</h1>
             <TableContainer component={Paper}>
             <Table className={classes.table} aria-label="spanning table">
@@ -86,7 +86,7 @@ export default function OrderList(propd){
                     {orders.map((order,index)=>
                         <TableRow>
                             <TableCell>{order.id}</TableCell>
-                            <TableCell align="right">{order.timestamp}</TableCell>
+                            <TableCell align="right">{order.timestamp.substring(0,10)} {order.timestamp.substring(11,16)}</TableCell>
                             <TableCell align="right">{(9999).toFixed(2)} $</TableCell>
                             <TableCell align="center">
                                 <ButtonGroup  orientation="horizontal" fontSize="small">
@@ -113,6 +113,6 @@ export default function OrderList(propd){
 /*
 TODO:
 - CALCULATE ORDER TOTAL
-
+- migliora visualizzazione timestamp
 
 */
