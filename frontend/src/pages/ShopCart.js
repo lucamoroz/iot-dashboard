@@ -45,6 +45,7 @@ const useStyles = makeStyles((theme) => ({
 export default function ShopCart(props) {
     const classes = useStyles();
     
+    const [orderId,setOrderId]=useState(-1); 
     const [address,setAddress]=useState("");
     const [products,setProducts]=useState([]);
     const [error, setError] = useState("");
@@ -66,7 +67,7 @@ export default function ShopCart(props) {
     function cartInfo(){
         axios.get('/order/cartInfo').then((res) => {
             console.log(res.data);
-
+            setOrderId(res.data.order.id);
             setAddress(res.data.order.address);
             setProducts(res.data.orderProducts);            
         })
@@ -143,25 +144,40 @@ export default function ShopCart(props) {
     }
 
     
-    /////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////
+    // COMPLETE ORDER MECHANISM
+    const [open, setOpen] = useState(false);   
+    //When user click on the "confirm" button inseide the dialog
     function completeOrder(){
+        setOpen(false); //close dialog
         
+        axios.post('/order/buyCart?orderId='+orderId+"&orderAddress="+address)
+            .then((res) => {
+                console.log(res);
+
+                setProducts([]);
+                cartInfo();
+            })
+            .catch((error) => {
+                console.log(error.response);
+            });
     }
     // Dialog confirm order
-    const [open, setOpen] = useState(false);    
     // If user clicked on "complete order" button
     const handleClickOpen = () => {
         //Check if all the text forms are filled
         if (!address){
-            setError("Please fill the form.");
-            console.log("fill form")
+            console.log("NO address");
+        }else if (products.length===0){
+            console.log("no products");
         }else{
             console.log("buy cart")
+            console.log(products)
             setOpen(true);  // open dialog
         }
     };
     const handleClose = () => {
-        setOpen(false);
+        setOpen(false); //close dialog
     };
     function dialogConfirmOrder(){
         return (
@@ -173,10 +189,10 @@ export default function ShopCart(props) {
             
             <DialogActions>
                 <Button onClick={handleClose} color="primary">
-                Cancel
+                    Cancel
                 </Button>
-                <Button onClick={handleClose} color="primary" autoFocus>
-                Confirm
+                <Button onClick={completeOrder} color="primary" autoFocus>
+                    Confirm
                 </Button>
             </DialogActions>
         </Dialog>
@@ -185,11 +201,12 @@ export default function ShopCart(props) {
 
     
     
-    /////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////
     //RENDER FUNCTION
     return(
         <Container maxWidth={"md"}>
             <h1>Your Products</h1>
+
             <TableContainer component={Paper}>
             <Table className={classes.table} aria-label="spanning table">
                 <TableHead>
