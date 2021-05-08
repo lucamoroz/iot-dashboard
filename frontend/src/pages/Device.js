@@ -30,8 +30,7 @@ const MyResponsiveLine = ({ data }) => (
             orient: 'bottom',
             tickSize: 5,
             tickPadding: 5,
-            tickRotation: 0,
-            legend: 'transportation',
+            tickRotation: 90,
             legendOffset: 36,
             legendPosition: 'middle'
         }}
@@ -40,7 +39,7 @@ const MyResponsiveLine = ({ data }) => (
             tickSize: 5,
             tickPadding: 5,
             tickRotation: 0,
-            legend: 'count',
+            legend: 'Value',
             legendOffset: -40,
             legendPosition: 'middle'
         }}
@@ -173,7 +172,7 @@ class Device extends React.Component {
                         let data = res.data[timestamp];
                         if (data[dataLabels[i]] !== undefined) {
                             let dataTemp = []
-                            dataTemp['x'] = timestamp;
+                            dataTemp['x'] = this.timestampFormat(timestamp);
                             dataTemp['y'] = data[dataLabels[i]];
                             lineData['data'].push(dataTemp);
                         }
