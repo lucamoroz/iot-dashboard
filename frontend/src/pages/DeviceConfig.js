@@ -16,7 +16,7 @@ function DeviceGroups(props) {
     React.useEffect(() => {
         axios.get('devices/' + deviceId)
             .then(resp => {
-                setGroups(resp.data["groups"].map(group => group["name"]));
+                setGroups(resp.data["groups"].map(group => [group["id"], group["name"]] ));
             })
             .catch((error) => {
                 setErrorState(true)
