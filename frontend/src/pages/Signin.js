@@ -14,7 +14,7 @@ class Signin extends React.Component {
 
     handleClickLogin() {
         const params = new URLSearchParams();
-        params.append('username', 'username2');
+        params.append('username', 'username1');
         params.append('password', 'password');
 
         axios.post('/customer/login', params)
