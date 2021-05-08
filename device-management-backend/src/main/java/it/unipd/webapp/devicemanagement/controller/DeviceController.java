@@ -1,13 +1,16 @@
 package it.unipd.webapp.devicemanagement.controller;
 
 import it.unipd.webapp.devicemanagement.exception.ErrorCode;
+import it.unipd.webapp.devicemanagement.exception.ForbiddenException;
 import it.unipd.webapp.devicemanagement.exception.ResourceNotFoundException;
 import it.unipd.webapp.devicemanagement.model.*;
+import it.unipd.webapp.devicemanagement.repository.CustomerGroupRepository;
 import it.unipd.webapp.devicemanagement.repository.DeviceRepository;
 import it.unipd.webapp.devicemanagement.repository.ProductRepository;
 import it.unipd.webapp.devicemanagement.repository.SensorDataRepository;
 import it.unipd.webapp.devicemanagement.security.DeviceAuthenticationToken;
 import it.unipd.webapp.devicemanagement.service.DeviceService;
+import it.unipd.webapp.devicemanagement.service.GroupService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +36,9 @@ public class DeviceController {
 
     @Autowired
     private DeviceService deviceService;
+
+    @Autowired
+    private GroupService groupService;
 
     /**
      * Gets all devices owned by the logged user.
@@ -212,6 +218,27 @@ public class DeviceController {
                 ));
         deviceService.addDevice(customer, product);
         ClientMessage clientMessage = new ClientMessage("New device added");
+        return ResponseEntity.ok(clientMessage);
+    }
+
+    @PostMapping("/devices/{id}/group")
+    public ResponseEntity<ClientMessage> addGroupToDevice(
+            @PathVariable(value = "id") long deviceId,
+            @RequestParam long groupId
+    )
+            throws ResourceNotFoundException{
+        Customer customer = currentLoggedUser();
+        Device device = repository.findCustomerDeviceById(customer.getId(), deviceId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "user's device not found for id: " + deviceId,
+                        ErrorCode.EDEV1
+                ));
+        CustomerGroup group = groupService.getCustomerGroupById(groupId);
+        List<CustomerGroup> deviceGroups = device.getGroups();
+        deviceGroups.add(group);
+        device.setGroups(deviceGroups);
+        repository.save(device);
+        ClientMessage clientMessage = new ClientMessage("Added group to device");
         return ResponseEntity.ok(clientMessage);
     }
 
