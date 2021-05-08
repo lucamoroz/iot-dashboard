@@ -51,7 +51,6 @@ export default function ShopCart(props) {
     const [products,setProducts]=useState([]);
     const [error, setError] = useState("");
 
-    const [count, setCount] = useState(1);  //just for testing the +/- buttons on cart
 
     //Calculate the sum of the prices of the products
     function cartInvoiceTotal(items){

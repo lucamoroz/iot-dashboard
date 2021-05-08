@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Signup from "./pages/Signup";
 import Signin from "./pages/Signin";
 import ShopCart from "./pages/ShopCart";
+import OrderList from "./pages/OrderList";
 
 
 // Allow to customize theme (e.g. change primary, secondary colors, ... )
@@ -36,6 +37,8 @@ const Navbar = () => (
             <li><NavLink to='/signup'>Signup</NavLink></li>
             <li><NavLink to='/signin'>Signin</NavLink></li>
             <li><NavLink to='/shop/cart'>Shop Cart</NavLink></li>
+            <li><NavLink to='/shop/orders'>Order List</NavLink></li>
+
         </ul>
     </nav>
 );
@@ -46,6 +49,7 @@ const Main = () => (
         <Route exact path='/signup' component={Signup} /> { /* Note: removing 'exact' we could have a Rout with path='/device' that matches child paths e.g. '/device/status' */ }
         <Route exact path='/signin' component={Signin} />
         <Route exact path='/shop/cart' component={ShopCart} />
+        <Route exact path='/shop/orders' component={OrderList} />
     </Switch>
 );
 
