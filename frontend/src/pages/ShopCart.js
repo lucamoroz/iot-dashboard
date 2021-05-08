@@ -4,12 +4,14 @@ import React, {useState,useEffect} from "react";
 import {Button,ButtonGroup, Container, TextField, Typography, Box} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
 
+//Button imports
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
 import Chip from '@material-ui/core/Chip';
 
+// Table imports
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -17,6 +19,13 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+
+//Dialog pop-up imports
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 
 const axios = require('axios').default
@@ -38,11 +47,11 @@ export default function ShopCart(props) {
     
     const [address,setAddress]=useState("");
     const [products,setProducts]=useState([]);
-    const [buy,setBuy]=useState(false); //Buy Cart button
     const [error, setError] = useState("");
 
     const [count, setCount] = useState(1);  //just for testing the +/- buttons on cart
 
+    //Calculate the sum of the prices of the products
     function cartInvoiceTotal(items){
         var ans=0;
         items.forEach(prod => {
@@ -59,13 +68,7 @@ export default function ShopCart(props) {
             console.log(res.data);
 
             setAddress(res.data.order.address);
-            setProducts(res.data.orderProducts);
-
-            var q=[];
-            products.forEach(prod => {
-                q.push(prod.orderProducts.quantity);
-            });
-            
+            setProducts(res.data.orderProducts);            
         })
         .catch((error) => {
             console.log(error.response);
@@ -73,12 +76,8 @@ export default function ShopCart(props) {
         });
     }
 
-
-    //Code run just once
-    useEffect(() => {
-        cartInfo();
-
-        //GET requests: user info
+    //GET requests: user info
+    function customerInfo(){
         axios.get('/customer/me')
             .then((res) => {
                 console.log(res.data);
@@ -86,24 +85,18 @@ export default function ShopCart(props) {
             .catch((err) => {
                 console.log(err.response);
             });
-
-    }, [])
-
-
-    // If user clicked on buy button
-    if (buy){
-        //Check if all the text forms are filled
-        if (!address){
-            setError("Please fill the form.");
-        }else{
-            //TODO: BUY CART.....
-
-        }
-        
-
-        setBuy(false);
     }
 
+
+    //Code runned just once
+    useEffect(() => {
+        cartInfo();
+        customerInfo();
+    }, [])
+
+    
+
+    //If user clicked on "+" button of a product
     function increaseQuantity(index){
         var newQuantity=products[index].quantity+=1;
         var productId=products[index].product.id;
@@ -119,6 +112,7 @@ export default function ShopCart(props) {
                 console.log(error.response);
             });
     }
+    //If user clicked on "-" button of a product
     function decreaseQuantity(index){
         var newQuantity=Math.max(1,products[index].quantity-1);
         var productId=products[index].product.id;
@@ -134,6 +128,7 @@ export default function ShopCart(props) {
                 console.log(error.response);
             });
     }
+    //If user clicked on "delete" button of a product
     function removeProduct(index){
         var productId=products[index].product.id;
         axios.delete('/order/removeProductFromCart/'+productId)
@@ -146,10 +141,55 @@ export default function ShopCart(props) {
                 console.log(error.response);
             });
     }
+
     
+    /////////////////////////////////////////////////////////////////////////////////
+    function completeOrder(){
+        
+    }
+    // Dialog confirm order
+    const [open, setOpen] = useState(false);    
+    // If user clicked on "complete order" button
+    const handleClickOpen = () => {
+        //Check if all the text forms are filled
+        if (!address){
+            setError("Please fill the form.");
+            console.log("fill form")
+        }else{
+            console.log("buy cart")
+            setOpen(true);  // open dialog
+        }
+    };
+    const handleClose = () => {
+        setOpen(false);
+    };
+    function dialogConfirmOrder(){
+        return (
+        <Dialog
+            open={open}
+            onClose={handleClose}
+            >
+            <DialogTitle id="alert-dialog-title">{"Are you sure to complete the order?"}</DialogTitle>
+            
+            <DialogActions>
+                <Button onClick={handleClose} color="primary">
+                Cancel
+                </Button>
+                <Button onClick={handleClose} color="primary" autoFocus>
+                Confirm
+                </Button>
+            </DialogActions>
+        </Dialog>
+        )
+    }
+
+    
+    
+    /////////////////////////////////////////////////////////////////////////////////
+    //RENDER FUNCTION
     return(
         <Container maxWidth={"md"}>
-            
+            <h1>Your Products</h1>
             <TableContainer component={Paper}>
             <Table className={classes.table} aria-label="spanning table">
                 <TableHead>
@@ -195,10 +235,7 @@ export default function ShopCart(props) {
             </Table>
             </TableContainer>
             
-
-
-
-
+            
             <form className={classes.form}>
                 <TextField 
                     label="Address"
@@ -206,6 +243,16 @@ export default function ShopCart(props) {
                     onChange={(e)=>setAddress(e.target.value)}
                 />
             </form>
+
+            <Button
+                variant="contained"
+                color="primary"
+                onClick={handleClickOpen}
+                >
+                Complete Order
+            </Button>
+
+            {dialogConfirmOrder()}
         </Container>
 
         
@@ -221,11 +268,10 @@ export default function ShopCart(props) {
 /*
 
 TODO:
-- display cart info. @GetMapping("/cartInfo")
-- buy cart button. PostMapping("/buyCart"). orderId, orderAddress
-- edit product quantity. PostMapping("/editProductQuantity"). productId, newQuantity
-- remove product from cart. DeleteMapping("/removeProductFromCart/{id}")
-- 
+- buy cart button. PostMapping("/order/buyCart"). orderId, orderAddress
+
+- Pop up di conferma per completare l'ordine
+- POp up di conferma per rimuovere oggetto dal carrello
 
 
 
