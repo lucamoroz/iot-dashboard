@@ -13,6 +13,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Card from '@material-ui/core/Card';
+import {CardActionArea} from "@material-ui/core";
 import {
     BatteryAlert,
     Battery20,
@@ -119,35 +120,39 @@ function Device (props) {
     const productName = props.deviceData["product_name"];
     const groups = props.deviceData["groups"];
     return (
-        <Grid container className={classes.deviceContainer}>
-            <Grid item>
-                <Paper className={classes.paper}>
-                    <DeviceEnabledIndicator enabled={deviceConfig["enabled"]}/>
-                    <Battery percentage={deviceStatus["battery"]}/>
-                </Paper>
-            </Grid>
-            <Grid item>
-                <Paper className={classes.paper}>ID: {deviceId}</Paper>
-            </Grid>
-            {
-                groups.map(group =>
-                    <DeviceGroups key={group["id"]} groupName={group["name"]}/>
-                )
-            }
-            <Grid item>
-                <Paper className={classes.paper}>{productName}</Paper>
-            </Grid>
-            {
-                Object.keys(deviceData).map(key =>
-                    <DeviceData key={key} dataType={key} value={deviceData[key]}/>
-                )
-            }
-            <Grid item>
-                <IconButton component={RouterLink} to={"/device/"+deviceId+"/config"}>
-                    <SettingsIcon/>
-                </IconButton>
-            </Grid>
-        </Grid>
+        <Card className={classes.deviceCard}>
+            <CardActionArea component={RouterLink} to={"/device/"+deviceId}>
+                <Grid container className={classes.deviceContainer}>
+                    <Grid item>
+                        <Paper className={classes.paper}>
+                            <DeviceEnabledIndicator enabled={deviceConfig["enabled"]}/>
+                            <Battery percentage={deviceStatus["battery"]}/>
+                        </Paper>
+                    </Grid>
+                    <Grid item>
+                        <Paper className={classes.paper}>ID: {deviceId}</Paper>
+                    </Grid>
+                    {
+                        groups.map(group =>
+                            <DeviceGroups key={group["id"]} groupName={group["name"]}/>
+                        )
+                    }
+                    <Grid item>
+                        <Paper className={classes.paper}>{productName}</Paper>
+                    </Grid>
+                    {
+                        Object.keys(deviceData).map(key =>
+                            <DeviceData key={key} dataType={key} value={deviceData[key]}/>
+                        )
+                    }
+                    <Grid item>
+                        <IconButton component={RouterLink} to={"/device/"+deviceId+"/config"}>
+                            <SettingsIcon/>
+                        </IconButton>
+                    </Grid>
+                </Grid>
+            </CardActionArea>
+        </Card>
     )
 }
 
@@ -261,9 +266,7 @@ function Dashboard(props) {
                 {
                     devices.sort(sortByItems[sortby])
                         .map(device =>
-                        <Card className={classes.deviceCard} key={device["device"]["id"]}>
-                                <Device deviceData={device}/>
-                        </Card>
+                            <Device key={device["device"]["id"]} deviceData={device}/>
                     )
                 }
         </div>
