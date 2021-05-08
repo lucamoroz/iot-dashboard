@@ -79,6 +79,19 @@ const MyResponsiveLine = ({ data }) => (
     />
 )
 
+const Graph = (props) => {
+    if (props.graphType === 1) {
+        return (
+            <MyResponsiveLine data={props.graphData}/>
+        )
+    } else {
+        //TODO
+        return (
+            <span>BOH</span>
+        )
+    }
+}
+
 
 class Device extends React.Component {
     constructor(props) {
@@ -90,7 +103,7 @@ class Device extends React.Component {
             tableRows: [],
             deviceStatus: null,
             config: null,
-            dataGraph: [],
+            graphData: [],
         };
     }
 
@@ -142,7 +155,16 @@ class Device extends React.Component {
                     this.state.tableRows.push(tableRow);
                 }
 
-                let datass = [];
+                let graphType;
+                if (dataLabels.includes("temperature") || dataLabels.includes("pressure")) {
+                    //This is a temperature sensor
+                    graphType = 1;
+                } else {
+                    //This is a wind sensor
+                    graphType = 2;
+                }
+
+                let graphData = [];
                 for (let i = 0; i < dataLabels.length; i++) {
                     let lineData = [];
                     lineData['id'] = dataLabels[i];
@@ -156,12 +178,12 @@ class Device extends React.Component {
                             lineData['data'].push(dataTemp);
                         }
                     }
-                    datass.push(lineData);
+                    graphData.push(lineData);
                 }
-                console.log(datass);
 
                 this.setState({
-                    dataGraph: datass,
+                    graphData: graphData,
+                    graphType: graphType,
                 })
             })
             .catch((error) => {
@@ -222,7 +244,7 @@ class Device extends React.Component {
                     <Grid item key="left" md={6} >
                         <Grid item md={12}>
                             <div style={{ height: 500 }}>
-                                <MyResponsiveLine data={this.state.dataGraph}/>
+                                <Graph graphData={this.state.graphData} graphType={this.state.graphType}/>
                             </div>
                         </Grid>
                         <Grid item md={12}>
