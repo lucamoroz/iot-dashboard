@@ -116,7 +116,7 @@ public class DeviceController {
      * @throws ResourceNotFoundException In case no device with specified id is owned by the user
      */
     @GetMapping("/devices/{id}")
-    public ResponseEntity<Device> getDeviceById(@PathVariable(value = "id") long deviceId)
+    public ResponseEntity<HashMap<String, Object>> getDeviceById(@PathVariable(value = "id") long deviceId)
             throws ResourceNotFoundException {
         log.info("getDeviceById");
         Customer customer = currentLoggedUser();
@@ -125,7 +125,11 @@ public class DeviceController {
                         "user's device not found for id: " + deviceId,
                         ErrorCode.EDEV1
                 ));
-        return ResponseEntity.ok().body(device);
+        HashMap<String, Object> output = new HashMap<>();
+        output.put("device", device);
+        output.put("product_name", device.getProduct().getName());
+        output.put("groups", device.getGroups());
+        return ResponseEntity.ok().body(output);
     }
 
     /**
