@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
     },
     subtitle: {
         color: '#fff',
-        fontSize: '2rem',
+        fontSize: '1.5rem',
     },
     container: {
         minHeight: '100vh',
@@ -51,10 +51,10 @@ const useStyles = makeStyles((theme) => ({
     },
     paper: {
         backgroundColor: 'rgba(55, 55, 55, 0.5)',
-        
+
     },
     buttonsStyle: {
-       borderRadius: 50 
+        borderRadius: 50
     }
 
 }));

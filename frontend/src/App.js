@@ -7,6 +7,7 @@ import Signin from "./pages/Signin";
 import ShopPage from "./pages/ShopPage";
 import Cart from "./pages/Cart";
 import LandingPage from './pages/LandingPage';
+import MapPage from "./pages/MapPage";
 
 // Allow to customize theme (e.g. change primary, secondary colors, ... )
 const theme = createMuiTheme()
@@ -50,6 +51,7 @@ const Main = () => (
         <Route exact path='/cart' component={Cart} />
         <Route exact path='/shop' component={ShopPage} />
         <Route exact path='/landing' component={LandingPage} />
+        <Route exact path='/map' component={MapPage} />
     </Switch>
 );
 
