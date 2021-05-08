@@ -90,6 +90,7 @@ class Device extends React.Component {
             tableRows: [],
             deviceStatus: null,
             config: null,
+            dataGraph: [],
         };
     }
 
@@ -140,6 +141,28 @@ class Device extends React.Component {
                     }
                     this.state.tableRows.push(tableRow);
                 }
+
+                let datass = [];
+                for (let i = 0; i < dataLabels.length; i++) {
+                    let lineData = [];
+                    lineData['id'] = dataLabels[i];
+                    lineData['data'] = [];
+                    for (let timestamp in res.data) {
+                        let data = res.data[timestamp];
+                        if (data[dataLabels[i]] !== undefined) {
+                            let dataTemp = []
+                            dataTemp['x'] = timestamp;
+                            dataTemp['y'] = data[dataLabels[i]];
+                            lineData['data'].push(dataTemp);
+                        }
+                    }
+                    datass.push(lineData);
+                }
+                console.log(datass);
+
+                this.setState({
+                    dataGraph: datass,
+                })
             })
             .catch((error) => {
                 //Sets error state
@@ -175,7 +198,7 @@ class Device extends React.Component {
         if (this.state.config !== null && this.state.config.enabled === true) {
             return "primary";
         } else {
-            return "error"
+            return "error";
         }
     }
 
@@ -189,280 +212,6 @@ class Device extends React.Component {
     }
 
     render() {
-
-        const datas = [
-            {
-                "id": "japan",
-                "color": "hsl(288, 70%, 50%)",
-                "data": [
-                    {
-                        "x": "plane",
-                        "y": 124
-                    },
-                    {
-                        "x": "helicopter",
-                        "y": 200
-                    },
-                    {
-                        "x": "boat",
-                        "y": 71
-                    },
-                    {
-                        "x": "train",
-                        "y": 94
-                    },
-                    {
-                        "x": "subway",
-                        "y": 15
-                    },
-                    {
-                        "x": "bus",
-                        "y": 242
-                    },
-                    {
-                        "x": "car",
-                        "y": 186
-                    },
-                    {
-                        "x": "moto",
-                        "y": 125
-                    },
-                    {
-                        "x": "bicycle",
-                        "y": 257
-                    },
-                    {
-                        "x": "horse",
-                        "y": 72
-                    },
-                    {
-                        "x": "skateboard",
-                        "y": 180
-                    },
-                    {
-                        "x": "others",
-                        "y": 258
-                    }
-                ]
-            },
-            {
-                "id": "france",
-                "color": "hsl(151, 70%, 50%)",
-                "data": [
-                    {
-                        "x": "plane",
-                        "y": 17
-                    },
-                    {
-                        "x": "helicopter",
-                        "y": 116
-                    },
-                    {
-                        "x": "boat",
-                        "y": 112
-                    },
-                    {
-                        "x": "train",
-                        "y": 201
-                    },
-                    {
-                        "x": "subway",
-                        "y": 164
-                    },
-                    {
-                        "x": "bus",
-                        "y": 140
-                    },
-                    {
-                        "x": "car",
-                        "y": 113
-                    },
-                    {
-                        "x": "moto",
-                        "y": 248
-                    },
-                    {
-                        "x": "bicycle",
-                        "y": 10
-                    },
-                    {
-                        "x": "horse",
-                        "y": 95
-                    },
-                    {
-                        "x": "skateboard",
-                        "y": 268
-                    },
-                    {
-                        "x": "others",
-                        "y": 275
-                    }
-                ]
-            },
-            {
-                "id": "us",
-                "color": "hsl(259, 70%, 50%)",
-                "data": [
-                    {
-                        "x": "plane",
-                        "y": 278
-                    },
-                    {
-                        "x": "helicopter",
-                        "y": 215
-                    },
-                    {
-                        "x": "boat",
-                        "y": 283
-                    },
-                    {
-                        "x": "train",
-                        "y": 224
-                    },
-                    {
-                        "x": "subway",
-                        "y": 42
-                    },
-                    {
-                        "x": "bus",
-                        "y": 271
-                    },
-                    {
-                        "x": "car",
-                        "y": 249
-                    },
-                    {
-                        "x": "moto",
-                        "y": 158
-                    },
-                    {
-                        "x": "bicycle",
-                        "y": 6
-                    },
-                    {
-                        "x": "horse",
-                        "y": 113
-                    },
-                    {
-                        "x": "skateboard",
-                        "y": 129
-                    },
-                    {
-                        "x": "others",
-                        "y": 89
-                    }
-                ]
-            },
-            {
-                "id": "germany",
-                "color": "hsl(42, 70%, 50%)",
-                "data": [
-                    {
-                        "x": "plane",
-                        "y": 133
-                    },
-                    {
-                        "x": "helicopter",
-                        "y": 290
-                    },
-                    {
-                        "x": "boat",
-                        "y": 102
-                    },
-                    {
-                        "x": "train",
-                        "y": 79
-                    },
-                    {
-                        "x": "subway",
-                        "y": 257
-                    },
-                    {
-                        "x": "bus",
-                        "y": 78
-                    },
-                    {
-                        "x": "car",
-                        "y": 261
-                    },
-                    {
-                        "x": "moto",
-                        "y": 113
-                    },
-                    {
-                        "x": "bicycle",
-                        "y": 251
-                    },
-                    {
-                        "x": "horse",
-                        "y": 260
-                    },
-                    {
-                        "x": "skateboard",
-                        "y": 61
-                    },
-                    {
-                        "x": "others",
-                        "y": 4
-                    }
-                ]
-            },
-            {
-                "id": "norway",
-                "color": "hsl(60, 70%, 50%)",
-                "data": [
-                    {
-                        "x": "plane",
-                        "y": 181
-                    },
-                    {
-                        "x": "helicopter",
-                        "y": 160
-                    },
-                    {
-                        "x": "boat",
-                        "y": 78
-                    },
-                    {
-                        "x": "train",
-                        "y": 183
-                    },
-                    {
-                        "x": "subway",
-                        "y": 43
-                    },
-                    {
-                        "x": "bus",
-                        "y": 180
-                    },
-                    {
-                        "x": "car",
-                        "y": 114
-                    },
-                    {
-                        "x": "moto",
-                        "y": 47
-                    },
-                    {
-                        "x": "bicycle",
-                        "y": 259
-                    },
-                    {
-                        "x": "horse",
-                        "y": 146
-                    },
-                    {
-                        "x": "skateboard",
-                        "y": 161
-                    },
-                    {
-                        "x": "others",
-                        "y": 124
-                    }
-                ]
-            }
-        ]
-
         if (this.state.errorState) {
             return (
                 <span>Error Loading data</span>
@@ -473,7 +222,7 @@ class Device extends React.Component {
                     <Grid item key="left" md={6} >
                         <Grid item md={12}>
                             <div style={{ height: 500 }}>
-                                <MyResponsiveLine data={datas}/>
+                                <MyResponsiveLine data={this.state.dataGraph}/>
                             </div>
                         </Grid>
                         <Grid item md={12}>
