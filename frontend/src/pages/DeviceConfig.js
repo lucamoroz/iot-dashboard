@@ -191,7 +191,7 @@ class DeviceConfig extends React.Component {
     render() {
         return (
             <div>
-                <DeviceId id="6" />
+                <DeviceId id="3" />
                 <DeviceRefreshRate id={3} />
                 <DeviceGroups id={3} />
                 <DeviceToken id={3} />
