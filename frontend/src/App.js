@@ -8,6 +8,7 @@ import ShopPage from "./pages/ShopPage";
 import Cart from "./pages/Cart";
 import LandingPage from './pages/LandingPage';
 import MapPage from "./pages/MapPage";
+import Dashboard from "./pages/Dashboard";
 
 // Allow to customize theme (e.g. change primary, secondary colors, ... )
 const theme = createMuiTheme()
@@ -39,6 +40,7 @@ const Navbar = () => (
             <li><NavLink to='/signin'>Signin</NavLink></li>
             <li><NavLink to='/shop'>Shop</NavLink></li>
             <li><NavLink to='/landing'>Landing</NavLink></li>
+            <li><NavLink to='/dashboard'>Dashboard</NavLink></li>
         </ul>
     </nav>
 );
@@ -52,6 +54,7 @@ const Main = () => (
         <Route exact path='/shop' component={ShopPage} />
         <Route exact path='/landing' component={LandingPage} />
         <Route exact path='/map' component={MapPage} />
+        <Route exact path='/dashboard' component={Dashboard} />
     </Switch>
 );
 
