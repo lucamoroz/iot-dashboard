@@ -27,6 +27,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
+import Grid from '@material-ui/core/Grid';
 
 const axios = require('axios').default
 
@@ -252,22 +253,29 @@ export default function ShopCart(props) {
             </Table>
             </TableContainer>
             
-            
-            <form className={classes.form}>
-                <TextField 
-                    label="Address"
-                    value={address}
-                    onChange={(e)=>setAddress(e.target.value)}
-                />
-            </form>
-
-            <Button
-                variant="contained"
-                color="primary"
-                onClick={handleClickOpen}
+            <Grid
+                container
+                direction="row"
+                justify="space-between"
+                alignItems="center"
                 >
-                Complete Order
-            </Button>
+                    <form className={classes.form}>
+                        <TextField 
+                            label="Address"
+                            value={address}
+                            onChange={(e)=>setAddress(e.target.value)}
+                        />
+                    </form>
+
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleClickOpen}
+                        >
+                        Complete Order
+                    </Button>
+            </Grid>
+            
 
             {dialogConfirmOrder()}
         </Container>
@@ -277,19 +285,13 @@ export default function ShopCart(props) {
     );
 
 }
-/*
-
-    const info = <p>Cart info:, {cartInfo.id}, {cartInfo.address}</p>;
-    prods=prods+"abaa<p>"+prod.id+" "+prod.quantity+" ("+prod.product.id+" "+prod.product.description+" "+prod.product.image+" "+prod.product.name+" "+prod.product.price+")</p>"
 
 /*
-
 TODO:
-- buy cart button. PostMapping("/order/buyCart"). orderId, orderAddress
 
-- Pop up di conferma per completare l'ordine
+
 - POp up di conferma per rimuovere oggetto dal carrello
-
+- SNackbar errore indirizzo non inserito ed errore compra carrello vuoto
 
 
 */
