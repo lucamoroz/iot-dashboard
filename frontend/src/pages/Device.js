@@ -168,7 +168,7 @@ class Device extends React.Component {
                                 dataTemp['y'] = data[dataLabels[i]];
                                 if (dataLabels.includes('windBearing')) {
                                     if (data['windBearing'] !== undefined) {
-                                        dataTemp['z'] = data['windBearing'] + "°";
+                                        dataTemp['z'] = this.windBearingFormat(data['windBearing']);
                                     } else {
                                         dataTemp['z'] = "";
                                     }
@@ -230,6 +230,27 @@ class Device extends React.Component {
      */
     timestampFormat(timestamp) {
         return new Date(Date.parse(timestamp)).toLocaleString();
+    }
+
+    windBearingFormat(windBearing) {
+        switch (true) {
+            case (11.25 <= windBearing && windBearing < 33.75): return 'NNE'; break;
+            case (33.75 <= windBearing && windBearing < 56.25): return 'NE'; break;
+            case (56.25 <= windBearing && windBearing < 78.75): return 'ENE'; break;
+            case (78.75 <= windBearing && windBearing < 101.25): return 'E'; break;
+            case (101.25 <= windBearing && windBearing < 123.75): return 'ESE'; break;
+            case (123.75 <= windBearing && windBearing < 146.25): return 'SE'; break;
+            case (146.25 <= windBearing && windBearing < 168.75): return 'SSE'; break;
+            case (168.75 <= windBearing && windBearing < 191.25): return 'S'; break;
+            case (191.25 <= windBearing && windBearing < 213.75): return 'SSW'; break;
+            case (213.75 <= windBearing && windBearing < 236.25): return 'SW'; break;
+            case (236.25 <= windBearing && windBearing < 258.75): return 'WSW'; break;
+            case (258.75 <= windBearing && windBearing < 281.25): return 'W'; break;
+            case (281.25 <= windBearing && windBearing < 303.75): return 'WNW'; break;
+            case (303.75 <= windBearing && windBearing < 326.25): return 'NW'; break;
+            case (326.25 <= windBearing && windBearing < 348.75): return 'NNW'; break;
+            case (348.75 <= windBearing && windBearing < 11.25): return 'N'; break;
+        }
     }
 
     /**
