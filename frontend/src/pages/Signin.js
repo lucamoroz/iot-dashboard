@@ -25,13 +25,12 @@ export default function Signin(props) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
-    const [submit, setSubmit] = useState(false);
 
     if (customerContext.isLoggedIn) {
         props.history.push('/profile');
     }
 
-    if (submit) {
+    function submit() {
         if (!username || !password) {
             setError("Please fill the form");
         } else {
@@ -60,8 +59,6 @@ export default function Signin(props) {
                     setError(errorMsg);
                 });
         }
-
-        setSubmit(false);
     }
 
     return (
@@ -97,7 +94,7 @@ export default function Signin(props) {
                         color="primary"
                         className="form-input"
                         size="large"
-                        onClick={() => setSubmit(true)}
+                        onClick={submit}
                     >
                         Login
                     </Button>
