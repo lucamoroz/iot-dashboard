@@ -65,18 +65,6 @@ class Group extends React.Component {
     }
 }
 
-class GroupList extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-    render() {
-        return (      
-                this.props.groups.map(name => <Group groupName={name} />)
-        );
-    }
-}
-
-
 class DeviceConfig extends React.Component {
 
     constructor(props) {
@@ -94,6 +82,7 @@ class DeviceConfig extends React.Component {
         this.handleRefreshChange = this.handleRefreshChange.bind(this);
         this.handleOnOff = this.handleOnOff.bind(this);
         this.handleToken = this.handleToken.bind(this);
+        this.handleSave = this.handleSave.bind(this);
     }
 
     componentDidMount() {
@@ -163,21 +152,28 @@ class DeviceConfig extends React.Component {
     }
 
     handleSave(event) {
-        const data = {
-            updateFrequency: this.state.refreshRate,
-            enabled: this.state.enabled
-        }
-        const params = new URLSearchParams();
-        params.append('updateFrequency', this.state.refreshRate);
-        params.append('enabled', this.state.enabled);
-        axios.put('devices/3/config', params)
+
+        // sets frequency and enabled
+        axios.put('devices/3/config/'+
+                '?updateFrequency='+this.state.refreshRate+
+                '&enabled='+this.state.enabled)
         .then((resp) => {
-            alert(resp);
+            console.log(resp);
         })
         .catch((error) => {
             console.log(error.response);
         })
-        //event.preventDefault();
+        
+        if (this.state.newToken) {
+            axios.put('devices/3/generatetoken/')
+            .then((resp) => {
+                console.log(resp);
+            })
+            .catch((error) => {
+                console.log(error.response);
+            })
+        }
+        
     }
     
     render() {
