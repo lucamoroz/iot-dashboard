@@ -39,28 +39,16 @@ export default function OrderList(props){
 
     const [orders,setOrders]=useState([]);
 
-    //GET requests: get products of a specific order
-    function productsOfOrder(id){
-        axios.get('/order/getProductsOfOrder?orderId='+id)
-            .then((res) => {
-                console.log(res.data);
-                return res.data
-            })
-            .catch((err) => {
-                console.log(err.response);
-            });
-
-        return [];
-    }
+    
     //GET requests: completed orders of the current user
     function completedOrders(){
         axios.get('/order/completedOrders')
             .then((res) => {
                 console.log(res.data);
-
+                //Calculate total $ for each order
                 var ords=res.data;
                 ords.forEach(ord => {
-                    const prods= productsOfOrder(ord.id);
+                    const prods= ord.orderProducts;
                     console.log("prods of "+ord.id,prods);
                     var total=0;
                     prods.forEach(prod => {
@@ -68,8 +56,8 @@ export default function OrderList(props){
                         console.log(prod.product.price,prod.quantity);
                     });
                     ord["total"]=total;
-                });
 
+                });
                 console.log("orders",ords);
                 setOrders(ords);
             })
@@ -115,7 +103,7 @@ export default function OrderList(props){
                         <TableRow>
                             <TableCell>{order.id}</TableCell>
                             <TableCell align="right">{order.timestamp.substring(0,10)} {order.timestamp.substring(11,16)}</TableCell>
-                            <TableCell align="right">{(9999).toFixed(2)} $</TableCell>
+                            <TableCell align="right">{(order.total).toFixed(2)} $</TableCell>
                             <TableCell align="center">
                                 <ButtonGroup  orientation="horizontal" fontSize="small">
                                     <Button component={RouterLink} to={"/shop/order/"+order.id}>
@@ -140,7 +128,6 @@ export default function OrderList(props){
 
 /*
 TODO:
-- CALCULATE ORDER TOTAL
 - migliora visualizzazione timestamp
 
 */
