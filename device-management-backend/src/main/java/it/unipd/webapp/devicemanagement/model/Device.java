@@ -36,7 +36,14 @@ public class Device {
     @JsonIgnore
     private List<SensorData> sensorData;
 
-    @ManyToMany(mappedBy = "devices")
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinTable(name = "customer_groups_devices",
+            joinColumns = {
+                    @JoinColumn(name = "device_id", referencedColumnName = "id",
+                            nullable = false, updatable = false)},
+            inverseJoinColumns = {
+                    @JoinColumn(name = "customer_group_id", referencedColumnName = "id",
+                            nullable = false, updatable = false)})
     @JsonIgnore
     private List<CustomerGroup> groups;
 

@@ -68,11 +68,11 @@ public class CustomerController {
         log.debug("updateLoggedCustomer");
 
         if (updatedCustomer.getUsername() == null || updatedCustomer.getUsername().isBlank()) {
-            throw new BadRequestException("Missing customer email", ErrorCode.ECUS6);
+            throw new BadRequestException("Missing customer username", ErrorCode.ECUS6);
         }
 
         if (updatedCustomer.getPassword() == null || updatedCustomer.getPassword().isBlank()) {
-            throw new BadRequestException("Missing customer email", ErrorCode.ECUS7);
+            throw new BadRequestException("Missing customer password", ErrorCode.ECUS7);
         }
 
         var loggedCustomer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -113,11 +113,11 @@ public class CustomerController {
         }
 
         if (customer.getUsername() == null || customer.getUsername().isBlank()) {
-            throw new BadRequestException("Missing customer email", ErrorCode.ECUS6);
+            throw new BadRequestException("Missing customer username", ErrorCode.ECUS6);
         }
 
         if (customer.getPassword() == null || customer.getPassword().isBlank()) {
-            throw new BadRequestException("Missing customer email", ErrorCode.ECUS7);
+            throw new BadRequestException("Missing customer password", ErrorCode.ECUS7);
         }
 
         var createdCustomer = service.registerCustomer(customer);
