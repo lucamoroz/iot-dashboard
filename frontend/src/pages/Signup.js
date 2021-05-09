@@ -1,8 +1,9 @@
 import {makeStyles} from "@material-ui/core/styles";
 import {Button, Container, TextField, Typography, Box} from "@material-ui/core";
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import axios from "axios";
 import SnackbarAlert from "../components/SnackbarAlert";
+import CustomerContext from "../CustomerContext";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -15,6 +16,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Signup(props) {
     const classes = useStyles();
+    const customerContext = useContext(CustomerContext);
 
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
@@ -22,6 +24,10 @@ export default function Signup(props) {
     const [passwordConfirm, setPasswordConfirm] = useState("");
     const [submit, setSubmit] = useState(false);
     const [error, setError] = useState("");
+
+    if (customerContext.isLoggedIn) {
+        props.history.push('/profile');
+    }
 
     if (submit) {
         if (password !== passwordConfirm) {
@@ -34,9 +40,12 @@ export default function Signup(props) {
                 username: username,
                 password: password
             }
+
+            // Register and then try to sign in
             axios.post('/customer/register', customer)
                 .then((res) => {
-                    // Sign in if successfully registered
+                    customerContext.setCustomer(res.data);
+
                     const params = new URLSearchParams();
                     params.append('username', username);
                     params.append('password', password);
@@ -44,7 +53,7 @@ export default function Signup(props) {
                     axios.post('/customer/login', params)
                         .then((res) => {
                             console.log(res);
-                            props.history.push("/profile");
+                            customerContext.setIsLoggedIn(true);
                         })
                         .catch((error) => {
                             console.log(error.response);
@@ -55,7 +64,7 @@ export default function Signup(props) {
                     console.log(err.response);
                     const errorMsg = err.response ? err.response.data.description : "No response from backend";
                     setError(errorMsg);
-                })
+                });
         }
 
         setSubmit(false);

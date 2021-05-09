@@ -4,10 +4,6 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter as Router } from "react-router-dom";
 
-const axios = require('axios').default
-axios.defaults.withCredentials = true
-axios.defaults.baseURL = 'http://localhost:8080'
-
 ReactDOM.render(
     <Router>
         <App /> {/* BrowserRouter accepts only a single child element - i.e. App - so the composition is done in App */}

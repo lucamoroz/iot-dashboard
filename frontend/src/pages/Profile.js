@@ -1,8 +1,11 @@
-import React, {useEffect, useState} from "react";
-import {Button, Container, Typography, Paper, Box} from "@material-ui/core";
+import React, {useContext, useState, useEffect} from "react";
+import {Button, Container, Typography, Paper, Grid} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
-import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import {ExitToApp} from "@material-ui/icons";
 import SnackbarAlert from "../components/SnackbarAlert";
+
+import CustomerContext from "../CustomerContext";
 
 const axios = require('axios').default
 
@@ -19,43 +22,60 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Profile(props) {
     const classes = useStyles();
+    const customerContext = useContext(CustomerContext);
 
-    const [customer, setCustomer] = useState(null);
-    const [isLoggedIn, setIsLoggedIn] = useState(true);
     const [deleteClicked, setDeleteClicked] = useState(false);
+    const [logoutClicked, setLogoutClicked] = useState(false);
     const [error, setError] = useState("");
 
+    const customer = customerContext.customer;
+
+    if (!customerContext.isLoggedIn) {
+        props.history.push('/signin');
+    }
+
+    // Fetch customer data (could be changed)
     useEffect(() => {
-        // Todo save logged customer globally, and redirect to e.g. profile from higher order component if already logged
         axios.get('/customer/me')
             .then((res) => {
-                setCustomer(res.data)
+                const newCus = res.data;
+                const prevCus = customerContext.customer;
+
+                if (newCus.id !== prevCus.id || newCus.username !== prevCus.username || newCus.email !== prevCus.email
+                    || newCus.callsCount !== prevCus.callsCount || newCus.plan !== prevCus.plan) {
+                    console.log("Updated customer with new data")
+                    customerContext.setCustomer(res.data)
+                }
             })
             .catch((err) => {
                 console.log(err.response);
-                if (err.response) {
-                    setIsLoggedIn(false);
-                } else {
-                    setError("No response from backend");
-                }
+                const errorMsg = err.response ? err.response.data.description : "No response from backend";
+                setError(errorMsg);
             });
-    }, []);
-
-    if (!isLoggedIn) {
-        // Redirect to signin
-        props.history.push("/signin");
-    }
+    }, [customerContext]);
 
     if (deleteClicked) {
         axios.delete('/customer/me')
             .then((res) => {
-                props.history.push("/");
+                customerContext.setCustomer({});
+                customerContext.setIsLoggedIn(false);
             })
             .catch((err) => {
                 const errorMsg = err.response ? err.response.data.description : "No response from backend";
                 setError(errorMsg);
             });
         setDeleteClicked(false);
+    }
+
+    if (logoutClicked) {
+        axios.post('/customer/logout')
+            .then((res) => {
+                customerContext.setIsLoggedIn(false);
+            })
+            .catch((err) => {
+                const errorMsg = err.response ? err.response.data.description : "No response from backend";
+                setError(errorMsg);
+            })
     }
 
     return (
@@ -76,16 +96,30 @@ export default function Profile(props) {
                 <Typography color="textSecondary" align="center">Calls count: </Typography>
                 <Typography variant="body1" align="center">{customer && customer.callsCount}</Typography>
             </Paper>
-            <Box textAlign='center'>
-                <Button
-                    variant="contained"
-                    color="secondary"
-                    startIcon={<DeleteIcon />}
-                    onClick={() => setDeleteClicked(true)}
-                >
-                    Delete
-                </Button>
-            </Box>
+            <Grid container>
+                <Grid container direction="row" justify="center">
+                    <Grid item xs={3}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            startIcon={<ExitToApp />}
+                            onClick={() => setLogoutClicked(true)}
+                        >
+                            Logout
+                        </Button>
+                    </Grid>
+                    <Grid item xs={3}>
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            startIcon={<DeleteForeverIcon />}
+                            onClick={() => setDeleteClicked(true)}
+                        >
+                            Delete
+                        </Button>
+                    </Grid>
+                </Grid>
+            </Grid>
             <SnackbarAlert
                 open={error !== ""}
                 autoHideDuration={3000}
@@ -94,5 +128,5 @@ export default function Profile(props) {
                 message={error}
             />
         </Container>
-    );
+    )
 }

@@ -6,7 +6,8 @@ import Signup from "./pages/Signup";
 import Signin from "./pages/Signin";
 import Profile from "./pages/Profile";
 import {CssBaseline} from "@material-ui/core";
-import React from "react";
+import React, {useContext, useEffect, useState} from "react";
+import CustomerContext from "./CustomerContext";
 
 // Allow to customize theme (e.g. change primary, secondary colors, ... )
 const theme = createMuiTheme();
@@ -17,16 +18,54 @@ const useStyles = makeStyles({
     }
 });
 
+const axios = require('axios').default
+axios.defaults.withCredentials = true
+axios.defaults.baseURL = 'http://localhost:8080'
+
+
 function App() {
     const classes = useStyles();
+    const customerContext = useContext(CustomerContext);
+    const [customer, setCustomer] = useState(customerContext.customer);
+    const [isLoggedIn, setIsLoggedIn] = useState(customerContext.isLoggedIn);
+
+    // Check if customer is logged in, update context if so (done on page refresh or close & open)
+    useEffect(() => {
+        axios.get('/customer/me')
+            .then((res) => {
+                console.log("App retrieved logged customer: " + res.data);
+                const newCus = res.data;
+                const prevCus = customer;
+
+                if (newCus.id !== prevCus.id || newCus.username !== prevCus.username || newCus.email !== prevCus.email
+                    || newCus.callsCount !== prevCus.callsCount || newCus.plan !== prevCus.plan) {
+                    setCustomer(newCus);
+                }
+                if (!isLoggedIn) {
+                    setIsLoggedIn(true);
+                }
+            })
+            .catch((err) => {
+                console.log("Customer not logged in")
+            });
+    }, []);
+
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline/>
-            <div className={classes.root}>
-                <Navbar />
-                <Main />
-                <Footer />
-            </div>
+            <CustomerContext.Provider
+                value={{
+                    customer: customer,
+                    setCustomer: setCustomer,
+                    isLoggedIn: isLoggedIn,
+                    setIsLoggedIn: setIsLoggedIn}}
+            >
+                <div className={classes.root}>
+                    <Navbar />
+                    <Main />
+                    <Footer />
+                </div>
+            </CustomerContext.Provider>
         </ThemeProvider>
     );
 }
