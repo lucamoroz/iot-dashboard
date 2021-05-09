@@ -84,7 +84,7 @@ export default function MapPage() {
            
             <Marker key={item.device.id} position={[item.device.config.latitude, item.device.config.longitude]}>
               <Popup>
-                
+                <h2 >{item.product_name.capitalize()}</h2> 
                 <h3>Device info:</h3>
                 {item.device.config.enabled ? <PowerIcon style={{color: green[500]}}/> : <PowerOffIcon style={{color: red[500]}}/>} <br /> 
                 Lat: {item.device.config.latitude} <br />
@@ -100,7 +100,12 @@ export default function MapPage() {
                   ))
                 }
                 
-                
+                <h3> Groups:</h3>
+                {
+                  item.groups.map((group) => (
+                    <h4 key={group.id}>{group.name}</h4>
+                  ))
+                }
               </Popup>
             </Marker>
           ))
