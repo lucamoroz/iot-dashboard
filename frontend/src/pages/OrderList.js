@@ -134,6 +134,6 @@ export default function OrderList(props){
 
 /*
 TODO:
-- migliora visualizzazione timestamp
+- 
 
 */

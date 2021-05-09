@@ -53,6 +53,7 @@ export default function ShopCart(props) {
     const [products,setProducts]=useState([]);
     const [error, setError] = useState("");
     const [snackMessage, setSnackMessage]=useState("");
+    const [snackSeverity,setSnackSeverity]=useState("error");
 
     //Calculate the sum of the prices of the products
     function cartInvoiceTotal(items){
@@ -156,6 +157,8 @@ export default function ShopCart(props) {
         axios.post('/order/buyCart?orderId='+orderId+"&orderAddress="+address)
             .then((res) => {
                 console.log(res);
+                setSnackSeverity("success");
+                setSnackMessage("Order completed successfully!");
 
                 setProducts([]);
                 cartInfo();
@@ -170,8 +173,12 @@ export default function ShopCart(props) {
         //Check if all the text forms are filled
         if (!address){
             console.log("NO address");
+            setSnackSeverity("error");
+            setSnackMessage("No address");
         }else if (products.length===0){
             console.log("no products");
+            setSnackSeverity("error");
+            setSnackMessage("No Products to buy");
         }else{
             console.log("buy cart")
             console.log(products)
@@ -282,11 +289,11 @@ export default function ShopCart(props) {
 
 
             <SnackbarAlert
-                open={error !== ""}
+                open={snackMessage !== ""}
                 autoHideDuration={3000}
-                onTimeout={() => setError("")}
-                severity="error"
-                message={error}
+                onTimeout={() => setSnackMessage("")}
+                severity={snackSeverity}
+                message={snackMessage}
             />
             
         </Container>
@@ -302,7 +309,6 @@ TODO:
 
 
 - POp up di conferma per rimuovere oggetto dal carrello
-- SNackbar errore indirizzo non inserito ed errore compra carrello vuoto
--snackbar aquisto completato
+
 
 */
