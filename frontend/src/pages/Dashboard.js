@@ -125,43 +125,48 @@ function Device (props) {
     const productName = props.deviceData["product_name"];
     const groups = props.deviceData["groups"];
     return (
-        <Card className={classes.deviceCard}>
-            <CardActionArea component={RouterLink} to={"/device/"+deviceId}>
-                <Grid container className={classes.deviceContainer}>
-                    <Grid item>
-                        <Paper className={classes.paper}>
-                            <DeviceEnabledIndicator enabled={deviceConfig["enabled"]}/>
-                            <Battery percentage={deviceStatus["battery"]}/>
-                        </Paper>
-                    </Grid>
-                    <Grid item>
-                        <Paper className={classes.paper}>
-                            <Typography>ID: {deviceId}</Typography>
-                        </Paper>
-                    </Grid>
-                    {
-                        groups.map(group =>
-                            <DeviceGroups key={group["id"]} groupName={group["name"]}/>
-                        )
-                    }
-                    <Grid item>
-                        <Paper className={classes.paper}>
-                            <Typography>{productName}</Typography>
-                        </Paper>
-                    </Grid>
-                    {
-                        Object.keys(deviceData).map(key =>
-                            <DeviceData key={key} dataType={key} value={deviceData[key]}/>
-                        )
-                    }
-                    <Grid item>
-                        <IconButton component={RouterLink} to={"/device/"+deviceId+"/config"}>
-                            <SettingsIcon/>
-                        </IconButton>
-                    </Grid>
-                </Grid>
-            </CardActionArea>
-        </Card>
+        <Grid container alignItems="center">
+            <Grid item xs={11}>
+                <Card className={classes.deviceCard}>
+                    <CardActionArea component={RouterLink} to={"/device/"+deviceId}>
+                        <Grid container className={classes.deviceContainer} alignItems="center">
+                            <Grid item>
+                                <Paper className={classes.paper}>
+                                    <DeviceEnabledIndicator enabled={deviceConfig["enabled"]}/>
+                                    <Battery percentage={deviceStatus["battery"]}/>
+                                </Paper>
+                            </Grid>
+                            <Grid item>
+                                <Paper className={classes.paper}>
+                                    <Typography>ID: {deviceId}</Typography>
+                                </Paper>
+                            </Grid>
+                            {
+                                groups.map(group =>
+                                    <DeviceGroups key={group["id"]} groupName={group["name"]}/>
+                                )
+                            }
+                            <Grid item>
+                                <Paper className={classes.paper}>
+                                    <Typography>{productName}</Typography>
+                                </Paper>
+                            </Grid>
+                            {
+                                Object.keys(deviceData).map(key =>
+                                    <DeviceData key={key} dataType={key} value={deviceData[key]}/>
+                                )
+                            }
+
+                        </Grid>
+                    </CardActionArea>
+                </Card>
+            </Grid>
+            <Grid item xs={1}>
+                <IconButton component={RouterLink} to={"/device/"+deviceId+"/config"} >
+                    <SettingsIcon/>
+                </IconButton>
+            </Grid>
+        </Grid>
     )
 }
 
