@@ -20,7 +20,7 @@ const axios = require('axios').default
 const MyResponsiveLine = ({ data }) => (
     <ResponsiveLine
         data={data}
-        margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
+        margin={{ top: 50, right: 150, bottom: 150, left: 60 }}
         xScale={{ type: 'point' }}
         yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: true, reverse: false }}
         yFormat=" >-.2f"
@@ -48,20 +48,22 @@ const MyResponsiveLine = ({ data }) => (
         pointBorderWidth={2}
         pointBorderColor={{ from: 'serieColor' }}
         pointLabelYOffset={-12}
+        enablePointLabel={true}
+        pointLabel={"z"}
         useMesh={true}
         legends={[
             {
-                anchor: 'bottom-right',
+                anchor: 'right',
                 direction: 'column',
                 justify: false,
                 translateX: 100,
                 translateY: 0,
-                itemsSpacing: 0,
+                itemsSpacing: 10,
                 itemDirection: 'left-to-right',
                 itemWidth: 80,
                 itemHeight: 20,
                 itemOpacity: 0.75,
-                symbolSize: 12,
+                symbolSize: 15,
                 symbolShape: 'circle',
                 symbolBorderColor: 'rgba(0, 0, 0, .5)',
                 effects: [
@@ -77,19 +79,6 @@ const MyResponsiveLine = ({ data }) => (
         ]}
     />
 )
-
-const Graph = (props) => {
-    if (props.graphType === 1) {
-        return (
-            <MyResponsiveLine data={props.graphData}/>
-        )
-    } else {
-        //TODO
-        return (
-            <span>BOH</span>
-        )
-    }
-}
 
 
 class Device extends React.Component {
@@ -154,6 +143,7 @@ class Device extends React.Component {
                     this.state.tableRows.push(tableRow);
                 }
 
+                //Infers the graph type from the data types included in the response
                 let graphType;
                 if (dataLabels.includes("temperature") || dataLabels.includes("pressure")) {
                     //This is a temperature sensor
@@ -163,21 +153,31 @@ class Device extends React.Component {
                     graphType = 2;
                 }
 
+                //Makes the array of data for the graph
                 let graphData = [];
                 for (let i = 0; i < dataLabels.length; i++) {
-                    let lineData = [];
-                    lineData['id'] = dataLabels[i];
-                    lineData['data'] = [];
-                    for (let timestamp in res.data) {
-                        let data = res.data[timestamp];
-                        if (data[dataLabels[i]] !== undefined) {
-                            let dataTemp = []
-                            dataTemp['x'] = this.timestampFormat(timestamp);
-                            dataTemp['y'] = data[dataLabels[i]];
-                            lineData['data'].push(dataTemp);
+                    if (dataLabels[i] !== 'windBearing') {
+                        let lineData = [];
+                        lineData['id'] = this.dataLabelsFormat(dataLabels[i]);
+                        lineData['data'] = [];
+                        for (let timestamp in res.data) {
+                            let data = res.data[timestamp];
+                            if (data[dataLabels[i]] !== undefined) {
+                                let dataTemp = []
+                                dataTemp['x'] = this.timestampFormat(timestamp);
+                                dataTemp['y'] = data[dataLabels[i]];
+                                if (dataLabels.includes('windBearing')) {
+                                    if (data['windBearing'] !== undefined) {
+                                        dataTemp['z'] = data['windBearing'] + "°";
+                                    } else {
+                                        dataTemp['z'] = "";
+                                    }
+                                }
+                                lineData['data'].push(dataTemp);
+                            }
                         }
+                        graphData.push(lineData);
                     }
-                    graphData.push(lineData);
                 }
 
                 this.setState({
@@ -232,6 +232,37 @@ class Device extends React.Component {
         return new Date(Date.parse(timestamp)).toLocaleString();
     }
 
+    /**
+     * Formats the labels adding spacing ("camelCase" to "Camel Case") and
+     * add measurement units depending on the data type
+     * @param dataLabel String representing the raw label
+     * @returns {string} String of the formatted label
+     */
+    dataLabelsFormat(dataLabel) {
+        let dataLabelFormatted = dataLabel
+            .replace(/([A-Z])/g, ' $1') // insert a space before all caps
+            .replace(/^./, function(str){ return str.toUpperCase(); }); // uppercase the first character
+
+        switch (dataLabel) {
+            case 'windBearing':
+                dataLabelFormatted = dataLabelFormatted + ' (Degrees)';
+                break;
+            case 'windSpeed':
+                dataLabelFormatted = dataLabelFormatted + ' (Km/h)';
+                break;
+            case 'temperature':
+                dataLabelFormatted = dataLabelFormatted + ' (C°)';
+                break;
+            case 'humidity':
+                dataLabelFormatted = dataLabelFormatted + ' (%)';
+                break;
+            case 'pressure':
+                dataLabelFormatted = dataLabelFormatted + ' (kPa)';
+                break;
+        }
+        return dataLabelFormatted;
+    }
+
     render() {
         if (this.state.errorState) {
             return (
@@ -240,10 +271,10 @@ class Device extends React.Component {
         } else {
             return (
                 <Grid container spacing={2}>
-                    <Grid item key="left" md={6} >
+                    <Grid item key="left" md={7} >
                         <Grid item md={12}>
                             <div style={{ height: 500 }}>
-                                <Graph graphData={this.state.graphData} graphType={this.state.graphType}/>
+                                <MyResponsiveLine data={this.state.graphData}/>
                             </div>
                         </Grid>
                         <Grid item md={12}>
@@ -283,7 +314,7 @@ class Device extends React.Component {
                         </Grid>
 
                     </Grid>
-                    <Grid item key="right" md={6} >
+                    <Grid item key="right" md={5} >
                         <Paper>
                             <TableContainer>
                                 <Table aria-label="simple table">
@@ -291,7 +322,7 @@ class Device extends React.Component {
                                         <TableRow>
                                             <TableCell>Timestamp</TableCell>
                                             {this.state.dataLabels.map((data) => (
-                                                <TableCell key={data}>{data.charAt(0).toUpperCase() + data.slice(1)}</TableCell>
+                                                <TableCell key={data}>{this.dataLabelsFormat(data)}</TableCell>
                                             ))}
                                         </TableRow>
                                     </TableHead>
