@@ -223,12 +223,19 @@ public class DeviceController {
         return ResponseEntity.ok(clientMessage);
     }
 
+    /**
+     * Set groups to a device
+     * @param deviceId The id of the device to set the groups to.
+     * @param groupIds A list of group ids
+     * @return A ResponseEntity with message
+     * @throws ResourceNotFoundException In case no device with specified id is
+     *                                   owned by the user or group ids are invalid
+     */
     @PostMapping("/devices/{id}/group")
     public ResponseEntity<ClientMessage> setDeviceGroups(
             @PathVariable(value = "id") long deviceId,
             @RequestBody List<Long> groupIds
-    )
-            throws ResourceNotFoundException{
+    ) throws ResourceNotFoundException {
         Customer customer = currentLoggedUser();
         Device device = repository.findCustomerDeviceById(customer.getId(), deviceId)
                 .orElseThrow(() -> new ResourceNotFoundException(
