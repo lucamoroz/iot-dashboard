@@ -310,22 +310,15 @@ class Device extends React.Component {
 
     render() {
         if (this.state.errorState) {
-            let description = this.state.error.response.data.description;
             let errorCode = this.state.error.response.data.errorCode;
 
             if (errorCode === "EDEV1" || errorCode === "ESDA2") {
-                //TODO change home to dashboard
-                return (<Redirect to="/home" />);
+                return (<Redirect to="/dashboard" />);
             } else if (errorCode === "EAUT2") {
                 return (<Redirect to="/signin" />);
             }
 
-            //TODO pass error description to the alert
-            console.log(description);
-
-            return (
-                <></>
-            );
+            return (<></>);
         } else {
             return (
                 <Grid container spacing={2}>
