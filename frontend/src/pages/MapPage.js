@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-String.prototype.capitalize = function() {
+String.prototype.capitalize = function () {
   return this.charAt(0).toUpperCase() + this.slice(1);
 }
 
@@ -39,7 +39,7 @@ function timestampFormat(timestamp) {
 
 export default function MapPage() {
   const classes = useStyles();
-  const [state, setState] = useState({devices: [], bounds: []});
+  const [state, setState] = useState({ devices: [], bounds: [] });
   const center = [51.505, -0.09] // Just a 
   useEffect(() => {
     axios.get("/devices?includeLastData=true")
@@ -49,10 +49,9 @@ export default function MapPage() {
         res.data.forEach(device => {
           mbounds.push([device.device.config.latitude, device.device.config.longitude]);
         });
-        console.log(mbounds);
-       
-        setState({devices: res.data, bounds: mbounds});
-        
+
+        setState({ devices: res.data, bounds: mbounds });
+
       })
       .catch((err) => {
         console.log(err);
@@ -61,51 +60,93 @@ export default function MapPage() {
 
   function ChangeMapBounds({ bounds }) {
     const map = useMap();
-    bounds.push([34.024212, -118.496475]); // Mockup bound just to avoid a crash
-    
-    var newBounds = latLngBounds(bounds);
+    //bounds.push([34.024212, -118.496475]); // Mockup bound just to avoid a crash
+
+    var uniqueBounds = []; // Stores the unique coordinates for bounds. Multiple items with same coordinates will cause the map crash
+
+    // Needs a much more optimized way to achieve that
+    bounds.forEach((elem1) => {
+      var unique = true;
+      uniqueBounds.forEach((elem2) => {
+        if (elem1[0] === elem2[0] && elem1[1] === elem2[1]) {
+          unique = false;
+          //Break statement in JS???
+        }
+      });
+      if (unique) {
+        uniqueBounds.push(elem1);
+      }
+    });
+
+
+    if (uniqueBounds.length === 0) {
+      return null;
+    }
+
+    /*if (uniqueBounds.length === 1) {
+      //map.setView(uniqueBounds[0])
+      var newBounds = latLngBounds(uniqueBounds);
+      map.fitBounds(newBounds);
+      return null;
+    }*/
+
+
+    var newBounds = latLngBounds(uniqueBounds);
     map.fitBounds(newBounds);
     return null;
   }
 
   return (
     <div className={classes.root}>
-      <CssBaseline/>
+      <CssBaseline />
       <MapContainer center={center} minZoom={0} maxZoom={13} zoom={6} scrollWheelZoom={false} markerZoomAnimation={true} className={classes.mapContainer}>
-      <ChangeMapBounds bounds={state.bounds}/> 
+        <ChangeMapBounds bounds={state.bounds} />
         <TileLayer
           attribution=''
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-          
+
         {
-          
+
           state.devices.map((item) => (
 
-           
+
             <Marker key={item.device.id} position={[item.device.config.latitude, item.device.config.longitude]}>
               <Popup>
-                <h2 >{item.product_name.capitalize()}</h2> 
+                {item.device.config.enabled ? <PowerIcon style={{ color: green[500] }} /> : <PowerOffIcon style={{ color: red[500] }} />}
+                <h2 >{item.product_name.capitalize()}</h2>
                 <h3>Device info:</h3>
-                {item.device.config.enabled ? <PowerIcon style={{color: green[500]}}/> : <PowerOffIcon style={{color: red[500]}}/>} <br /> 
-                Lat: {item.device.config.latitude} <br />
-                Lon: {item.device.config.longitude} <br />
-                Freq: {item.device.config.update_frequency} <br />
-                Battery: {item.device.deviceStatus.battery}% <br />
-                Last Update: {timestampFormat(item.device.deviceStatus.last_update)} <br />
-                
-                <h3>Latest Data:</h3>
-                {
-                  Object.keys(item.data).map((key) => (
-                    <h4 key={key}>{key.capitalize()}: {item.data[key]}</h4>
-                  ))
-                }
-                
+                <ul>
+                  <li>Lat: {item.device.config.latitude}</li>
+                  <li>Lon: {item.device.config.longitude}</li>
+                  <li>Freq: {item.device.config.update_frequency}</li>
+                  <li>Battery: {item.device.deviceStatus.battery}%</li>
+                  <li>Last Update: {timestampFormat(item.device.deviceStatus.last_update)}</li>
+                </ul>
+
                 <h3> Groups:</h3>
                 {
-                  item.groups.map((group) => (
-                    <h4 key={group.id}>{group.name}</h4>
-                  ))
+                  <ul>
+                    {
+                      item.groups.map((group) => (
+                        <li key={group.id}>{group.name}</li>
+                      ))
+                    }
+                  </ul>
+
                 }
+
+                <h3>Latest Data:</h3>
+                {
+                  <ul>
+                    {
+                      Object.keys(item.data).map((key) => (
+                        <li key={key}>{key.capitalize()}: {item.data[key]}</li>
+                      ))
+                    }
+                  </ul>
+
+                }
+
               </Popup>
             </Marker>
           ))
