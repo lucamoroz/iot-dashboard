@@ -24,6 +24,7 @@ import {
     Battery90,
     BatteryFull
 } from "@material-ui/icons";
+import Typography from "@material-ui/core/Typography";
 
 const axios = require('axios').default
 
@@ -77,7 +78,9 @@ function DeviceData(props) {
     const classes = useStyles();
     return (
         <Grid item>
-            <Paper className={classes.paper}>{props.dataType}: {props.value}</Paper>
+            <Paper className={classes.paper}>
+                <Typography>{props.dataType}: {props.value}</Typography>
+            </Paper>
         </Grid>
     )
 }
@@ -86,7 +89,9 @@ function DeviceGroups(props) {
     const classes = useStyles();
     return (
         <Grid item>
-            <Paper className={classes.paper}>{props.groupName}</Paper>
+            <Paper className={classes.paper}>
+                <Typography>{props.groupName}</Typography>
+            </Paper>
         </Grid>
     );
 }
@@ -130,7 +135,9 @@ function Device (props) {
                         </Paper>
                     </Grid>
                     <Grid item>
-                        <Paper className={classes.paper}>ID: {deviceId}</Paper>
+                        <Paper className={classes.paper}>
+                            <Typography>ID: {deviceId}</Typography>
+                        </Paper>
                     </Grid>
                     {
                         groups.map(group =>
@@ -138,7 +145,9 @@ function Device (props) {
                         )
                     }
                     <Grid item>
-                        <Paper className={classes.paper}>{productName}</Paper>
+                        <Paper className={classes.paper}>
+                            <Typography>{productName}</Typography>
+                        </Paper>
                     </Grid>
                     {
                         Object.keys(deviceData).map(key =>
