@@ -4,6 +4,10 @@ import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { featureGroup, LatLngBounds, latLngBounds } from 'leaflet';
+import { CssBaseline } from '@material-ui/core';
+import PowerIcon from '@material-ui/icons/Power';
+import PowerOffIcon from '@material-ui/icons/PowerOff';
+import { green, red } from '@material-ui/core/colors';
 
 const axios = require('axios').default
 
@@ -24,6 +28,13 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
+String.prototype.capitalize = function() {
+  return this.charAt(0).toUpperCase() + this.slice(1);
+}
+
+function timestampFormat(timestamp) {
+  return new Date(Date.parse(timestamp)).toLocaleString();
+}
 
 
 export default function MapPage() {
@@ -31,7 +42,7 @@ export default function MapPage() {
   const [state, setState] = useState({devices: [], bounds: []});
   const center = [51.505, -0.09] // Just a 
   useEffect(() => {
-    axios.get("/devices")
+    axios.get("/devices?includeLastData=true")
       .then((res) => {
         console.log(res);
         var mbounds = [];
@@ -50,7 +61,7 @@ export default function MapPage() {
 
   function ChangeMapBounds({ bounds }) {
     const map = useMap();
-    bounds.push([51.505, -0.09]); // Mockup bound just to avoid a crash
+    bounds.push([34.024212, -118.496475]); // Mockup bound just to avoid a crash
     
     var newBounds = latLngBounds(bounds);
     map.fitBounds(newBounds);
@@ -59,6 +70,7 @@ export default function MapPage() {
 
   return (
     <div className={classes.root}>
+      <CssBaseline/>
       <MapContainer center={center} minZoom={0} maxZoom={13} zoom={6} scrollWheelZoom={false} markerZoomAnimation={true} className={classes.mapContainer}>
       <ChangeMapBounds bounds={state.bounds}/> 
         <TileLayer
@@ -67,15 +79,32 @@ export default function MapPage() {
           
         {
           
-          state.devices.map((device) => (
+          state.devices.map((item) => (
 
-            <Marker key={device.device.id} position={[device.device.config.latitude, device.device.config.longitude]}>
+            <Marker key={item.device.id} position={[item.device.config.latitude, item.device.config.longitude]}>
               <Popup>
-                Lat: {device.device.config.latitude} Lon: {device.device.config.longitude} <br />
-                Freq: {device.device.config.update_frequency} <br />
-                Battery: {device.device.deviceStatus.battery}% <br />
-                Last Update: {device.device.deviceStatus.last_update} <br />
-               
+                <h2 >{item.product_name.capitalize()}</h2> 
+                <h3>Device info:</h3>
+                {item.device.config.enabled ? <PowerIcon style={{color: green[500]}}/> : <PowerOffIcon style={{color: red[500]}}/>} <br /> 
+                Lat: {item.device.config.latitude} <br />
+                Lon: {item.device.config.longitude} <br />
+                Freq: {item.device.config.update_frequency} <br />
+                Battery: {item.device.deviceStatus.battery}% <br />
+                Last Update: {timestampFormat(item.device.deviceStatus.last_update)} <br />
+                
+                <h3>Latest Data:</h3>
+                {
+                  Object.keys(item.data).map((key) => (
+                    <h4 key={key}>{key.capitalize()}: {item.data[key]}</h4>
+                  ))
+                }
+                
+                <h3> Groups:</h3>
+                {
+                  item.groups.map((group) => (
+                    <h4 key={group.id}>{group.name}</h4>
+                  ))
+                }
               </Popup>
             </Marker>
           ))
