@@ -285,7 +285,7 @@ export default function ShopCart(props) {
                 open={error !== ""}
                 autoHideDuration={3000}
                 onTimeout={() => setError("")}
-                severity={severiry}
+                severity="error"
                 message={error}
             />
             

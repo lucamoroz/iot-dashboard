@@ -69,9 +69,9 @@ function App() {
                     setIsLoggedIn: setIsLoggedIn}}
             >
                 <div className={classes.root}>
-                    
+                    <Navbar />
                     <Main />
-                    
+                    <Footer />
                 </div>
             </CustomerContext.Provider>
         </ThemeProvider>
