@@ -36,25 +36,93 @@ const useStyles = makeStyles((theme) => ({
 export default function Order(props){
     const classes = useStyles();
 
-    
-    const [orderId,setOrderId]=useState(-1); 
-    const [address,setAddress]=useState("");
-    const [timestamp,setTimestap]=useState("0");
-    const [products,setProducts]=useState([]);
-
-    
     let { id } = useParams();
+    const [orderId,setOrderId]=useState(id);
+    const [order,setOrder]=useState();
+    
+
+    //GET requests: completed orders of the current user
+    function completedOrders(){
+        axios.get('/order/completedOrders')
+            .then((res) => {
+                console.log(res.data);
+                
+                //Find the order with id=orderId
+                var ord=res.data.find(element => String(element.id)===orderId);
+
+                //Calculate total $
+                var total=0;
+                ord.orderProducts.forEach(prod => {
+                    total+=prod.product.price*prod.quantity;
+                    console.log(prod.product.price,prod.quantity);
+                });
+                ord["total"]=total;
+
+                setOrder(ord);
+            })
+            .catch((err) => {
+                console.log(err.response);
+            });
+    }
+
     //Code runned just once
     useEffect(() => {
-        //completedOrders();
-        setOrderId(id);
+        //setOrderId(id);
+        console.log("orderid:"+orderId);
+        completedOrders();
     }, [])
 
-    return (
-        <Container maxWidth={"sm"}>
-            <h1>Order id={orderId}</h1>
-            <h2>Delivered at {address}</h2>
-            <h2>Paid on </h2>
-        </Container>
-    )
+    function renderOrder(){
+        if (!order){
+            return (<h1>This Order does not exist</h1>);
+        }
+
+        return(
+            <Container maxWidth={"sm"}>
+                
+                <h1>Order id={orderId}</h1>
+                <h3>Delivered at {order.address}</h3>
+                <h3>Paid on {order.timestamp.substring(0,10)} {order.timestamp.substring(11,16)}</h3>
+
+                <TableContainer component={Paper}>
+                    <Table className={classes.table} aria-label="spanning table">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Product</TableCell>
+                                <TableCell align="right">Quantity</TableCell>
+                                <TableCell align="right">Price</TableCell>
+                                <TableCell align="right">Sum</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {order.orderProducts.map((prod,index)=>
+                                <TableRow>
+                                    <TableCell>{prod.product.name}</TableCell>
+                                    <TableCell align="right">{prod.quantity}</TableCell>
+                                    <TableCell align="right">{prod.product.price.toFixed(2)} $</TableCell>
+                                    <TableCell align="right">{(prod.quantity*prod.product.price).toFixed(2)} $</TableCell>
+                                </TableRow>
+                            )}
+
+
+                        <TableRow>
+                            <TableCell></TableCell>
+                            <TableCell></TableCell>
+                            <TableCell align="right"><strong>Total</strong></TableCell>
+                            <TableCell align="right"><strong>{order.total.toFixed(2)} $</strong></TableCell>
+                        </TableRow>
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </Container>);
+    }
+
+    return renderOrder();
 }
+
+
+/*
+TODO:
+- migliora visualizzazione timestamp
+
+*/
