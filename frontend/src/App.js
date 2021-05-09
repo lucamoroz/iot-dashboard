@@ -4,6 +4,7 @@ import {createMuiTheme, makeStyles, ThemeProvider} from '@material-ui/core/style
 import Home from "./pages/Home";
 import Signup from "./pages/Signup";
 import Signin from "./pages/Signin";
+import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import {CssBaseline} from "@material-ui/core";
 import React, {useContext, useEffect, useState} from "react";
@@ -77,6 +78,7 @@ const Navbar = () => (
             <li><NavLink to='/signup'>Signup</NavLink></li>
             <li><NavLink to='/signin'>Signin</NavLink></li>
             <li><NavLink to='/profile'>Profile</NavLink></li>
+            <li><NavLink to='/dashboard'>Dashboard</NavLink></li>
         </ul>
     </nav>
 );
@@ -87,6 +89,7 @@ const Main = () => (
         <Route exact path='/signup' component={Signup} /> { /* Note: removing 'exact' we could have a Rout with path='/device' that matches child paths e.g. '/device/status' */ }
         <Route exact path='/signin' component={Signin} />
         <Route exact path='/profile' component={Profile} />
+        <Route exact path='/dashboard' component={Dashboard} />
     </Switch>
 );
 
