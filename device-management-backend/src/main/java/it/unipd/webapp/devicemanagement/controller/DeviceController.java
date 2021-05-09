@@ -222,9 +222,9 @@ public class DeviceController {
     }
 
     @PostMapping("/devices/{id}/group")
-    public ResponseEntity<ClientMessage> addGroupToDevice(
+    public ResponseEntity<ClientMessage> setDeviceGroups(
             @PathVariable(value = "id") long deviceId,
-            @RequestParam long groupId
+            @RequestBody List<Long> groupIds
     )
             throws ResourceNotFoundException{
         Customer customer = currentLoggedUser();
@@ -233,12 +233,15 @@ public class DeviceController {
                         "user's device not found for id: " + deviceId,
                         ErrorCode.EDEV1
                 ));
-        CustomerGroup group = groupService.getCustomerGroupById(groupId);
-        List<CustomerGroup> deviceGroups = device.getGroups();
-        deviceGroups.add(group);
+
+        List<CustomerGroup> deviceGroups = new ArrayList<>();
+        for (Long groupId : groupIds) {
+            CustomerGroup group = groupService.getCustomerGroupById(groupId);
+            deviceGroups.add(group);
+        }
         device.setGroups(deviceGroups);
         repository.save(device);
-        ClientMessage clientMessage = new ClientMessage("Added group to device");
+        ClientMessage clientMessage = new ClientMessage("Set groups to devices");
         return ResponseEntity.ok(clientMessage);
     }
 
