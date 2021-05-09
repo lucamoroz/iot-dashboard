@@ -27,6 +27,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
+import SnackbarAlert from "../components/SnackbarAlert";
+
 import Grid from '@material-ui/core/Grid';
 
 const axios = require('axios').default
@@ -50,7 +52,7 @@ export default function ShopCart(props) {
     const [address,setAddress]=useState("");
     const [products,setProducts]=useState([]);
     const [error, setError] = useState("");
-
+    const [snackMessage, setSnackMessage]=useState("");
 
     //Calculate the sum of the prices of the products
     function cartInvoiceTotal(items){
@@ -277,6 +279,16 @@ export default function ShopCart(props) {
             
 
             {dialogConfirmOrder()}
+
+
+            <SnackbarAlert
+                open={error !== ""}
+                autoHideDuration={3000}
+                onTimeout={() => setError("")}
+                severity={severiry}
+                message={error}
+            />
+            
         </Container>
 
         
@@ -291,6 +303,6 @@ TODO:
 
 - POp up di conferma per rimuovere oggetto dal carrello
 - SNackbar errore indirizzo non inserito ed errore compra carrello vuoto
-
+-snackbar aquisto completato
 
 */
