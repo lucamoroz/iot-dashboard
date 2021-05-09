@@ -273,19 +273,6 @@ class Device extends React.Component {
                 <Grid container spacing={2}>
                     <Grid item key="left" md={7} sm={12}>
                         <Grid item xs={12}>
-                            <Paper>
-                                <Grid item sm={1} xs={12}>
-                                    <Typography variant="body1">ID: {this.props.match.params.id}</Typography>
-                                </Grid>
-                                <Grid item sm={1} xs={12}>
-                                    <FiberManualRecordIcon color={this.colorIsEnabled()}/>
-                                </Grid>
-                                <Grid item sm={3} xs={12}>
-                                    <Typography variant="body1">Battery: {this.state.deviceStatus !== null ? this.state.deviceStatus.battery : ''}</Typography>
-                                </Grid>
-                            </Paper>
-                        </Grid>
-                        <Grid item xs={12}>
                             <div style={{ height: 500 }}>
                                 <MyResponsiveLine data={this.state.graphData}/>
                             </div>
@@ -295,6 +282,20 @@ class Device extends React.Component {
                                 <TableContainer>
                                     <Table aria-label="simple table">
                                         <TableBody>
+                                            <TableRow key="id">
+                                                <TableCell key="id_key" align="left">ID</TableCell>
+                                                <TableCell key="id_value" align="left">{this.props.match.params.id}</TableCell>
+                                            </TableRow>
+                                            <TableRow key="status">
+                                                <TableCell key="status_key" align="left">Status</TableCell>
+                                                <TableCell key="status_value" align="left">
+                                                    <FiberManualRecordIcon color={this.colorIsEnabled()}/>
+                                                </TableCell>
+                                            </TableRow>
+                                            <TableRow key="battery">
+                                                <TableCell key="battery_key" align="left">Battery</TableCell>
+                                                <TableCell key="battery_value" align="left">{this.state.deviceStatus !== null ? this.state.deviceStatus.battery : ''}%</TableCell>
+                                            </TableRow>
                                             <TableRow key="version">
                                                 <TableCell key="version_key" align="left">Version</TableCell>
                                                 <TableCell key="version_value" align="left">{this.state.deviceStatus !== null ? this.state.deviceStatus.version : ''}</TableCell>
