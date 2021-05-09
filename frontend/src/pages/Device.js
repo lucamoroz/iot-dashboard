@@ -225,8 +225,8 @@ class Device extends React.Component {
 
                 //Sets deviceStatus and config in the State
                 this.setState({
-                    deviceStatus: resp.data.deviceStatus,
-                    config: resp.data.config,
+                    deviceStatus: resp.data.device.deviceStatus,
+                    config: resp.data.device.config,
                 })
             })
             .catch((error) => {
