@@ -271,26 +271,26 @@ class Device extends React.Component {
         } else {
             return (
                 <Grid container spacing={2}>
-                    <Grid item key="left" md={7} >
-                        <Grid item md={12}>
+                    <Grid item key="left" md={7} sm={12}>
+                        <Grid item sx={12}>
                             <div style={{ height: 500 }}>
                                 <MyResponsiveLine data={this.state.graphData}/>
                             </div>
                         </Grid>
-                        <Grid item md={12}>
+                        <Grid item sx={12}>
                             <Paper>
                                 <Grid container>
                                     <Grid item container>
-                                        <Grid item md={1} >
+                                        <Grid item sm={1} xs={12}>
                                             <FiberManualRecordIcon color={this.colorIsEnabled()}/>
                                         </Grid>
-                                        <Grid item md={3} >
+                                        <Grid item sm={3} xs={12}>
                                             <Typography variant="body1">Battery: {this.state.deviceStatus !== null ? this.state.deviceStatus.battery : ''}</Typography>
                                         </Grid>
-                                        <Grid item md={3}>
+                                        <Grid item sm={3} xs={12}>
                                             <Typography variant="body1">Version: {this.state.deviceStatus !== null ? this.state.deviceStatus.version : ''}</Typography>
                                         </Grid>
-                                        <Grid item md={5}>
+                                        <Grid item sm={5} xs={12}>
                                             <Typography variant="body1">Last update: {this.state.deviceStatus !== null ? this.timestampFormat(this.state.deviceStatus.last_update) : ''}</Typography>
                                         </Grid>
                                     </Grid>
@@ -308,13 +308,11 @@ class Device extends React.Component {
                                             <Typography variant="body1">Longitude: {this.state.config !== null ? this.state.config.longitude : ''}</Typography>
                                         </Grid>
                                     </Grid>
-
                                 </Grid>
                             </Paper>
                         </Grid>
-
                     </Grid>
-                    <Grid item key="right" md={5} >
+                    <Grid item key="right" md={5} sm={12}>
                         <Paper>
                             <TableContainer>
                                 <Table aria-label="simple table">
@@ -338,7 +336,6 @@ class Device extends React.Component {
                                 </Table>
                             </TableContainer>
                         </Paper>
-
                     </Grid>
                 </Grid>
             );
