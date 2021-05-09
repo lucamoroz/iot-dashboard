@@ -185,7 +185,7 @@ public class DeviceController {
      * @throws ResourceNotFoundException In case no device with specified id is owned by the user
      */
     @PutMapping("/devices/{id}/generatetoken")
-    public ResponseEntity<ClientMessage> generateNewToken(@PathVariable(value = "id") long deviceId)
+    public ResponseEntity<HashMap<String, Object>> generateNewToken(@PathVariable(value = "id") long deviceId)
             throws ResourceNotFoundException {
         Customer customer = currentLoggedUser();
         Device device = repository.findCustomerDeviceById(customer.getId(), deviceId)
@@ -193,9 +193,11 @@ public class DeviceController {
                         "user's device not found for id: " + deviceId,
                         ErrorCode.EDEV1
                 ));
-        deviceService.generateNewToken(device);
-        ClientMessage clientMessage = new ClientMessage("New token generated for device id: "+ deviceId);
-        return ResponseEntity.ok(clientMessage);
+        String newToken = deviceService.generateNewToken(device);
+
+        HashMap<String, Object> output = new HashMap<>();
+        output.put("token", newToken);
+        return ResponseEntity.ok().body(output);
     }
 
     /**
@@ -241,7 +243,7 @@ public class DeviceController {
         }
         device.setGroups(deviceGroups);
         repository.save(device);
-        ClientMessage clientMessage = new ClientMessage("Set groups to devices");
+        ClientMessage clientMessage = new ClientMessage("Set groups to device");
         return ResponseEntity.ok(clientMessage);
     }
 

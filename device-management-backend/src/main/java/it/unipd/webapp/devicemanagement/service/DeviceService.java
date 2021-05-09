@@ -49,10 +49,13 @@ public class DeviceService {
     /**
      * Generate a new random alphanumeric token for a device
      * @param device The device whose token we want to update
+     * @return The new token generated
      */
-    public void generateNewToken(Device device) {
+    public String generateNewToken(Device device) {
         DeviceConfig deviceConfig = device.getConfig();
-        deviceConfig.setToken(tokenGenerator.nextToken());
+        String newToken = tokenGenerator.nextToken();
+        deviceConfig.setToken(newToken);
         deviceRepo.save(device);
+        return newToken;
     }
 }
