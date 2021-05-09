@@ -272,43 +272,56 @@ class Device extends React.Component {
             return (
                 <Grid container spacing={2}>
                     <Grid item key="left" md={7} sm={12}>
-                        <Grid item sx={12}>
+                        <Grid item xs={12}>
+                            <Paper>
+                                <Grid item sm={1} xs={12}>
+                                    <Typography variant="body1">ID: {this.props.match.params.id}</Typography>
+                                </Grid>
+                                <Grid item sm={1} xs={12}>
+                                    <FiberManualRecordIcon color={this.colorIsEnabled()}/>
+                                </Grid>
+                                <Grid item sm={3} xs={12}>
+                                    <Typography variant="body1">Battery: {this.state.deviceStatus !== null ? this.state.deviceStatus.battery : ''}</Typography>
+                                </Grid>
+                            </Paper>
+                        </Grid>
+                        <Grid item xs={12}>
                             <div style={{ height: 500 }}>
                                 <MyResponsiveLine data={this.state.graphData}/>
                             </div>
                         </Grid>
-                        <Grid item sx={12}>
+                        <Grid item xs={12}>
                             <Paper>
-                                <Grid container>
-                                    <Grid item container>
-                                        <Grid item sm={1} xs={12}>
-                                            <FiberManualRecordIcon color={this.colorIsEnabled()}/>
-                                        </Grid>
-                                        <Grid item sm={3} xs={12}>
-                                            <Typography variant="body1">Battery: {this.state.deviceStatus !== null ? this.state.deviceStatus.battery : ''}</Typography>
-                                        </Grid>
-                                        <Grid item sm={3} xs={12}>
-                                            <Typography variant="body1">Version: {this.state.deviceStatus !== null ? this.state.deviceStatus.version : ''}</Typography>
-                                        </Grid>
-                                        <Grid item sm={5} xs={12}>
-                                            <Typography variant="body1">Last update: {this.state.deviceStatus !== null ? this.timestampFormat(this.state.deviceStatus.last_update) : ''}</Typography>
-                                        </Grid>
-                                    </Grid>
-                                    <Grid item container>
-                                        <Grid item xs={12}>
-                                            <Typography variant="body1">Update frequency: {this.state.config !== null ? this.state.config.update_frequency : ''}</Typography>
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <Typography variant="body1">Token: {this.state.config !== null ? this.state.config.token : ''}</Typography>
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <Typography variant="body1">Latitude: {this.state.config !== null ? this.state.config.latitude : ''}</Typography>
-                                        </Grid>
-                                        <Grid item xs={12}>
-                                            <Typography variant="body1">Longitude: {this.state.config !== null ? this.state.config.longitude : ''}</Typography>
-                                        </Grid>
-                                    </Grid>
-                                </Grid>
+                                <TableContainer>
+                                    <Table aria-label="simple table">
+                                        <TableBody>
+                                            <TableRow key="version">
+                                                <TableCell key="version_key" align="left">Version</TableCell>
+                                                <TableCell key="version_value" align="left">{this.state.deviceStatus !== null ? this.state.deviceStatus.version : ''}</TableCell>
+                                            </TableRow>
+                                            <TableRow key="last_update">
+                                                <TableCell key="last_update_key" align="left">Last update</TableCell>
+                                                <TableCell key="last_update_value" align="left">{this.state.deviceStatus !== null ? this.timestampFormat(this.state.deviceStatus.last_update) : ''}</TableCell>
+                                            </TableRow>
+                                            <TableRow key="update_frequency">
+                                                <TableCell key="update_frequency_key" align="left">Update frequency</TableCell>
+                                                <TableCell key="update_frequency_value" align="left">{this.state.config !== null ? this.state.config.update_frequency : ''}</TableCell>
+                                            </TableRow>
+                                            <TableRow key="token">
+                                                <TableCell key="token_key" align="left">Token</TableCell>
+                                                <TableCell key="token_value" align="left">{this.state.config !== null ? this.state.config.token : ''}</TableCell>
+                                            </TableRow>
+                                            <TableRow key="latitude">
+                                                <TableCell key="latitude_key" align="left">Latitude</TableCell>
+                                                <TableCell key="latitude_value" align="left">{this.state.config !== null ? this.state.config.latitude : ''}</TableCell>
+                                            </TableRow>
+                                            <TableRow key="longitude">
+                                                <TableCell key="longitude_key" align="left">Longitude</TableCell>
+                                                <TableCell key="longitude_value" align="left">{this.state.config !== null ? this.state.config.longitude : ''}</TableCell>
+                                            </TableRow>
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
                             </Paper>
                         </Grid>
                     </Grid>
