@@ -85,7 +85,7 @@ const Navbar = () => (
             <li><NavLink to='/dashboard'>Dashboard</NavLink></li>
             <li><NavLink to='/shop/cart'>Shop Cart</NavLink></li>
             <li><NavLink to='/shop/orders'>Order List</NavLink></li>
-            <li><NavLink to='/device'>Device</NavLink></li>
+            <li><NavLink to='/device/1'>Device (1)</NavLink></li>
         </ul>
     </nav>
 );
