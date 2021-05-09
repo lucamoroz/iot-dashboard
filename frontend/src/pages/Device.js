@@ -10,7 +10,6 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { Grid } from "@material-ui/core";
-import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 import { green, red } from '@material-ui/core/colors';
 import PowerIcon from '@material-ui/icons/Power';
 import PowerOffIcon from '@material-ui/icons/PowerOff';
@@ -240,18 +239,6 @@ class Device extends React.Component {
     }
 
     /**
-     * This function takes care of the proper color for the enabled/disabled dot for the device
-     * @returns {string} indicating the color text for the right device status (enabled/disabled)
-     */
-    colorIsEnabled() {
-        if (this.state.config !== null && this.state.config.enabled === true) {
-            return "primary";
-        } else {
-            return "error";
-        }
-    }
-
-    /**
      * Takes care of the Timestamp formatting
      * @param timestamp Timestamp is the string received by the remote requests
      * @returns {string} String formatted in the proper way
@@ -319,7 +306,6 @@ class Device extends React.Component {
         }
         return dataLabelFormatted;
     }
-
 
 
     render() {
