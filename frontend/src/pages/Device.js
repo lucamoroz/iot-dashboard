@@ -9,13 +9,17 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import { Grid } from "@material-ui/core";
+import {Grid, Typography} from "@material-ui/core";
 import { green, red } from '@material-ui/core/colors';
 import PowerIcon from '@material-ui/icons/Power';
 import PowerOffIcon from '@material-ui/icons/PowerOff';
+import SettingsIcon from "@material-ui/icons/Settings";
+import IconButton from "@material-ui/core/IconButton";
 
 //Nivo imports
 import { ResponsiveLine } from '@nivo/line'
+import {Link as RouterLink} from "react-router-dom";
+
 
 const axios = require('axios').default
 
@@ -322,6 +326,12 @@ class Device extends React.Component {
         } else {
             return (
                 <Grid container spacing={2}>
+                    <Grid item xs={12} container>
+                        <Typography variant={"h4"}>Device</Typography>
+                        <IconButton component={RouterLink} to={"/device/"+this.props.match.params.id+"/config"}>
+                            <SettingsIcon/>
+                        </IconButton>
+                    </Grid>
                     <Grid item key="left" md={7} sm={12}>
                         <Grid item xs={12}>
                             <div style={{ height: 500 }}>
