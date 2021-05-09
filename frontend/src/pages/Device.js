@@ -11,6 +11,9 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { Grid } from "@material-ui/core";
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
+import { green, red } from '@material-ui/core/colors';
+import PowerIcon from '@material-ui/icons/Power';
+import PowerOffIcon from '@material-ui/icons/PowerOff';
 
 //Nivo imports
 import { ResponsiveLine } from '@nivo/line'
@@ -80,6 +83,18 @@ const MyResponsiveLine = ({ data }) => (
         ]}
     />
 )
+
+function DeviceEnabledIndicator(props) {
+    if (props.enabled) {
+        return (
+            <PowerIcon style={{color: green[500]}}/>
+        )
+    } else {
+        return (
+            <PowerOffIcon style={{color: red[500]}}/>
+        )
+    }
+}
 
 
 class Device extends React.Component {
@@ -305,6 +320,8 @@ class Device extends React.Component {
         return dataLabelFormatted;
     }
 
+
+
     render() {
         if (this.state.errorState) {
             let description = this.state.error.response.data.description;
@@ -319,7 +336,6 @@ class Device extends React.Component {
 
             //TODO pass error description to the alert
             console.log(description);
-            //console.log(this.state.error.response);
 
             return (
                 <></>
@@ -345,7 +361,7 @@ class Device extends React.Component {
                                             <TableRow key="status">
                                                 <TableCell key="status_key" align="left">Status</TableCell>
                                                 <TableCell key="status_value" align="left">
-                                                    <FiberManualRecordIcon color={this.colorIsEnabled()}/>
+                                                    <DeviceEnabledIndicator enabled={this.state.config !== null ? this.state.config.enabled : true}/>
                                                 </TableCell>
                                             </TableRow>
                                             <TableRow key="battery">
