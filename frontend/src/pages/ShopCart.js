@@ -205,8 +205,8 @@ export default function ShopCart(props) {
     //RENDER FUNCTION
     return(
         <Container maxWidth={"md"}>
-            <h1>Your Products</h1>
-
+            <Typography variant="h4">Your Products</Typography>
+            <br/>
             <TableContainer component={Paper}>
             <Table className={classes.table} aria-label="spanning table">
                 <TableHead>

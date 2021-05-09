@@ -72,6 +72,10 @@ export default function Order(props){
         completedOrders();
     }, [])
 
+    function timestampFormat(timestamp) {
+        return new Date(Date.parse(timestamp)).toLocaleString();
+    }
+
     function renderOrder(){
         if (!order){
             return (<h1>This Order does not exist</h1>);
@@ -80,10 +84,12 @@ export default function Order(props){
         return(
             <Container maxWidth={"sm"}>
                 
-                <h1>Order id={orderId}</h1>
-                <h3>Delivered at {order.address}</h3>
-                <h3>Paid on {order.timestamp.substring(0,10)} {order.timestamp.substring(11,16)}</h3>
+                <Typography variant="h4">Order ID = {orderId}</Typography>
+                <Typography variant="subtitle1">Delivered at: {order.address}</Typography>
+                <Typography variant="subtitle1">Paid on: {timestampFormat(order.timestamp)}</Typography>
 
+                <br/>
+                
                 <TableContainer component={Paper}>
                     <Table className={classes.table} aria-label="spanning table">
                         <TableHead>
@@ -119,10 +125,3 @@ export default function Order(props){
 
     return renderOrder();
 }
-
-
-/*
-TODO:
-- migliora visualizzazione timestamp
-
-*/

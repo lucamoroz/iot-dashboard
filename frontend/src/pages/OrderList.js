@@ -15,6 +15,8 @@ import Paper from '@material-ui/core/Paper';
 
 import SearchIcon from '@material-ui/icons/Search';
 
+import Divider from '@material-ui/core/Divider';
+
 import { Link as RouterLink } from 'react-router-dom';
 
 const axios = require('axios').default
@@ -83,11 +85,15 @@ export default function OrderList(props){
         }
     }
     
+    function timestampFormat(timestamp) {
+        return new Date(Date.parse(timestamp)).toLocaleString();
+    }
 
     // RENDER
     return (
         <Container maxWidth={"sm"}>
-            <h1>Order History</h1>
+            <Typography variant="h4">Order History</Typography>
+            <br/>
             <TableContainer component={Paper}>
             <Table className={classes.table} aria-label="spanning table">
                 <TableHead>
@@ -102,7 +108,7 @@ export default function OrderList(props){
                     {orders.map((order,index)=>
                         <TableRow>
                             <TableCell>{order.id}</TableCell>
-                            <TableCell align="right">{order.timestamp.substring(0,10)} {order.timestamp.substring(11,16)}</TableCell>
+                            <TableCell align="right">{timestampFormat(order.timestamp)}</TableCell>
                             <TableCell align="right">{(order.total).toFixed(2)} $</TableCell>
                             <TableCell align="center">
                                 <ButtonGroup  orientation="horizontal" fontSize="small">
