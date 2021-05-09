@@ -13,7 +13,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Card from '@material-ui/core/Card';
-import {CardActionArea} from "@material-ui/core";
+import {CardActionArea, CardContent} from "@material-ui/core";
 import {
     BatteryAlert,
     Battery20,
@@ -34,8 +34,10 @@ const useStyles = makeStyles((theme) => ({
         marginRight: 10
     },
     deviceContainer: {
-        display: "grid",
-        gridTemplateColumns: "repeat(12, 1fr)"
+        display: "flex",
+        padding:0,
+        flexFlow: "row wrap",
+        justifyContent: "flex-start",
     },
     paper: {
         padding: theme.spacing(1),
@@ -43,7 +45,9 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.text.secondary,
         whiteSpace: "nowrap",
         margin: theme.spacing(1),
-        backgroundColor: "#F6F6F6"
+        backgroundColor: "#F6F6F6",
+        width: 180,
+        float:"left"
     },
     divider: {
         margin: `${theme.spacing(2)}px 0`
@@ -77,22 +81,18 @@ function DeviceEnabledIndicator(props) {
 function DeviceData(props) {
     const classes = useStyles();
     return (
-        <Grid item>
             <Paper className={classes.paper}>
-                <Typography>{props.dataType}: {props.value}</Typography>
+                <Typography noWrap>{props.dataType}: {props.value}</Typography>
             </Paper>
-        </Grid>
     )
 }
 
 function DeviceGroups(props) {
     const classes = useStyles();
     return (
-        <Grid item>
             <Paper className={classes.paper}>
                 <Typography>{props.groupName}</Typography>
             </Paper>
-        </Grid>
     );
 }
 
@@ -129,35 +129,28 @@ function Device (props) {
             <Grid item xs={11}>
                 <Card className={classes.deviceCard}>
                     <CardActionArea component={RouterLink} to={"/device/"+deviceId}>
-                        <Grid container className={classes.deviceContainer} alignItems="center">
-                            <Grid item>
-                                <Paper className={classes.paper}>
-                                    <DeviceEnabledIndicator enabled={deviceConfig["enabled"]}/>
-                                    <Battery percentage={deviceStatus["battery"]}/>
-                                </Paper>
-                            </Grid>
-                            <Grid item>
-                                <Paper className={classes.paper}>
-                                    <Typography>ID: {deviceId}</Typography>
-                                </Paper>
-                            </Grid>
+                        <CardContent className={classes.deviceContainer}>
+                            <Paper className={classes.paper} style={{width: "auto"}}>
+                                <DeviceEnabledIndicator enabled={deviceConfig["enabled"]}/>
+                                <Battery percentage={deviceStatus["battery"]}/>
+                            </Paper>
+                            <Paper className={classes.paper} style={{width: 70}}>
+                                <Typography>ID: {deviceId}</Typography>
+                            </Paper>
                             {
                                 groups.map(group =>
                                     <DeviceGroups key={group["id"]} groupName={group["name"]}/>
                                 )
                             }
-                            <Grid item>
                                 <Paper className={classes.paper}>
-                                    <Typography>{productName}</Typography>
+                                    <Typography noWrap>{productName}</Typography>
                                 </Paper>
-                            </Grid>
                             {
                                 Object.keys(deviceData).map(key =>
                                     <DeviceData key={key} dataType={key} value={deviceData[key]}/>
                                 )
                             }
-
-                        </Grid>
+                        </CardContent>
                     </CardActionArea>
                 </Card>
             </Grid>
