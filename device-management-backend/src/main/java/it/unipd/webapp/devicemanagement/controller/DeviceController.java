@@ -1,13 +1,16 @@
 package it.unipd.webapp.devicemanagement.controller;
 
 import it.unipd.webapp.devicemanagement.exception.ErrorCode;
+import it.unipd.webapp.devicemanagement.exception.ForbiddenException;
 import it.unipd.webapp.devicemanagement.exception.ResourceNotFoundException;
 import it.unipd.webapp.devicemanagement.model.*;
+import it.unipd.webapp.devicemanagement.repository.CustomerGroupRepository;
 import it.unipd.webapp.devicemanagement.repository.DeviceRepository;
 import it.unipd.webapp.devicemanagement.repository.ProductRepository;
 import it.unipd.webapp.devicemanagement.repository.SensorDataRepository;
 import it.unipd.webapp.devicemanagement.security.DeviceAuthenticationToken;
 import it.unipd.webapp.devicemanagement.service.DeviceService;
+import it.unipd.webapp.devicemanagement.service.GroupService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +36,9 @@ public class DeviceController {
 
     @Autowired
     private DeviceService deviceService;
+
+    @Autowired
+    private GroupService groupService;
 
     /**
      * Gets all devices owned by the logged user.
@@ -128,7 +134,7 @@ public class DeviceController {
      * @throws ResourceNotFoundException In case no device with specified id is owned by the user
      */
     @GetMapping("/devices/{id}")
-    public ResponseEntity<Device> getDeviceById(@PathVariable(value = "id") long deviceId)
+    public ResponseEntity<HashMap<String, Object>> getDeviceById(@PathVariable(value = "id") long deviceId)
             throws ResourceNotFoundException {
         log.info("getDeviceById");
         Customer customer = currentLoggedUser();
@@ -137,7 +143,11 @@ public class DeviceController {
                         "user's device not found for id: " + deviceId,
                         ErrorCode.EDEV1
                 ));
-        return ResponseEntity.ok().body(device);
+        HashMap<String, Object> output = new HashMap<>();
+        output.put("device", device);
+        output.put("product_name", device.getProduct().getName());
+        output.put("groups", device.getGroups());
+        return ResponseEntity.ok().body(output);
     }
 
     /**
@@ -175,7 +185,7 @@ public class DeviceController {
      * @throws ResourceNotFoundException In case no device with specified id is owned by the user
      */
     @PutMapping("/devices/{id}/generatetoken")
-    public ResponseEntity<ClientMessage> generateNewToken(@PathVariable(value = "id") long deviceId)
+    public ResponseEntity<HashMap<String, Object>> generateNewToken(@PathVariable(value = "id") long deviceId)
             throws ResourceNotFoundException {
         Customer customer = currentLoggedUser();
         Device device = repository.findCustomerDeviceById(customer.getId(), deviceId)
@@ -183,9 +193,11 @@ public class DeviceController {
                         "user's device not found for id: " + deviceId,
                         ErrorCode.EDEV1
                 ));
-        deviceService.generateNewToken(device);
-        ClientMessage clientMessage = new ClientMessage("New token generated for device id: "+ deviceId);
-        return ResponseEntity.ok(clientMessage);
+        String newToken = deviceService.generateNewToken(device);
+
+        HashMap<String, Object> output = new HashMap<>();
+        output.put("token", newToken);
+        return ResponseEntity.ok().body(output);
     }
 
     /**
@@ -208,6 +220,37 @@ public class DeviceController {
                 ));
         deviceService.addDevice(customer, product);
         ClientMessage clientMessage = new ClientMessage("New device added");
+        return ResponseEntity.ok(clientMessage);
+    }
+
+    /**
+     * Set groups to a device
+     * @param deviceId The id of the device to set the groups to.
+     * @param groupIds A list of group ids
+     * @return A ResponseEntity with message
+     * @throws ResourceNotFoundException In case no device with specified id is
+     *                                   owned by the user or group ids are invalid
+     */
+    @PostMapping("/devices/{id}/group")
+    public ResponseEntity<ClientMessage> setDeviceGroups(
+            @PathVariable(value = "id") long deviceId,
+            @RequestBody List<Long> groupIds
+    ) throws ResourceNotFoundException {
+        Customer customer = currentLoggedUser();
+        Device device = repository.findCustomerDeviceById(customer.getId(), deviceId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "user's device not found for id: " + deviceId,
+                        ErrorCode.EDEV1
+                ));
+
+        List<CustomerGroup> deviceGroups = new ArrayList<>();
+        for (Long groupId : groupIds) {
+            CustomerGroup group = groupService.getCustomerGroupById(groupId);
+            deviceGroups.add(group);
+        }
+        device.setGroups(deviceGroups);
+        repository.save(device);
+        ClientMessage clientMessage = new ClientMessage("Set groups to device");
         return ResponseEntity.ok(clientMessage);
     }
 
