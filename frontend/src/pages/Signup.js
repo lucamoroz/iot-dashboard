@@ -22,14 +22,13 @@ export default function Signup(props) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [passwordConfirm, setPasswordConfirm] = useState("");
-    const [submit, setSubmit] = useState(false);
     const [error, setError] = useState("");
 
     if (customerContext.isLoggedIn) {
         props.history.push('/profile');
     }
 
-    if (submit) {
+    function submit() {
         if (password !== passwordConfirm) {
             setError("Passwords don't match, please retry.");
         } else if (!password || !username || !email) {
@@ -66,9 +65,8 @@ export default function Signup(props) {
                     setError(errorMsg);
                 });
         }
-
-        setSubmit(false);
     }
+
 
     return (
         <Container maxWidth={"sm"}>
@@ -118,7 +116,7 @@ export default function Signup(props) {
                         color="primary"
                         className="form-input"
                         size="large"
-                        onClick={() => {setSubmit(true)} }
+                        onClick={submit}
                     >
                         Register
                     </Button>

@@ -23,9 +23,6 @@ const useStyles = makeStyles((theme) => ({
 export default function Profile(props) {
     const classes = useStyles();
     const customerContext = useContext(CustomerContext);
-
-    const [deleteClicked, setDeleteClicked] = useState(false);
-    const [logoutClicked, setLogoutClicked] = useState(false);
     const [error, setError] = useState("");
 
     const customer = customerContext.customer;
@@ -54,7 +51,8 @@ export default function Profile(props) {
             });
     }, [customerContext]);
 
-    if (deleteClicked) {
+
+    function deleteCustomer() {
         axios.delete('/customer/me')
             .then((res) => {
                 customerContext.setCustomer({});
@@ -64,10 +62,9 @@ export default function Profile(props) {
                 const errorMsg = err.response ? err.response.data.description : "No response from backend";
                 setError(errorMsg);
             });
-        setDeleteClicked(false);
     }
 
-    if (logoutClicked) {
+    function logoutCustomer() {
         axios.post('/customer/logout')
             .then((res) => {
                 customerContext.setIsLoggedIn(false);
@@ -103,7 +100,7 @@ export default function Profile(props) {
                             variant="contained"
                             color="primary"
                             startIcon={<ExitToApp />}
-                            onClick={() => setLogoutClicked(true)}
+                            onClick={logoutCustomer}
                         >
                             Logout
                         </Button>
@@ -113,7 +110,7 @@ export default function Profile(props) {
                             variant="contained"
                             color="secondary"
                             startIcon={<DeleteForeverIcon />}
-                            onClick={() => setDeleteClicked(true)}
+                            onClick={deleteCustomer}
                         >
                             Delete
                         </Button>
