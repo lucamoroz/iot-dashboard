@@ -27,7 +27,7 @@ public class OrderDetail {
 
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.REMOVE)
-    @JsonIgnore
+    //@JsonIgnore
     private List<OrderProduct> orderProducts;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
