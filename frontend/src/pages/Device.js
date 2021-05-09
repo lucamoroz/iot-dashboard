@@ -1,4 +1,5 @@
 import React from "react";
+import { Redirect } from "react-router";
 
 //Material IU imports
 import Table from '@material-ui/core/Table';
@@ -8,7 +9,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import {Grid, Typography} from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 
 //Nivo imports
@@ -85,8 +86,12 @@ class Device extends React.Component {
     constructor(props) {
         super(props);
 
+        //This variable is used to check if the component is unmounted
+        this._isMounted = false;
+
         this.state = {
             errorState: false,
+            error: null,
             dataLabels: [],
             tableRows: [],
             deviceStatus: null,
@@ -100,6 +105,8 @@ class Device extends React.Component {
      * This is the function called after the Component is called where React advice to make remote calls.
      */
     componentDidMount() {
+        this._isMounted = true;
+
         //Gets device data from the API
         axios.get('/devices/'+this.props.match.params.id+'/data')
             .then((res) => {
@@ -187,8 +194,9 @@ class Device extends React.Component {
             })
             .catch((error) => {
                 //Sets error state
-                this.setState({
+                this._isMounted && this.setState({
                     errorState: true,
+                    error: error,
                 })
             });
 
@@ -205,10 +213,15 @@ class Device extends React.Component {
             })
             .catch((error) => {
                 //Sets error state
-                this.setState({
+                this._isMounted && this.setState({
                     errorState: true,
+                    error: error,
                 })
             })
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
     }
 
     /**
@@ -232,24 +245,30 @@ class Device extends React.Component {
         return new Date(Date.parse(timestamp)).toLocaleString();
     }
 
+    /**
+     * Takes care of the wind bearing formatting
+     * @param windBearing Raw data of the wind bearing
+     * @returns {string} Formatted data of the wind bearing
+     */
     windBearingFormat(windBearing) {
         switch (true) {
-            case (11.25 <= windBearing && windBearing < 33.75): return 'NNE'; break;
-            case (33.75 <= windBearing && windBearing < 56.25): return 'NE'; break;
-            case (56.25 <= windBearing && windBearing < 78.75): return 'ENE'; break;
-            case (78.75 <= windBearing && windBearing < 101.25): return 'E'; break;
-            case (101.25 <= windBearing && windBearing < 123.75): return 'ESE'; break;
-            case (123.75 <= windBearing && windBearing < 146.25): return 'SE'; break;
-            case (146.25 <= windBearing && windBearing < 168.75): return 'SSE'; break;
-            case (168.75 <= windBearing && windBearing < 191.25): return 'S'; break;
-            case (191.25 <= windBearing && windBearing < 213.75): return 'SSW'; break;
-            case (213.75 <= windBearing && windBearing < 236.25): return 'SW'; break;
-            case (236.25 <= windBearing && windBearing < 258.75): return 'WSW'; break;
-            case (258.75 <= windBearing && windBearing < 281.25): return 'W'; break;
-            case (281.25 <= windBearing && windBearing < 303.75): return 'WNW'; break;
-            case (303.75 <= windBearing && windBearing < 326.25): return 'NW'; break;
-            case (326.25 <= windBearing && windBearing < 348.75): return 'NNW'; break;
-            case (348.75 <= windBearing && windBearing < 11.25): return 'N'; break;
+            case (11.25 <= windBearing && windBearing < 33.75): return 'NNE';
+            case (33.75 <= windBearing && windBearing < 56.25): return 'NE';
+            case (56.25 <= windBearing && windBearing < 78.75): return 'ENE';
+            case (78.75 <= windBearing && windBearing < 101.25): return 'E';
+            case (101.25 <= windBearing && windBearing < 123.75): return 'ESE';
+            case (123.75 <= windBearing && windBearing < 146.25): return 'SE';
+            case (146.25 <= windBearing && windBearing < 168.75): return 'SSE';
+            case (168.75 <= windBearing && windBearing < 191.25): return 'S';
+            case (191.25 <= windBearing && windBearing < 213.75): return 'SSW';
+            case (213.75 <= windBearing && windBearing < 236.25): return 'SW';
+            case (236.25 <= windBearing && windBearing < 258.75): return 'WSW';
+            case (258.75 <= windBearing && windBearing < 281.25): return 'W';
+            case (281.25 <= windBearing && windBearing < 303.75): return 'WNW';
+            case (303.75 <= windBearing && windBearing < 326.25): return 'NW';
+            case (326.25 <= windBearing && windBearing < 348.75): return 'NNW';
+            case (348.75 <= windBearing && windBearing < 11.25): return 'N';
+            default: return '';
         }
     }
 
@@ -280,14 +299,30 @@ class Device extends React.Component {
             case 'pressure':
                 dataLabelFormatted = dataLabelFormatted + ' (kPa)';
                 break;
+            default:
+                break;
         }
         return dataLabelFormatted;
     }
 
     render() {
         if (this.state.errorState) {
+            let description = this.state.error.response.data.description;
+            let errorCode = this.state.error.response.data.errorCode;
+
+            if (errorCode === "EDEV1" || errorCode === "ESDA2") {
+                //TODO change home to dashboard
+                return (<Redirect to="/home" />);
+            } else if (errorCode === "EAUT2") {
+                return (<Redirect to="/signin" />);
+            }
+
+            //TODO pass error description to the alert
+            console.log(description);
+            //console.log(this.state.error.response);
+
             return (
-                <span>Error Loading data</span>
+                <></>
             );
         } else {
             return (
