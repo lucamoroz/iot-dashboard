@@ -7,6 +7,7 @@ import Signin from "./pages/Signin";
 import ShopPage from "./pages/ShopPage";
 import LandingPage from './pages/LandingPage';
 import MapPage from "./pages/MapPage";
+import Device from "./pages/Device";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import {CssBaseline} from "@material-ui/core";
@@ -17,7 +18,7 @@ import OrderList from "./pages/OrderList";
 import Order from "./pages/Order";
 
 // Allow to customize theme (e.g. change primary, secondary colors, ... )
-const theme = createMuiTheme()
+const theme = createMuiTheme();
 
 const useStyles = makeStyles({
     root: {
@@ -106,6 +107,7 @@ const Main = () => (
         <Route exact path='/shop/order/:id' component={Order} />
         <Route exact path='/profile' component={Profile} />
         <Route exact path='/dashboard' component={Dashboard} />
+        <Route exact path='/device/:id' component={Device} />
     </Switch>
 );
 
