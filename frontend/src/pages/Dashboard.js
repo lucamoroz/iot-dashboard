@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useContext, useState} from "react";
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import {makeStyles} from "@material-ui/core/styles";
@@ -13,7 +13,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Card from '@material-ui/core/Card';
-import {CardActionArea} from "@material-ui/core";
+import {CardActionArea, CardContent} from "@material-ui/core";
 import {
     BatteryAlert,
     Battery20,
@@ -24,6 +24,8 @@ import {
     Battery90,
     BatteryFull
 } from "@material-ui/icons";
+import Typography from "@material-ui/core/Typography";
+import CustomerContext from "../CustomerContext";
 
 const axios = require('axios').default
 
@@ -33,8 +35,10 @@ const useStyles = makeStyles((theme) => ({
         marginRight: 10
     },
     deviceContainer: {
-        display: "grid",
-        gridTemplateColumns: "repeat(12, 1fr)"
+        display: "flex",
+        padding:0,
+        flexFlow: "row wrap",
+        justifyContent: "flex-start",
     },
     paper: {
         padding: theme.spacing(1),
@@ -42,7 +46,9 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.text.secondary,
         whiteSpace: "nowrap",
         margin: theme.spacing(1),
-        backgroundColor: "#F6F6F6"
+        backgroundColor: "#F6F6F6",
+        width: 180,
+        float:"left"
     },
     divider: {
         margin: `${theme.spacing(2)}px 0`
@@ -76,18 +82,18 @@ function DeviceEnabledIndicator(props) {
 function DeviceData(props) {
     const classes = useStyles();
     return (
-        <Grid item>
-            <Paper className={classes.paper}>{props.dataType}: {props.value}</Paper>
-        </Grid>
+            <Paper className={classes.paper}>
+                <Typography noWrap>{props.dataType}: {props.value}</Typography>
+            </Paper>
     )
 }
 
 function DeviceGroups(props) {
     const classes = useStyles();
     return (
-        <Grid item>
-            <Paper className={classes.paper}>{props.groupName}</Paper>
-        </Grid>
+            <Paper className={classes.paper}>
+                <Typography>{props.groupName}</Typography>
+            </Paper>
     );
 }
 
@@ -120,40 +126,53 @@ function Device (props) {
     const productName = props.deviceData["product_name"];
     const groups = props.deviceData["groups"];
     return (
-        <Card className={classes.deviceCard}>
-            <CardActionArea component={RouterLink} to={"/device/"+deviceId}>
-                <Grid container className={classes.deviceContainer}>
-                    <Grid item>
-                        <Paper className={classes.paper}>
-                            <DeviceEnabledIndicator enabled={deviceConfig["enabled"]}/>
-                            <Battery percentage={deviceStatus["battery"]}/>
-                        </Paper>
-                    </Grid>
-                    <Grid item>
-                        <Paper className={classes.paper}>ID: {deviceId}</Paper>
-                    </Grid>
-                    {
-                        groups.map(group =>
-                            <DeviceGroups key={group["id"]} groupName={group["name"]}/>
-                        )
-                    }
-                    <Grid item>
-                        <Paper className={classes.paper}>{productName}</Paper>
-                    </Grid>
-                    {
-                        Object.keys(deviceData).map(key =>
-                            <DeviceData key={key} dataType={key} value={deviceData[key]}/>
-                        )
-                    }
-                    <Grid item>
-                        <IconButton component={RouterLink} to={"/device/"+deviceId+"/config"}>
-                            <SettingsIcon/>
-                        </IconButton>
-                    </Grid>
-                </Grid>
-            </CardActionArea>
-        </Card>
+        <Grid container alignItems="center">
+            <Grid item xs={11}>
+                <Card className={classes.deviceCard}>
+                    <CardActionArea component={RouterLink} to={"/device/"+deviceId}>
+                        <CardContent className={classes.deviceContainer}>
+                            <Paper className={classes.paper} style={{width: "auto"}}>
+                                <DeviceEnabledIndicator enabled={deviceConfig["enabled"]}/>
+                                <Battery percentage={deviceStatus["battery"]}/>
+                            </Paper>
+                            <Paper className={classes.paper} style={{width: 70}}>
+                                <Typography>ID: {deviceId}</Typography>
+                            </Paper>
+                            {
+                                groups.map(group =>
+                                    <DeviceGroups key={group["id"]} groupName={group["name"]}/>
+                                )
+                            }
+                                <Paper className={classes.paper}>
+                                    <Typography noWrap>{productName}</Typography>
+                                </Paper>
+                            {
+                                Object.keys(deviceData).map(key =>
+                                    <DeviceData key={key} dataType={key} value={deviceData[key]}/>
+                                )
+                            }
+                        </CardContent>
+                    </CardActionArea>
+                </Card>
+            </Grid>
+            <Grid item xs={1}>
+                <IconButton component={RouterLink} to={"/device/"+deviceId+"/config"} >
+                    <SettingsIcon/>
+                </IconButton>
+            </Grid>
+        </Grid>
     )
+}
+
+function Devices(props) {
+    if (props.devices.length > 0) {
+        return props.devices
+            .map(device =>
+                <Device key={device["device"]["id"]} deviceData={device}/>
+            )
+    } else {
+        return <Typography>No devices</Typography>
+    }
 }
 
 function Dashboard(props) {
@@ -164,6 +183,12 @@ function Dashboard(props) {
     const [product, setProduct] = React.useState([]);
     const [products, setProducts] = React.useState([]);
     const [sortby, setSortby] = React.useState(["id"]);
+
+    const customerContext = useContext(CustomerContext);
+    const customer = customerContext.customer;
+    if (!customerContext.isLoggedIn) {
+        props.history.push('/signin');
+    }
 
     React.useEffect(() => {
         // get user's groups
@@ -264,10 +289,7 @@ function Dashboard(props) {
                 </Select>
             </FormControl>
                 {
-                    devices.sort(sortByItems[sortby])
-                        .map(device =>
-                            <Device key={device["device"]["id"]} deviceData={device}/>
-                    )
+                    <Devices devices={devices.sort(sortByItems[sortby])}/>
                 }
         </div>
     );
