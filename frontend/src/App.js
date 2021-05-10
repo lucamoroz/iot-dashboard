@@ -4,6 +4,9 @@ import {createMuiTheme, makeStyles, ThemeProvider} from '@material-ui/core/style
 import Home from "./pages/Home";
 import Signup from "./pages/Signup";
 import Signin from "./pages/Signin";
+import ShopPage from "./pages/ShopPage";
+import LandingPage from './pages/LandingPage';
+import MapPage from "./pages/MapPage";
 import Device from "./pages/Device";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
@@ -81,20 +84,24 @@ const Navbar = () => (
             <li><NavLink to='/'>Home</NavLink></li>
             <li><NavLink to='/signup'>Signup</NavLink></li>
             <li><NavLink to='/signin'>Signin</NavLink></li>
+            <li><NavLink to='/shop'>Shop</NavLink></li>
+            <li><NavLink to='/landing'>Landing</NavLink></li>
             <li><NavLink to='/profile'>Profile</NavLink></li>
             <li><NavLink to='/dashboard'>Dashboard</NavLink></li>
             <li><NavLink to='/shop/cart'>Shop Cart</NavLink></li>
             <li><NavLink to='/shop/orders'>Order List</NavLink></li>
-            <li><NavLink to='/device/1'>Device (1)</NavLink></li>
         </ul>
     </nav>
 );
 
 const Main = () => (
     <Switch>  { /* Render only the first Route that matches the URL */ }
-        <Route exact path='/' component={Home} /> { /* Render component Home when the URL matches the path '/' */ }
+        <Route exact path='/' component={LandingPage} /> { /* Render component Home when the URL matches the path '/' */ }
         <Route exact path='/signup' component={Signup} /> { /* Note: removing 'exact' we could have a Rout with path='/device' that matches child paths e.g. '/device/status' */ }
         <Route exact path='/signin' component={Signin} />
+        <Route exact path='/shop' component={ShopPage} />
+        <Route exact path='/landing' component={LandingPage} />
+        <Route exact path='/map' component={MapPage} />
         <Route exact path='/shop/cart' component={ShopCart} />
         <Route exact path='/shop/orders' component={OrderList} />
         <Route exact path='/shop/order/:id' component={Order} />
