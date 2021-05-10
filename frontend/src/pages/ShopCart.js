@@ -1,4 +1,4 @@
-import React, {useState,useEffect} from "react";
+import React, {useState,useEffect,useContext} from "react";
 
 //material UI imports
 import {Button,ButtonGroup, Container, TextField, Typography, Box} from "@material-ui/core";
@@ -31,6 +31,9 @@ import SnackbarAlert from "../components/SnackbarAlert";
 
 import Grid from '@material-ui/core/Grid';
 
+
+import CustomerContext from "../CustomerContext";
+
 const axios = require('axios').default
 
 
@@ -54,6 +57,14 @@ export default function ShopCart(props) {
     const [error, setError] = useState("");
     const [snackMessage, setSnackMessage]=useState("");
     const [snackSeverity,setSnackSeverity]=useState("error");
+
+    // IF user not logged in redirect
+    const customerContext = useContext(CustomerContext);
+    const customer = customerContext.customer;
+    if (!customerContext.isLoggedIn) {
+        props.history.push('/signin');
+
+    }
 
     //Calculate the sum of the prices of the products
     function cartInvoiceTotal(items){

@@ -1,4 +1,4 @@
-import React, {useState,useEffect} from "react";
+import React, {useState,useEffect,useContext} from "react";
 import {makeStyles} from "@material-ui/core/styles";
 
 import {Button,ButtonGroup, Container, TextField, Typography, Box} from "@material-ui/core";
@@ -15,6 +15,8 @@ import Paper from '@material-ui/core/Paper';
 import SearchIcon from '@material-ui/icons/Search';
 
 import {useParams} from 'react-router-dom';
+
+import CustomerContext from "../CustomerContext";
 
 const axios = require('axios').default
 
@@ -39,6 +41,14 @@ export default function Order(props){
     let { id } = useParams();
     const [orderId,setOrderId]=useState(id);
     const [order,setOrder]=useState();
+
+    // IF user not logged in redirect
+    const customerContext = useContext(CustomerContext);
+    const customer = customerContext.customer;
+    if (!customerContext.isLoggedIn) {
+        props.history.push('/signin');
+
+    }
     
 
     //GET requests: completed orders of the current user
