@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useContext, useState} from "react";
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import {makeStyles} from "@material-ui/core/styles";
@@ -25,6 +25,7 @@ import {
     BatteryFull
 } from "@material-ui/icons";
 import Typography from "@material-ui/core/Typography";
+import CustomerContext from "../CustomerContext";
 
 const axios = require('axios').default
 
@@ -171,6 +172,12 @@ function Dashboard(props) {
     const [product, setProduct] = React.useState([]);
     const [products, setProducts] = React.useState([]);
     const [sortby, setSortby] = React.useState(["id"]);
+
+    const customerContext = useContext(CustomerContext);
+    const customer = customerContext.customer;
+    if (!customerContext.isLoggedIn) {
+        props.history.push('/signin');
+    }
 
     React.useEffect(() => {
         // get user's groups
