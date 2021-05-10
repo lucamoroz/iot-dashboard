@@ -5,7 +5,6 @@ import Home from "./pages/Home";
 import Signup from "./pages/Signup";
 import Signin from "./pages/Signin";
 import ShopPage from "./pages/ShopPage";
-import Cart from "./pages/Cart";
 import LandingPage from './pages/LandingPage';
 import MapPage from "./pages/MapPage";
 import Dashboard from "./pages/Dashboard";
@@ -99,7 +98,6 @@ const Main = () => (
         <Route exact path='/' component={LandingPage} /> { /* Render component Home when the URL matches the path '/' */ }
         <Route exact path='/signup' component={Signup} /> { /* Note: removing 'exact' we could have a Rout with path='/device' that matches child paths e.g. '/device/status' */ }
         <Route exact path='/signin' component={Signin} />
-        <Route exact path='/cart' component={Cart} />
         <Route exact path='/shop' component={ShopPage} />
         <Route exact path='/landing' component={LandingPage} />
         <Route exact path='/map' component={MapPage} />

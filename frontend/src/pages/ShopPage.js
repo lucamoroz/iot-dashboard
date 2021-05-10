@@ -1,8 +1,10 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState,useContext} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import { CssBaseline } from '@material-ui/core';
 import ShopHeader from '../components/ShopHeader';
 import SensorsToBuy from '../components/SensorsToBuy';
+
+import CustomerContext from "../CustomerContext";
 
 const axios = require('axios').default
 
@@ -17,7 +19,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 //Not optimized for network calls. For every render it calls the axiom.get function. TODO: Solve this by using react component
-export default function ShopPage() {
+export default function ShopPage(props) {
+
+  // IF user not logged in redirect
+  const customerContext = useContext(CustomerContext);
+  const customer = customerContext.customer;
+  if (!customerContext.isLoggedIn) {
+      props.history.push('/signin');
+
+  }
+
   const classes = useStyles();
   const [numProdInCart, setNumProdInCart] = useState(0);
   useEffect(() => {
