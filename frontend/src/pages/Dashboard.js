@@ -164,6 +164,17 @@ function Device (props) {
     )
 }
 
+function Devices(props) {
+    if (props.devices.length > 0) {
+        return props.devices
+            .map(device =>
+                <Device key={device["device"]["id"]} deviceData={device}/>
+            )
+    } else {
+        return <Typography>No devices</Typography>
+    }
+}
+
 function Dashboard(props) {
     const classes = useStyles();
     const [group, setGroup] = React.useState("");
@@ -278,10 +289,7 @@ function Dashboard(props) {
                 </Select>
             </FormControl>
                 {
-                    devices.sort(sortByItems[sortby])
-                        .map(device =>
-                            <Device key={device["device"]["id"]} deviceData={device}/>
-                    )
+                    <Devices devices={devices.sort(sortByItems[sortby])}/>
                 }
         </div>
     );
