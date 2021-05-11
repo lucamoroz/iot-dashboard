@@ -24,6 +24,7 @@ import CustomerContext from "./CustomerContext";
 import MapIcon from '@material-ui/icons/Map';
 import ShopIcon from '@material-ui/icons/Shop';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import HomeIcon from '@material-ui/icons/Home';
 
 const drawerWidth = 240;
 
@@ -165,6 +166,12 @@ function Dashboard(props) {
                 }}
             >
                 <div className={classes.toolbar}>
+                    <List>
+                        <ListItem button key="home" component={Link} to="/">
+                            <ListItemIcon><HomeIcon/></ListItemIcon>
+                            <ListItemText primary="Home page" />
+                        </ListItem>
+                    </List>
                     <IconButton onClick={handleDrawerClose}>
                         {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
                     </IconButton>
