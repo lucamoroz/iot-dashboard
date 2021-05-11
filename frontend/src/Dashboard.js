@@ -19,9 +19,11 @@ import {Link, Route, Switch, useRouteMatch} from "react-router-dom";
 import Profile from "./pages/Profile";
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import DashboardPage from "./pages/DashboardPage";
-import ShopPage from "./pages/ShopPage";
 import MapPage from "./pages/MapPage";
 import CustomerContext from "./CustomerContext";
+import MapIcon from '@material-ui/icons/Map';
+import ShopIcon from '@material-ui/icons/Shop';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
 const drawerWidth = 240;
 
@@ -174,15 +176,15 @@ function Dashboard(props) {
                         <ListItemText primary="Dashboard" />
                     </ListItem>
                     <ListItem button key="Map" component={Link} to={`${match.path}/map`}>
-                        <ListItemIcon><DashboardIcon/></ListItemIcon>
+                        <ListItemIcon><MapIcon/></ListItemIcon>
                         <ListItemText primary="Map" />
                     </ListItem>
                     <ListItem button key="Shop" component={Link} to="/shop">
-                        <ListItemIcon><DashboardIcon/></ListItemIcon>
+                        <ListItemIcon><ShopIcon/></ListItemIcon>
                         <ListItemText primary="Shop" />
                     </ListItem>
                     <ListItem button key="Profile" component={Link} to={`${match.path}/profile`}>
-                        <ListItemIcon><DashboardIcon/></ListItemIcon>
+                        <ListItemIcon><AccountCircleIcon/></ListItemIcon>
                         <ListItemText primary="Profile" />
                     </ListItem>
 
