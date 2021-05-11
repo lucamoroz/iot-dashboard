@@ -65,7 +65,7 @@ export default function ShopHeader({numProdInCart}) {
                             <ArrowBackIcon className={classes.backArrowIcon}/>
                         </IconButton>
                         <h1 className={classes.appBarTitle}>IoT<span className={classes.colorText}>-Dash</span></h1>
-                        <Badge badgeContent={numProdInCart} component={RouterLink} to="/cart" color="secondary">
+                        <Badge badgeContent={numProdInCart} component={RouterLink} to="/shop/cart" color="secondary">
                             <ShoppingCartIcon className={classes.cartIcon}/>
                         </Badge>
                     </Toolbar>
