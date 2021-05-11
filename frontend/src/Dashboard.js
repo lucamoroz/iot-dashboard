@@ -25,6 +25,7 @@ import MapIcon from '@material-ui/icons/Map';
 import ShopIcon from '@material-ui/icons/Shop';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import HomeIcon from '@material-ui/icons/Home';
+import Device from "./pages/Device";
 
 const drawerWidth = 240;
 
@@ -203,6 +204,7 @@ function Dashboard(props) {
                     <Route exact path={`${match.path}`}  component={DashboardPage} />
                     <Route exact path={`${match.path}/profile`}  component={Profile} />
                     <Route exact path={`${match.path}/map`} component={MapPage} />
+                    <Route exact path={`${match.path}/device/:id`} component={Device} />
                 </Switch>
             </main>
         </div>

@@ -129,7 +129,7 @@ function Device (props) {
         <Grid container alignItems="center">
             <Grid item xs={11}>
                 <Card className={classes.deviceCard}>
-                    <CardActionArea component={RouterLink} to={"/device/"+deviceId}>
+                    <CardActionArea component={RouterLink} to={"/dashboard/device/"+deviceId}>
                         <CardContent className={classes.deviceContainer}>
                             <Paper className={classes.paper} style={{width: "auto"}}>
                                 <DeviceEnabledIndicator enabled={deviceConfig["enabled"]}/>
