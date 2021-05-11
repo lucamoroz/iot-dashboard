@@ -184,11 +184,11 @@ function DashboardPage(props) {
     const [products, setProducts] = React.useState([]);
     const [sortby, setSortby] = React.useState(["id"]);
 
-    // const customerContext = useContext(CustomerContext);
-    // const customer = customerContext.customer;
-    // if (!customerContext.isLoggedIn) {
-    //     props.history.push('/signin');
-    // }
+    const customerContext = useContext(CustomerContext);
+    const customer = customerContext.customer;
+    if (!customerContext.isLoggedIn) {
+        props.history.push('/signin');
+    }
 
     React.useEffect(() => {
         // get user's groups

@@ -27,7 +27,7 @@ export default function Signin(props) {
     const [error, setError] = useState("");
 
     if (customerContext.isLoggedIn) {
-        props.history.push('/profile');
+        props.history.push('/dashboard/profile');
     }
 
     function submit() {

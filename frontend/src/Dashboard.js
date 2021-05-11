@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import clsx from 'clsx';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -20,6 +20,8 @@ import Profile from "./pages/Profile";
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import DashboardPage from "./pages/DashboardPage";
 import ShopPage from "./pages/ShopPage";
+import MapPage from "./pages/MapPage";
+import CustomerContext from "./CustomerContext";
 
 const drawerWidth = 240;
 
@@ -99,9 +101,16 @@ function Test() {
     )
 }
 
-function Dashboard() {
+function Dashboard(props) {
     const classes = useStyles();
     const theme = useTheme();
+
+    const customerContext = useContext(CustomerContext);
+    const customer = customerContext.customer;
+    if (!customerContext.isLoggedIn) {
+        props.history.push('/signin');
+    }
+
     const [open, setOpen] = React.useState(true);
 
     const handleDrawerOpen = () => {
@@ -164,7 +173,11 @@ function Dashboard() {
                         <ListItemIcon><DashboardIcon/></ListItemIcon>
                         <ListItemText primary="Dashboard" />
                     </ListItem>
-                    <ListItem button key="Shop" component={Link} to={`${match.path}/shop`}>
+                    <ListItem button key="Map" component={Link} to={`${match.path}/map`}>
+                        <ListItemIcon><DashboardIcon/></ListItemIcon>
+                        <ListItemText primary="Map" />
+                    </ListItem>
+                    <ListItem button key="Shop" component={Link} to="/shop">
                         <ListItemIcon><DashboardIcon/></ListItemIcon>
                         <ListItemText primary="Shop" />
                     </ListItem>
@@ -172,14 +185,15 @@ function Dashboard() {
                         <ListItemIcon><DashboardIcon/></ListItemIcon>
                         <ListItemText primary="Profile" />
                     </ListItem>
+
                 </List>
             </Drawer>
             <main className={classes.content}>
                 <div className={classes.toolbar} />
                 <Switch>
                     <Route exact path={`${match.path}`}  component={DashboardPage} />
-                    <Route exact path={`${match.path}/shop`}  component={ShopPage} />
                     <Route exact path={`${match.path}/profile`}  component={Profile} />
+                    <Route exact path={`${match.path}/map`} component={MapPage} />
                 </Switch>
             </main>
         </div>
