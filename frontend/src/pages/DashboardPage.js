@@ -175,7 +175,7 @@ function Devices(props) {
     }
 }
 
-function Dashboard(props) {
+function DashboardPage(props) {
     const classes = useStyles();
     const [group, setGroup] = React.useState("");
     const [devices, setDevices] = React.useState([]);
@@ -295,4 +295,4 @@ function Dashboard(props) {
     );
 }
 
-export default Dashboard
+export default DashboardPage
