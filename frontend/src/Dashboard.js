@@ -19,6 +19,7 @@ import {Link, Route, Switch, useRouteMatch} from "react-router-dom";
 import Profile from "./pages/Profile";
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import DashboardPage from "./pages/DashboardPage";
+import ShopPage from "./pages/ShopPage";
 
 const drawerWidth = 240;
 
@@ -82,6 +83,12 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         padding: theme.spacing(3),
     },
+    appBarTitle: {
+        flexGrow: '1',
+    },
+    colorText: {
+        color: '#5AFF3D'
+    },
 }));
 
 function Test() {
@@ -129,7 +136,7 @@ function Dashboard() {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" noWrap>
-                        Mini variant drawer
+                        IoT<span className={classes.colorText}>-Dash</span>
                     </Typography>
                 </Toolbar>
             </AppBar>
@@ -157,12 +164,21 @@ function Dashboard() {
                         <ListItemIcon><DashboardIcon/></ListItemIcon>
                         <ListItemText primary="Dashboard" />
                     </ListItem>
+                    <ListItem button key="Shop" component={Link} to={`${match.path}/shop`}>
+                        <ListItemIcon><DashboardIcon/></ListItemIcon>
+                        <ListItemText primary="Shop" />
+                    </ListItem>
+                    <ListItem button key="Profile" component={Link} to={`${match.path}/profile`}>
+                        <ListItemIcon><DashboardIcon/></ListItemIcon>
+                        <ListItemText primary="Profile" />
+                    </ListItem>
                 </List>
             </Drawer>
             <main className={classes.content}>
                 <div className={classes.toolbar} />
                 <Switch>
                     <Route exact path={`${match.path}`}  component={DashboardPage} />
+                    <Route exact path={`${match.path}/shop`}  component={ShopPage} />
                     <Route exact path={`${match.path}/profile`}  component={Profile} />
                 </Switch>
             </main>
