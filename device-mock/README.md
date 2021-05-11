@@ -8,8 +8,10 @@ A part of the dataset can be found in data/
 
 ## Build
 With virtual environments run (inside the device-mock folder):
-1. (optional, if you have virtual environments) `virtualenv venv -p=/usr/bin/python3.7` and `. venv/bin/activate`
-2. `pip install -r src/requirements.txt`
+
+- (optional, if you have virtual environments) `virtualenv venv -p=/usr/bin/python3.7` and `. venv/bin/activate`
+
+- `pip install -r src/requirements.txt`
 
 
 If you are using docker-compose: see below
