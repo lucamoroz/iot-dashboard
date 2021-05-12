@@ -46,7 +46,8 @@ function App() {
                 }
             })
             .catch((err) => {
-                console.log("Customer not logged in")
+                console.log("Customer not logged in");
+                setIsLoggedIn(false);
             });
     }, []);
 

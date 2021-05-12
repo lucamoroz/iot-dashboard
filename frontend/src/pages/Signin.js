@@ -30,7 +30,7 @@ export default function Signin(props) {
     if (customerContext.isLoggedIn === undefined) {
         // Waiting to know if customer is logged in
     } else if (customerContext.isLoggedIn) {
-        props.history.push('/dashboard/profile');
+        props.history.push('/dashboard');
     }
 
     function submit() {
