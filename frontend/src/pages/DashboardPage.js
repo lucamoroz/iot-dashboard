@@ -185,9 +185,10 @@ function DashboardPage(props) {
     const [sortby, setSortby] = useState("id");
 
     const customerContext = useContext(CustomerContext);
-    if (!customerContext.isLoggedIn) {
-        props.history.push('/signin');
-    }
+    console.log(customerContext);
+    // if (!customerContext.isLoggedIn) {
+    //     props.history.push('/signin');
+    // }
 
     React.useEffect(() => {
         // get user's groups

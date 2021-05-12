@@ -108,9 +108,9 @@ function Dashboard(props) {
     const theme = useTheme();
 
     const customerContext = useContext(CustomerContext);
-    if (!customerContext.isLoggedIn) {
-        props.history.push('/signin');
-    }
+    // if (!customerContext.isLoggedIn) {
+    //     props.history.push('/signin');
+    // }
 
     const [open, setOpen] = React.useState(true);
 
