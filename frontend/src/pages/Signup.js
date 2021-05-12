@@ -1,5 +1,5 @@
 import {makeStyles} from "@material-ui/core/styles";
-import {Button, Container, TextField, Typography, Box} from "@material-ui/core";
+import {Button, Container, TextField, Typography, Box, Link} from "@material-ui/core";
 import React, {useContext, useState} from "react";
 import axios from "axios";
 import SnackbarAlert from "../components/SnackbarAlert";
@@ -7,6 +7,10 @@ import CustomerContext from "../CustomerContext";
 
 
 const useStyles = makeStyles((theme) => ({
+    root: {
+        flexWrap: 'wrap',
+        paddingTop: theme.spacing(4)
+    },
     form: {
         '& > *': {
             padding: theme.spacing(1),
@@ -24,8 +28,10 @@ export default function Signup(props) {
     const [passwordConfirm, setPasswordConfirm] = useState("");
     const [error, setError] = useState("");
 
-    if (customerContext.isLoggedIn) {
-        props.history.push('/profile');
+    if (customerContext.isLoggedIn === undefined) {
+        // Waiting to know if customer is logged in
+    } else if (customerContext.isLoggedIn) {
+        props.history.push('/dashboard');
     }
 
     function submit() {
@@ -67,9 +73,8 @@ export default function Signup(props) {
         }
     }
 
-
     return (
-        <Container maxWidth={"sm"}>
+        <Container className={classes.root} maxWidth={"sm"}>
             <form className={classes.form}>
                 <Typography variant="h5">Register</Typography>
                 <TextField
@@ -129,6 +134,10 @@ export default function Signup(props) {
                     message={error}
                 />
             </form>
+            <br/>
+            <Typography align="center">
+                Already have an account? <Link href="" onClick={() => props.history.push("/signin")}>Sign in</Link>
+            </Typography>
         </Container>
 
     );

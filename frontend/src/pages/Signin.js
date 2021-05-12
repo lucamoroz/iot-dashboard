@@ -1,4 +1,4 @@
-import {Button, Container, TextField, Typography, Box} from "@material-ui/core";
+import {Button, Container, TextField, Typography, Box, Link} from "@material-ui/core";
 import React, {useContext, useState} from "react";
 import {makeStyles} from "@material-ui/core/styles";
 import SnackbarAlert from "../components/SnackbarAlert";
@@ -9,7 +9,8 @@ const axios = require('axios').default
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        justifyContent: 'center'
+        flexWrap: 'wrap',
+        paddingTop: theme.spacing(4)
     },
     form: {
         '& > *': {
@@ -26,8 +27,10 @@ export default function Signin(props) {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
-    if (customerContext.isLoggedIn) {
-        props.history.push('/profile');
+    if (customerContext.isLoggedIn === undefined) {
+        // Waiting to know if customer is logged in
+    } else if (customerContext.isLoggedIn) {
+        props.history.push('/dashboard');
     }
 
     function submit() {
@@ -62,7 +65,7 @@ export default function Signin(props) {
     }
 
     return (
-        <Container maxWidth={"sm"}>
+        <Container className={classes.root} maxWidth={"sm"}>
             <form className={classes.form}>
                 <Typography variant="h5">Login</Typography>
                 <TextField
@@ -107,6 +110,10 @@ export default function Signin(props) {
                     message={error}
                 />
             </form>
+            <br/>
+            <Typography align="center">
+                Don't have an account? <Link href="" onClick={() => props.history.push("/signup")}>Sign up</Link>
+            </Typography>
         </Container>
     )
 }

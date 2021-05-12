@@ -1,7 +1,7 @@
 import React, {useState,useEffect,useContext} from "react";
 import {makeStyles} from "@material-ui/core/styles";
 
-import {Button,ButtonGroup, Container, TextField, Typography, Box} from "@material-ui/core";
+import {Button,ButtonGroup, Container, Typography } from "@material-ui/core";
 
 
 // Table imports
@@ -44,10 +44,10 @@ export default function OrderList(props){
 
     // IF user not logged in redirect
     const customerContext = useContext(CustomerContext);
-    const customer = customerContext.customer;
-    if (!customerContext.isLoggedIn) {
+    if (customerContext.isLoggedIn === undefined) {
+        // Waiting to know if customer is logged in
+    } else if (!customerContext.isLoggedIn) {
         props.history.push('/signin');
-
     }
 
     
@@ -121,7 +121,7 @@ export default function OrderList(props){
                             <TableCell align="right">{(order.total).toFixed(2)} $</TableCell>
                             <TableCell align="center">
                                 <ButtonGroup  orientation="horizontal" fontSize="small">
-                                    <Button component={RouterLink} to={"/shop/order/"+order.id}>
+                                    <Button component={RouterLink} to={"/dashboard/shop/order/"+order.id}>
                                         <SearchIcon fontSize="small" />
                                     </Button>
                                     

@@ -129,7 +129,7 @@ function Device (props) {
         <Grid container alignItems="center">
             <Grid item xs={11}>
                 <Card className={classes.deviceCard}>
-                    <CardActionArea component={RouterLink} to={"/device/"+deviceId}>
+                    <CardActionArea component={RouterLink} to={"/dashboard/device/"+deviceId}>
                         <CardContent className={classes.deviceContainer}>
                             <Paper className={classes.paper} style={{width: "auto"}}>
                                 <DeviceEnabledIndicator enabled={deviceConfig["enabled"]}/>
@@ -156,7 +156,7 @@ function Device (props) {
                 </Card>
             </Grid>
             <Grid item xs={1}>
-                <IconButton component={RouterLink} to={"/device/"+deviceId+"/config"} >
+                <IconButton component={RouterLink} to={"/dashboard/device/"+deviceId+"/config"} >
                     <SettingsIcon/>
                 </IconButton>
             </Grid>
@@ -175,18 +175,20 @@ function Devices(props) {
     }
 }
 
-function Dashboard(props) {
+function DashboardPage(props) {
     const classes = useStyles();
-    const [group, setGroup] = React.useState("");
-    const [devices, setDevices] = React.useState([]);
-    const [groups, setGroups] = React.useState([]);
-    const [product, setProduct] = React.useState([]);
-    const [products, setProducts] = React.useState([]);
-    const [sortby, setSortby] = React.useState(["id"]);
+    const [group, setGroup] = useState("");
+    const [devices, setDevices] = useState([]);
+    const [groups, setGroups] = useState([]);
+    const [product, setProduct] = useState([]);
+    const [products, setProducts] = useState([]);
+    const [sortby, setSortby] = useState("id");
 
     const customerContext = useContext(CustomerContext);
-    const customer = customerContext.customer;
-    if (!customerContext.isLoggedIn) {
+
+    if (customerContext.isLoggedIn === undefined) {
+        console.log("Waiting to know if customer is logged in");
+    } else if (!customerContext.isLoggedIn) {
         props.history.push('/signin');
     }
 
@@ -295,4 +297,4 @@ function Dashboard(props) {
     );
 }
 
-export default Dashboard
+export default DashboardPage

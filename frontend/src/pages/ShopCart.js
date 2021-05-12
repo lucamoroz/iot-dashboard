@@ -1,15 +1,13 @@
 import React, {useState,useEffect,useContext} from "react";
 
 //material UI imports
-import {Button,ButtonGroup, Container, TextField, Typography, Box} from "@material-ui/core";
+import {Button,ButtonGroup, Container, TextField, Typography} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
 
 //Button imports
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 import DeleteIcon from '@material-ui/icons/Delete';
-import IconButton from '@material-ui/core/IconButton';
-import Chip from '@material-ui/core/Chip';
 
 // Table imports
 import Table from '@material-ui/core/Table';
@@ -23,8 +21,6 @@ import Paper from '@material-ui/core/Paper';
 //Dialog pop-up imports
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
 import SnackbarAlert from "../components/SnackbarAlert";
@@ -60,10 +56,10 @@ export default function ShopCart(props) {
 
     // IF user not logged in redirect
     const customerContext = useContext(CustomerContext);
-    const customer = customerContext.customer;
-    if (!customerContext.isLoggedIn) {
+    if (customerContext.isLoggedIn === undefined) {
+        // Waiting to know if customer is logged in
+    } else if (!customerContext.isLoggedIn) {
         props.history.push('/signin');
-
     }
 
     //Calculate the sum of the prices of the products

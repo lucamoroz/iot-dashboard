@@ -1,22 +1,17 @@
-import {NavLink, Route, Switch} from "react-router-dom";
+import {Route, Switch} from "react-router-dom";
 import {createMuiTheme, makeStyles, ThemeProvider} from '@material-ui/core/styles';
 
-import Home from "./pages/Home";
 import Signup from "./pages/Signup";
 import Signin from "./pages/Signin";
-import ShopPage from "./pages/ShopPage";
 import LandingPage from './pages/LandingPage';
-import MapPage from "./pages/MapPage";
-import Device from "./pages/Device";
-import Dashboard from "./pages/Dashboard";
-import Profile from "./pages/Profile";
-import {CssBaseline} from "@material-ui/core";
+import {Backdrop, CircularProgress, CssBaseline} from "@material-ui/core";
 import React, {useContext, useEffect, useState} from "react";
 import CustomerContext from "./CustomerContext";
 import ShopCart from "./pages/ShopCart";
 import OrderList from "./pages/OrderList";
 import Order from "./pages/Order";
 import Product from "./pages/Product"
+import Dashboard from "./Dashboard";
 
 // Allow to customize theme (e.g. change primary, secondary colors, ... )
 const theme = createMuiTheme();
@@ -24,6 +19,10 @@ const theme = createMuiTheme();
 const useStyles = makeStyles({
     root: {
         display: "inline"
+    },
+    backdrop: {
+        zIndex: theme.zIndex.drawer + 1,
+        color: '#fff',
     }
 });
 
@@ -55,7 +54,8 @@ function App() {
                 }
             })
             .catch((err) => {
-                console.log("Customer not logged in")
+                console.log("Customer not logged in");
+                setIsLoggedIn(false);
             });
     }, []);
 
@@ -70,53 +70,28 @@ function App() {
                     setIsLoggedIn: setIsLoggedIn}}
             >
                 <div className={classes.root}>
-
-                    <Navbar />
+                    <Backdrop className={classes.backdrop} open={isLoggedIn === undefined}>
+                        <CircularProgress color="inherit" />
+                    </Backdrop>
                     <Main />
-                    <Footer />
                 </div>
             </CustomerContext.Provider>
         </ThemeProvider>
     );
 }
 
-const Navbar = () => (
-    <nav>
-        <ul>
-            <li><NavLink to='/'>Home</NavLink></li>
-            <li><NavLink to='/signup'>Signup</NavLink></li>
-            <li><NavLink to='/signin'>Signin</NavLink></li>
-            <li><NavLink to='/shop'>Shop</NavLink></li>
-            <li><NavLink to='/landing'>Landing</NavLink></li>
-            <li><NavLink to='/profile'>Profile</NavLink></li>
-            <li><NavLink to='/dashboard'>Dashboard</NavLink></li>
-            <li><NavLink to='/shop/cart'>Shop Cart</NavLink></li>
-            <li><NavLink to='/shop/orders'>Order List</NavLink></li>
-            <li><NavLink to='/map'>Map</NavLink></li>
-        </ul>
-    </nav>
-);
-
 const Main = () => (
     <Switch>  { /* Render only the first Route that matches the URL */ }
         <Route exact path='/' component={LandingPage} /> { /* Render component Home when the URL matches the path '/' */ }
         <Route exact path='/signup' component={Signup} /> { /* Note: removing 'exact' we could have a Rout with path='/device' that matches child paths e.g. '/device/status' */ }
         <Route exact path='/signin' component={Signin} />
-        <Route exact path='/shop' component={ShopPage} />
         <Route exact path='/landing' component={LandingPage} />
-        <Route exact path='/map' component={MapPage} />
         <Route exact path='/shop/cart' component={ShopCart} />
         <Route exact path='/shop/orders' component={OrderList} />
         <Route exact path='/shop/order/:id' component={Order} />
-        <Route exact path='/profile' component={Profile} />
-        <Route exact path='/dashboard' component={Dashboard} />
-        <Route exact path='/device/:id' component={Device} />
         <Route exact path='/product/:id' component={Product} />
+        <Route path='/dashboard' component={Dashboard} />
     </Switch>
-);
-
-const Footer = () => (
-    <div>This is the footer</div>
 );
 
 
