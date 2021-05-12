@@ -328,7 +328,7 @@ class Device extends React.Component {
                 <Grid container spacing={2}>
                     <Grid item xs={12} container>
                         <Typography variant={"h4"}>Device</Typography>
-                        <IconButton component={RouterLink} to={"/device/"+this.props.match.params.id+"/config"}>
+                        <IconButton component={RouterLink} to={"/dashboard/device/"+this.props.match.params.id+"/config"}>
                             <SettingsIcon/>
                         </IconButton>
                     </Grid>

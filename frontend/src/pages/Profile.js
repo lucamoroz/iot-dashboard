@@ -27,7 +27,9 @@ export default function Profile(props) {
 
     const customer = customerContext.customer;
 
-    if (!customerContext.isLoggedIn) {
+    if (customerContext.isLoggedIn === undefined) {
+        // Waiting to know if customer is logged in
+    } else if (!customerContext.isLoggedIn) {
         props.history.push('/signin');
     }
 
