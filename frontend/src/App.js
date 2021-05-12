@@ -4,7 +4,7 @@ import {createMuiTheme, makeStyles, ThemeProvider} from '@material-ui/core/style
 import Signup from "./pages/Signup";
 import Signin from "./pages/Signin";
 import LandingPage from './pages/LandingPage';
-import {CssBaseline} from "@material-ui/core";
+import {Backdrop, CircularProgress, CssBaseline} from "@material-ui/core";
 import React, {useContext, useEffect, useState} from "react";
 import CustomerContext from "./CustomerContext";
 import Dashboard from "./Dashboard";
@@ -15,6 +15,10 @@ const theme = createMuiTheme();
 const useStyles = makeStyles({
     root: {
         display: "inline"
+    },
+    backdrop: {
+        zIndex: theme.zIndex.drawer + 1,
+        color: '#fff',
     }
 });
 
@@ -62,6 +66,9 @@ function App() {
                     setIsLoggedIn: setIsLoggedIn}}
             >
                 <div className={classes.root}>
+                    <Backdrop className={classes.backdrop} open={isLoggedIn === undefined}>
+                        <CircularProgress color="inherit" />
+                    </Backdrop>
                     <Main />
                 </div>
             </CustomerContext.Provider>
