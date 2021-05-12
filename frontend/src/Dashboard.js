@@ -193,6 +193,7 @@ function Dashboard(props) {
                         <ListItemIcon><MapIcon/></ListItemIcon>
                         <ListItemText primary="Map" />
                     </ListItem>
+                    <Divider />
                     <ListItem button key="Shop" component={Link} to="/dashboard/shop">
                         <ListItemIcon><ShopIcon/></ListItemIcon>
                         <ListItemText primary="Shop" />
@@ -205,6 +206,7 @@ function Dashboard(props) {
                         <ListItemIcon><HistoryIcon/></ListItemIcon>
                         <ListItemText primary="Orders history" />
                     </ListItem>
+                    <Divider />
                     <ListItem button key="Profile" component={Link} to={`${match.path}/profile`}>
                         <ListItemIcon><AccountCircleIcon/></ListItemIcon>
                         <ListItemText primary="Profile" />
