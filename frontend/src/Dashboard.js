@@ -113,7 +113,9 @@ function Dashboard(props) {
     const theme = useTheme();
 
     const customerContext = useContext(CustomerContext);
-    if (!customerContext.isLoggedIn) {
+    if (customerContext.isLoggedIn === undefined) {
+        // Waiting to know if customer is logged in
+    } else if (!customerContext.isLoggedIn) {
         props.history.push('/signin');
     }
 

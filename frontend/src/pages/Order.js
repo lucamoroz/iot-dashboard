@@ -44,12 +44,12 @@ export default function Order(props){
 
     // IF user not logged in redirect
     const customerContext = useContext(CustomerContext);
-    const customer = customerContext.customer;
-    if (!customerContext.isLoggedIn) {
-        props.history.push('/signin');
 
+    if (customerContext.isLoggedIn === undefined) {
+        // Waiting to know if customer is logged in
+    } else if (!customerContext.isLoggedIn) {
+        props.history.push('/signin');
     }
-    
 
     //GET requests: completed orders of the current user
     function completedOrders(){

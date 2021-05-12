@@ -28,7 +28,9 @@ export default function Signup(props) {
     const [passwordConfirm, setPasswordConfirm] = useState("");
     const [error, setError] = useState("");
 
-    if (customerContext.isLoggedIn) {
+    if (customerContext.isLoggedIn === undefined) {
+        // Waiting to know if customer is logged in
+    } else if (customerContext.isLoggedIn) {
         props.history.push('/dashboard/profile');
     }
 

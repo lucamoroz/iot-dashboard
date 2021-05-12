@@ -185,7 +185,10 @@ function DashboardPage(props) {
     const [sortby, setSortby] = useState("id");
 
     const customerContext = useContext(CustomerContext);
-    if (!customerContext.isLoggedIn) {
+
+    if (customerContext.isLoggedIn === undefined) {
+        console.log("Waiting to know if customer is logged in");
+    } else if (!customerContext.isLoggedIn) {
         props.history.push('/signin');
     }
 

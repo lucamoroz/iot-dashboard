@@ -60,10 +60,10 @@ export default function ShopCart(props) {
 
     // IF user not logged in redirect
     const customerContext = useContext(CustomerContext);
-    const customer = customerContext.customer;
-    if (!customerContext.isLoggedIn) {
+    if (customerContext.isLoggedIn === undefined) {
+        // Waiting to know if customer is logged in
+    } else if (!customerContext.isLoggedIn) {
         props.history.push('/signin');
-
     }
 
     //Calculate the sum of the prices of the products
