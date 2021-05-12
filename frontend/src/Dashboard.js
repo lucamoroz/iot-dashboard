@@ -230,9 +230,12 @@ function Dashboard(props) {
                     <Route exact path={`${match.path}/profile`}  component={Profile} />
                     <Route exact path={`${match.path}/map`} component={MapPage} />
                     <Route exact path={`${match.path}/device/:id`} component={Device} />
-                    <Route exact path={`${match.path}/shop`}>
-                        <ShopPage handleSetCartCount={handleSetCartCount}/>
-                    </Route>
+                    <Route exact
+                           path={`${match.path}/shop`}
+                           render={(props) => (
+                               <ShopPage {...props} handleSetCartCount={handleSetCartCount}/>
+                           )}
+                    />
                     <Route exact path={`${match.path}/shop/cart`} component={ShopCart} />
                     <Route exact path={`${match.path}/shop/orders`} component={OrderList} />
                     <Route exact path={`${match.path}/shop/order/:id`} component={Order} />
