@@ -56,7 +56,7 @@ const useStyles = makeStyles({
   }
 });
 
-export default function ImageCard({ sensor, checked, onAddToCart, onClick }) {
+export default function ImageCard({ sensor, checked, onAddToCart, onClick, component, to }) {
   const classes = useStyles();
   const [raiseState, setRaiseState] = useState({
     raised: false,
@@ -71,7 +71,7 @@ export default function ImageCard({ sensor, checked, onAddToCart, onClick }) {
         onMouseOut={() => setRaiseState({ raised: false, shadow: 1 })}
         raised={raiseState.raised}
         zdepth={raiseState.shadow}>
-        <CardActionArea component={RouterLink} to={"product/" + sensor.id}>
+        <CardActionArea component={component} to={to}>
           <CardMedia
             className={classes.media}
             component="img"

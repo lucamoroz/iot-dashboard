@@ -6,18 +6,6 @@ import { Link as RouterLink } from 'react-router-dom';
 
 const axios = require('axios').default
 
-/*const useStyles = makeStyles((theme) => ({
-  root: {
-    minHeight: '100vh',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    [theme.breakpoints.down('md')]: {
-        flexDirection: 'column',
-    }
-  }
-}));*/
-
 const styles = theme => ({
   root: {
     minHeight: '100vh',
@@ -48,7 +36,7 @@ class SensorCards extends React.Component {
               key={sensor.id}
               checked={true}
               onAddToCart={this.onAddToCart}
-              component={RouterLink} to={"/product/" + sensor.id} />
+              component={RouterLink} to={"/dashboard/shop/product/" + sensor.id} />
           })
         }
 
@@ -112,42 +100,8 @@ class SensorsToBuy extends React.Component {
       </div>
 
     );
-    /*return (
-      <div className={classes.root} id='sensors-to-buy'>
-          <ImageCardExpanded
-            sensor={sensorToExpand} 
-            key={sensorToExpand.id} 
-            checked={true} 
-            onAddToCart={(id) => {this.onAddToCart(id); this.onProductAdded(quantity); }} 
-            onClose={() => {this.setState({sensors: sensors, sensorToExpand: null})}}
-          />
-      </div>
-      
-      );*/
-
   }
 }
-
-/*export default function SensorsToBuy() {
-  const classes = useStyles();
-  const  checked = useWindowPosition('header');
-  const [sensorState, updateSensorState] = useState([])
-  axios.get("/products")
-    .then((res) => {
-      updateSensorState(res.data)
-      console.log(res);
-    })
-  return (
-    <div className={classes.root} id='sensors-to-buy'>
-      {
-        sensorState.map((sensor, i) => {
-          return <ImageCard sensor={sensor} checked={checked}/>
-        })
-      }
-      
-    </div>
-  );
-}*/
 
 //export default SensorsToBuy;
 export default withStyles(styles, { withTheme: true })(SensorsToBuy);
