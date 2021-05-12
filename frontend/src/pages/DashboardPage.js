@@ -177,15 +177,14 @@ function Devices(props) {
 
 function DashboardPage(props) {
     const classes = useStyles();
-    const [group, setGroup] = React.useState("");
-    const [devices, setDevices] = React.useState([]);
-    const [groups, setGroups] = React.useState([]);
-    const [product, setProduct] = React.useState([]);
-    const [products, setProducts] = React.useState([]);
-    const [sortby, setSortby] = React.useState(["id"]);
+    const [group, setGroup] = useState("");
+    const [devices, setDevices] = useState([]);
+    const [groups, setGroups] = useState([]);
+    const [product, setProduct] = useState([]);
+    const [products, setProducts] = useState([]);
+    const [sortby, setSortby] = useState("id");
 
     const customerContext = useContext(CustomerContext);
-    const customer = customerContext.customer;
     if (!customerContext.isLoggedIn) {
         props.history.push('/signin');
     }

@@ -1,4 +1,4 @@
-import {NavLink, Route, Switch} from "react-router-dom";
+import {Route, Switch} from "react-router-dom";
 import {createMuiTheme, makeStyles, ThemeProvider} from '@material-ui/core/styles';
 
 import Signup from "./pages/Signup";
@@ -8,10 +8,6 @@ import {CssBaseline} from "@material-ui/core";
 import React, {useContext, useEffect, useState} from "react";
 import CustomerContext from "./CustomerContext";
 import Dashboard from "./Dashboard";
-import ShopPage from "./pages/ShopPage";
-import ShopCart from "./pages/ShopCart";
-import OrderList from "./pages/OrderList";
-import Order from "./pages/Order";
 
 // Allow to customize theme (e.g. change primary, secondary colors, ... )
 const theme = createMuiTheme();

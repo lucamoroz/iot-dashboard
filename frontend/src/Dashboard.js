@@ -103,20 +103,11 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function Test() {
-    return (
-        <Typography>
-            Hello worlfawijefoiawjfoawjeofi
-        </Typography>
-    )
-}
-
 function Dashboard(props) {
     const classes = useStyles();
     const theme = useTheme();
 
     const customerContext = useContext(CustomerContext);
-    const customer = customerContext.customer;
     if (!customerContext.isLoggedIn) {
         props.history.push('/signin');
     }
