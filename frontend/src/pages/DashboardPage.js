@@ -156,7 +156,7 @@ function Device (props) {
                 </Card>
             </Grid>
             <Grid item xs={1}>
-                <IconButton component={RouterLink} to={"/device/"+deviceId+"/config"} >
+                <IconButton component={RouterLink} to={"/dashboard/device/"+deviceId+"/config"} >
                     <SettingsIcon/>
                 </IconButton>
             </Grid>
