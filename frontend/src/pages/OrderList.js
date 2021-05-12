@@ -121,7 +121,7 @@ export default function OrderList(props){
                             <TableCell align="right">{(order.total).toFixed(2)} $</TableCell>
                             <TableCell align="center">
                                 <ButtonGroup  orientation="horizontal" fontSize="small">
-                                    <Button component={RouterLink} to={"/shop/order/"+order.id}>
+                                    <Button component={RouterLink} to={"/dashboard/shop/order/"+order.id}>
                                         <SearchIcon fontSize="small" />
                                     </Button>
                                     

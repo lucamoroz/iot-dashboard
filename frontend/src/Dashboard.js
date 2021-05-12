@@ -26,6 +26,12 @@ import ShopIcon from '@material-ui/icons/Shop';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import HomeIcon from '@material-ui/icons/Home';
 import Device from "./pages/Device";
+import ShopPage from "./pages/ShopPage";
+import ShopCart from "./pages/ShopCart";
+import OrderList from "./pages/OrderList";
+import Order from "./pages/Order";
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import HistoryIcon from '@material-ui/icons/History';
 
 const drawerWidth = 240;
 
@@ -187,9 +193,17 @@ function Dashboard(props) {
                         <ListItemIcon><MapIcon/></ListItemIcon>
                         <ListItemText primary="Map" />
                     </ListItem>
-                    <ListItem button key="Shop" component={Link} to="/shop">
+                    <ListItem button key="Shop" component={Link} to="/dashboard/shop">
                         <ListItemIcon><ShopIcon/></ListItemIcon>
                         <ListItemText primary="Shop" />
+                    </ListItem>
+                    <ListItem button key="ShopCart" component={Link} to="/dashboard/shop/cart">
+                        <ListItemIcon><ShoppingCartIcon/></ListItemIcon>
+                        <ListItemText primary="Shopping cart" />
+                    </ListItem>
+                    <ListItem button key="Orders" component={Link} to="/dashboard/shop/orders">
+                        <ListItemIcon><HistoryIcon/></ListItemIcon>
+                        <ListItemText primary="Orders history" />
                     </ListItem>
                     <ListItem button key="Profile" component={Link} to={`${match.path}/profile`}>
                         <ListItemIcon><AccountCircleIcon/></ListItemIcon>
@@ -205,6 +219,10 @@ function Dashboard(props) {
                     <Route exact path={`${match.path}/profile`}  component={Profile} />
                     <Route exact path={`${match.path}/map`} component={MapPage} />
                     <Route exact path={`${match.path}/device/:id`} component={Device} />
+                    <Route exact path={`${match.path}/shop`} component={ShopPage} />
+                    <Route exact path={`${match.path}/shop/cart`} component={ShopCart} />
+                    <Route exact path={`${match.path}/shop/orders`} component={OrderList} />
+                    <Route exact path={`${match.path}/shop/order/:id`} component={Order} />
                 </Switch>
             </main>
         </div>

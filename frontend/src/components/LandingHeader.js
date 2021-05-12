@@ -72,7 +72,7 @@ export default function LandingHeader() {
                 <Toolbar className={classes.appBarWrapper}>
                     <h1 className={classes.appBarTitle}>IoT<span className={classes.colorText}>-Dash</span></h1>
                     <Box m="0.5rem">
-                        <Button component={RouterLink} to="/shop" variant="outlined" color="primary" style={{ borderRadius: 50 }}>Shop</Button>
+                        <Button component={RouterLink} to="/dashboard/shop" variant="outlined" color="primary" style={{ borderRadius: 50 }}>Shop</Button>
                     </Box>
                     <Box m="0.5rem">
                         <Button component={RouterLink} to="/dashboard" variant="outlined" color="primary" style={{ borderRadius: 50 }}>Dashboard</Button>
