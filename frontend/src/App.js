@@ -69,6 +69,7 @@ function App() {
                     setIsLoggedIn: setIsLoggedIn}}
             >
                 <div className={classes.root}>
+
                     <Navbar />
                     <Main />
                     <Footer />
@@ -90,6 +91,7 @@ const Navbar = () => (
             <li><NavLink to='/dashboard'>Dashboard</NavLink></li>
             <li><NavLink to='/shop/cart'>Shop Cart</NavLink></li>
             <li><NavLink to='/shop/orders'>Order List</NavLink></li>
+            <li><NavLink to='/map'>Map</NavLink></li>
         </ul>
     </nav>
 );
