@@ -24,6 +24,79 @@ import {Link as RouterLink} from "react-router-dom";
 const axios = require('axios').default
 
 
+//***** UTILS FUNCTIONS *****//
+
+/**
+ * Takes care of the Timestamp formatting
+ * @param timestamp Timestamp is the string received by the remote requests
+ * @returns {string} String formatted in the proper way
+ */
+function timestampFormat(timestamp) {
+    return new Date(Date.parse(timestamp)).toLocaleString();
+}
+
+/**
+ * Formats the labels adding spacing ("camelCase" to "Camel Case") and
+ * add measurement units depending on the data type
+ * @param dataLabel String representing the raw label
+ * @returns {string} String of the formatted label
+ */
+function dataLabelsFormat(dataLabel) {
+    let dataLabelFormatted = dataLabel
+        .replace(/([A-Z])/g, ' $1') // insert a space before all caps
+        .replace(/^./, function(str){ return str.toUpperCase(); }); // uppercase the first character
+
+    switch (dataLabel) {
+        case 'windBearing':
+            dataLabelFormatted = dataLabelFormatted + ' (Degrees)';
+            break;
+        case 'windSpeed':
+            dataLabelFormatted = dataLabelFormatted + ' (Km/h)';
+            break;
+        case 'temperature':
+            dataLabelFormatted = dataLabelFormatted + ' (C°)';
+            break;
+        case 'humidity':
+            dataLabelFormatted = dataLabelFormatted + ' (%)';
+            break;
+        case 'pressure':
+            dataLabelFormatted = dataLabelFormatted + ' (kPa)';
+            break;
+        default:
+            break;
+    }
+    return dataLabelFormatted;
+}
+
+/**
+ * Takes care of the wind bearing formatting
+ * @param windBearing Raw data of the wind bearing
+ * @returns {string} Formatted data of the wind bearing
+ */
+function windBearingFormat(windBearing) {
+    switch (true) {
+        case (11.25 <= windBearing && windBearing < 33.75): return 'NNE';
+        case (33.75 <= windBearing && windBearing < 56.25): return 'NE';
+        case (56.25 <= windBearing && windBearing < 78.75): return 'ENE';
+        case (78.75 <= windBearing && windBearing < 101.25): return 'E';
+        case (101.25 <= windBearing && windBearing < 123.75): return 'ESE';
+        case (123.75 <= windBearing && windBearing < 146.25): return 'SE';
+        case (146.25 <= windBearing && windBearing < 168.75): return 'SSE';
+        case (168.75 <= windBearing && windBearing < 191.25): return 'S';
+        case (191.25 <= windBearing && windBearing < 213.75): return 'SSW';
+        case (213.75 <= windBearing && windBearing < 236.25): return 'SW';
+        case (236.25 <= windBearing && windBearing < 258.75): return 'WSW';
+        case (258.75 <= windBearing && windBearing < 281.25): return 'W';
+        case (281.25 <= windBearing && windBearing < 303.75): return 'WNW';
+        case (303.75 <= windBearing && windBearing < 326.25): return 'NW';
+        case (326.25 <= windBearing && windBearing < 348.75): return 'NNW';
+        case (348.75 <= windBearing && windBearing < 11.25): return 'N';
+        default: return '';
+    }
+}
+
+//***** REACT COMPONENTS *****//
+
 const MyResponsiveLine = ({ data }) => (
     <ResponsiveLine
         data={data}
@@ -99,6 +172,96 @@ function DeviceEnabledIndicator(props) {
     }
 }
 
+function DeviceTable(props) {
+    return (
+        <TableContainer>
+            <Table aria-label="simple table">
+                <TableBody>
+                    <TableRow key="id">
+                        <TableCell key="id_key" align="left">ID</TableCell>
+                        <TableCell key="id_value" align="left">{props.id}</TableCell>
+                    </TableRow>
+                    <TableRow key="status">
+                        <TableCell key="status_key" align="left">Status</TableCell>
+                        <TableCell key="status_value" align="left">
+                            <DeviceEnabledIndicator enabled={props.config !== null ? props.config.enabled : true}/>
+                        </TableCell>
+                    </TableRow>
+                    <TableRow key="battery">
+                        <TableCell key="battery_key" align="left">Battery</TableCell>
+                        <TableCell key="battery_value" align="left">{props.deviceStatus !== null ? props.deviceStatus.battery : ''}%</TableCell>
+                    </TableRow>
+                    <TableRow key="version">
+                        <TableCell key="version_key" align="left">Version</TableCell>
+                        <TableCell key="version_value" align="left">{props.deviceStatus !== null ? props.deviceStatus.version : ''}</TableCell>
+                    </TableRow>
+                    <TableRow key="last_update">
+                        <TableCell key="last_update_key" align="left">Last update</TableCell>
+                        <TableCell key="last_update_value" align="left">{props.deviceStatus !== null ? timestampFormat(props.deviceStatus.last_update) : ''}</TableCell>
+                    </TableRow>
+                    <TableRow key="update_frequency">
+                        <TableCell key="update_frequency_key" align="left">Update frequency</TableCell>
+                        <TableCell key="update_frequency_value" align="left">{props.config !== null ? props.config.update_frequency : ''}</TableCell>
+                    </TableRow>
+                    <TableRow key="token">
+                        <TableCell key="token_key" align="left">Token</TableCell>
+                        <TableCell key="token_value" align="left">{props.config !== null ? props.config.token : ''}</TableCell>
+                    </TableRow>
+                    <TableRow key="latitude">
+                        <TableCell key="latitude_key" align="left">Latitude</TableCell>
+                        <TableCell key="latitude_value" align="left">{props.config !== null ? props.config.latitude : ''}</TableCell>
+                    </TableRow>
+                    <TableRow key="longitude">
+                        <TableCell key="longitude_key" align="left">Longitude</TableCell>
+                        <TableCell key="longitude_value" align="left">{props.config !== null ? props.config.longitude : ''}</TableCell>
+                    </TableRow>
+                </TableBody>
+            </Table>
+        </TableContainer>
+    );
+}
+
+function DataTable(props) {
+    return (
+        <TableContainer>
+            <Table aria-label="simple table">
+                <TableHead>
+                    <TableRow>
+                        <TableCell>Timestamp</TableCell>
+                        {props.dataLabels.map((data) => (
+                            <TableCell key={data}>{dataLabelsFormat(data)}</TableCell>
+                        ))}
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {(props.tableRows.length === 0) ? <TableRow key="noData"><TableCell key="noDataCell">No data</TableCell></TableRow> : null}
+                    {props.tableRows.map((tableRow) => (
+                        <TableRow key={tableRow[0]}>
+                            {tableRow.map((data, index) => (
+                                <TableCell key={tableRow+data} align={index === 0 ? "left" : "right"}>{data}</TableCell>
+                            ))}
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </TableContainer>
+    );
+}
+
+function Graph(props) {
+    if (props.graphData.length !== 0) {
+        return (
+            <div style={{ height: 500 }}>
+                <MyResponsiveLine data={props.graphData}/>
+            </div>
+        );
+    } else {
+        return (
+            <></>
+        )
+    }
+}
+
 
 class Device extends React.Component {
     constructor(props) {
@@ -156,7 +319,7 @@ class Device extends React.Component {
                 //Creates the rows for the table
                 for (let timestamp in res.data) {
                     let tableRow = [];
-                    tableRow.push(this.timestampFormat(timestamp));
+                    tableRow.push(timestampFormat(timestamp));
 
                     let data = res.data[timestamp]
                     for (let i in dataLabels) {
@@ -183,17 +346,17 @@ class Device extends React.Component {
                 for (let i = 0; i < dataLabels.length; i++) {
                     if (dataLabels[i] !== 'windBearing') {
                         let lineData = [];
-                        lineData['id'] = this.dataLabelsFormat(dataLabels[i]);
+                        lineData['id'] = dataLabelsFormat(dataLabels[i]);
                         lineData['data'] = [];
                         for (let timestamp in res.data) {
                             let data = res.data[timestamp];
                             if (data[dataLabels[i]] !== undefined) {
                                 let dataTemp = []
-                                dataTemp['x'] = this.timestampFormat(timestamp);
+                                dataTemp['x'] = timestampFormat(timestamp);
                                 dataTemp['y'] = data[dataLabels[i]];
                                 if (dataLabels.includes('windBearing')) {
                                     if (data['windBearing'] !== undefined) {
-                                        dataTemp['z'] = this.windBearingFormat(data['windBearing']);
+                                        dataTemp['z'] = windBearingFormat(data['windBearing']);
                                     } else {
                                         dataTemp['z'] = "";
                                     }
@@ -242,76 +405,6 @@ class Device extends React.Component {
         this._isMounted = false;
     }
 
-    /**
-     * Takes care of the Timestamp formatting
-     * @param timestamp Timestamp is the string received by the remote requests
-     * @returns {string} String formatted in the proper way
-     */
-    timestampFormat(timestamp) {
-        return new Date(Date.parse(timestamp)).toLocaleString();
-    }
-
-    /**
-     * Takes care of the wind bearing formatting
-     * @param windBearing Raw data of the wind bearing
-     * @returns {string} Formatted data of the wind bearing
-     */
-    windBearingFormat(windBearing) {
-        switch (true) {
-            case (11.25 <= windBearing && windBearing < 33.75): return 'NNE';
-            case (33.75 <= windBearing && windBearing < 56.25): return 'NE';
-            case (56.25 <= windBearing && windBearing < 78.75): return 'ENE';
-            case (78.75 <= windBearing && windBearing < 101.25): return 'E';
-            case (101.25 <= windBearing && windBearing < 123.75): return 'ESE';
-            case (123.75 <= windBearing && windBearing < 146.25): return 'SE';
-            case (146.25 <= windBearing && windBearing < 168.75): return 'SSE';
-            case (168.75 <= windBearing && windBearing < 191.25): return 'S';
-            case (191.25 <= windBearing && windBearing < 213.75): return 'SSW';
-            case (213.75 <= windBearing && windBearing < 236.25): return 'SW';
-            case (236.25 <= windBearing && windBearing < 258.75): return 'WSW';
-            case (258.75 <= windBearing && windBearing < 281.25): return 'W';
-            case (281.25 <= windBearing && windBearing < 303.75): return 'WNW';
-            case (303.75 <= windBearing && windBearing < 326.25): return 'NW';
-            case (326.25 <= windBearing && windBearing < 348.75): return 'NNW';
-            case (348.75 <= windBearing && windBearing < 11.25): return 'N';
-            default: return '';
-        }
-    }
-
-    /**
-     * Formats the labels adding spacing ("camelCase" to "Camel Case") and
-     * add measurement units depending on the data type
-     * @param dataLabel String representing the raw label
-     * @returns {string} String of the formatted label
-     */
-    dataLabelsFormat(dataLabel) {
-        let dataLabelFormatted = dataLabel
-            .replace(/([A-Z])/g, ' $1') // insert a space before all caps
-            .replace(/^./, function(str){ return str.toUpperCase(); }); // uppercase the first character
-
-        switch (dataLabel) {
-            case 'windBearing':
-                dataLabelFormatted = dataLabelFormatted + ' (Degrees)';
-                break;
-            case 'windSpeed':
-                dataLabelFormatted = dataLabelFormatted + ' (Km/h)';
-                break;
-            case 'temperature':
-                dataLabelFormatted = dataLabelFormatted + ' (C°)';
-                break;
-            case 'humidity':
-                dataLabelFormatted = dataLabelFormatted + ' (%)';
-                break;
-            case 'pressure':
-                dataLabelFormatted = dataLabelFormatted + ' (kPa)';
-                break;
-            default:
-                break;
-        }
-        return dataLabelFormatted;
-    }
-
-
     render() {
         if (this.state.errorState) {
             let errorCode = this.state.error.response.data.errorCode;
@@ -334,82 +427,17 @@ class Device extends React.Component {
                     </Grid>
                     <Grid item key="left" md={7} sm={12}>
                         <Grid item xs={12}>
-                            <div style={{ height: 500 }}>
-                                <MyResponsiveLine data={this.state.graphData}/>
-                            </div>
+                            <Graph graphData={this.state.graphData}/>
                         </Grid>
                         <Grid item xs={12}>
                             <Paper>
-                                <TableContainer>
-                                    <Table aria-label="simple table">
-                                        <TableBody>
-                                            <TableRow key="id">
-                                                <TableCell key="id_key" align="left">ID</TableCell>
-                                                <TableCell key="id_value" align="left">{this.props.match.params.id}</TableCell>
-                                            </TableRow>
-                                            <TableRow key="status">
-                                                <TableCell key="status_key" align="left">Status</TableCell>
-                                                <TableCell key="status_value" align="left">
-                                                    <DeviceEnabledIndicator enabled={this.state.config !== null ? this.state.config.enabled : true}/>
-                                                </TableCell>
-                                            </TableRow>
-                                            <TableRow key="battery">
-                                                <TableCell key="battery_key" align="left">Battery</TableCell>
-                                                <TableCell key="battery_value" align="left">{this.state.deviceStatus !== null ? this.state.deviceStatus.battery : ''}%</TableCell>
-                                            </TableRow>
-                                            <TableRow key="version">
-                                                <TableCell key="version_key" align="left">Version</TableCell>
-                                                <TableCell key="version_value" align="left">{this.state.deviceStatus !== null ? this.state.deviceStatus.version : ''}</TableCell>
-                                            </TableRow>
-                                            <TableRow key="last_update">
-                                                <TableCell key="last_update_key" align="left">Last update</TableCell>
-                                                <TableCell key="last_update_value" align="left">{this.state.deviceStatus !== null ? this.timestampFormat(this.state.deviceStatus.last_update) : ''}</TableCell>
-                                            </TableRow>
-                                            <TableRow key="update_frequency">
-                                                <TableCell key="update_frequency_key" align="left">Update frequency</TableCell>
-                                                <TableCell key="update_frequency_value" align="left">{this.state.config !== null ? this.state.config.update_frequency : ''}</TableCell>
-                                            </TableRow>
-                                            <TableRow key="token">
-                                                <TableCell key="token_key" align="left">Token</TableCell>
-                                                <TableCell key="token_value" align="left">{this.state.config !== null ? this.state.config.token : ''}</TableCell>
-                                            </TableRow>
-                                            <TableRow key="latitude">
-                                                <TableCell key="latitude_key" align="left">Latitude</TableCell>
-                                                <TableCell key="latitude_value" align="left">{this.state.config !== null ? this.state.config.latitude : ''}</TableCell>
-                                            </TableRow>
-                                            <TableRow key="longitude">
-                                                <TableCell key="longitude_key" align="left">Longitude</TableCell>
-                                                <TableCell key="longitude_value" align="left">{this.state.config !== null ? this.state.config.longitude : ''}</TableCell>
-                                            </TableRow>
-                                        </TableBody>
-                                    </Table>
-                                </TableContainer>
+                                <DeviceTable id={this.props.match.params.id} config={this.state.config} deviceStatus={this.state.deviceStatus}/>
                             </Paper>
                         </Grid>
                     </Grid>
                     <Grid item key="right" md={5} sm={12}>
                         <Paper>
-                            <TableContainer>
-                                <Table aria-label="simple table">
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell>Timestamp</TableCell>
-                                            {this.state.dataLabels.map((data) => (
-                                                <TableCell key={data}>{this.dataLabelsFormat(data)}</TableCell>
-                                            ))}
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {this.state.tableRows.map((tableRow) => (
-                                            <TableRow key={tableRow[0]}>
-                                                {tableRow.map((data, index) => (
-                                                    <TableCell key={tableRow+data} align={index === 0 ? "left" : "right"}>{data}</TableCell>
-                                                ))}
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
+                            <DataTable dataLabels={this.state.dataLabels} tableRows={this.state.tableRows}/>
                         </Paper>
                     </Grid>
                 </Grid>
