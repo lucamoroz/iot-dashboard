@@ -1,11 +1,14 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
-import { Collapse} from '@material-ui/core';
+import { CardActionArea, Collapse } from '@material-ui/core';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import { Link as RouterLink } from 'react-router-dom';
+
+
 
 const useStyles = makeStyles({
   root: {
@@ -14,19 +17,25 @@ const useStyles = makeStyles({
     margin: '20px'
   },
   media: {
-      height: 440,
+    height: 440,
   },
   title: {
-      fontFamily: 'Nunito',
-      fontWeight: 'bold',
-      fontSize: '2rem',
-      color: '#fff'
+    fontFamily: 'Roboto',
+    fontWeight: 'bold',
+    fontSize: '2rem',
+    color: '#fff'
   },
   description: {
-    fontFamily: 'Nunito',
+    fontFamily: 'Roboto',
     fontWeight: 'regular',
     fontSize: '1.1rem',
     color: '#ddd'
+  },
+  price: {
+    fontFamily: 'Roboto',
+    fontWeight: 'regular',
+    fontSize: '1.1rem',
+    color: '#fff'
   },
   buttonText: {
     color: 'white',
@@ -43,11 +52,11 @@ const useStyles = makeStyles({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    width: '80%'
+
   }
 });
 
-export default function ImageCard( { sensor, checked, onAddToCart, onClick } ) {
+export default function ImageCard({ sensor, checked, onAddToCart, onClick }) {
   const classes = useStyles();
   const [raiseState, setRaiseState] = useState({
     raised: false,
@@ -56,34 +65,41 @@ export default function ImageCard( { sensor, checked, onAddToCart, onClick } ) {
   // Not good. Get the image id or the image directly from backend
   const imageUrl = sensor.id === 1 ? process.env.PUBLIC_URL + '/assets/temp_sensor.jpg' : process.env.PUBLIC_URL + '/assets/wind_sensor.jpg';
   return (
-      <Collapse in={checked}>
-        <Card className={classes.root} 
-        onMouseOver={() => setRaiseState({ raised:true, shadow:5 })} 
-        onMouseOut={()=>setRaiseState({ raised:false, shadow:1 })} 
-        raised= {raiseState.raised}
+    <Collapse in={checked}>
+      <Card className={classes.root}
+        onMouseOver={() => setRaiseState({ raised: true, shadow: 5 })}
+        onMouseOut={() => setRaiseState({ raised: false, shadow: 1 })}
+        raised={raiseState.raised}
         zdepth={raiseState.shadow}>
-            <CardMedia
-                className={classes.media}
-                component="img"
-                height="140"
-                image={imageUrl}
-                onClick={onClick}
-            />
-            <CardContent className={classes.cardContent}>
-              <Typography 
-                  gutterBottom 
-                  variant="h5" 
-                  component="h1" 
-                  className={classes.title}>
-                      {sensor.name}
+        <CardActionArea component={RouterLink} to={"product/" + sensor.id}>
+          <CardMedia
+            className={classes.media}
+            component="img"
+            height="140"
+            image={imageUrl}
+            onClick={onClick}
+          />
+          <CardContent className={classes.cardContent}>
+          <Typography
+                gutterBottom
+                variant="h5"
+                component="h1"
+                className={classes.title}>
+                {sensor.name}
               </Typography>
-              <Button className={classes.addToCartButton} onClick={() => onAddToCart(sensor.id)}>
+              <Typography className={classes.price}>
+                {sensor.price}$
+              </Typography>
+
+            {/*<Button className={classes.addToCartButton} onClick={() => onAddToCart(sensor.id)}>
                 <Typography className={classes.buttonText}>
                   Add to cart
                 </Typography>
-              </Button>
-            </CardContent>
-        </Card>
-      </Collapse>
+              </Button>*/}
+          </CardContent>
+        </CardActionArea>
+
+      </Card>
+    </Collapse>
   );
 }

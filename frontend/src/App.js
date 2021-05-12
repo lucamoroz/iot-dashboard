@@ -16,6 +16,7 @@ import CustomerContext from "./CustomerContext";
 import ShopCart from "./pages/ShopCart";
 import OrderList from "./pages/OrderList";
 import Order from "./pages/Order";
+import Product from "./pages/Product"
 
 // Allow to customize theme (e.g. change primary, secondary colors, ... )
 const theme = createMuiTheme();
@@ -110,6 +111,7 @@ const Main = () => (
         <Route exact path='/profile' component={Profile} />
         <Route exact path='/dashboard' component={Dashboard} />
         <Route exact path='/device/:id' component={Device} />
+        <Route exact path='/product/:id' component={Product} />
     </Switch>
 );
 

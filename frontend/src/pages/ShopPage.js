@@ -18,7 +18,6 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-//Not optimized for network calls. For every render it calls the axiom.get function. TODO: Solve this by using react component
 export default function ShopPage(props) {
 
   // IF user not logged in redirect
@@ -43,8 +42,7 @@ export default function ShopPage(props) {
     })
     .catch((err) => {
       console.log(err);
-    })
-    ;
+    });
   }, []);
 
   useEffect(() => {

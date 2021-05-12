@@ -1,7 +1,8 @@
 import React from 'react';
-import {withStyles} from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import ImageCard from './ImageCard';
 import ImageCardExpanded from './ImageCardExpanded';
+import { Link as RouterLink } from 'react-router-dom';
 
 const axios = require('axios').default
 
@@ -24,7 +25,7 @@ const styles = theme => ({
     justifyContent: 'center',
     alignItems: 'center',
     [theme.breakpoints.down('md')]: {
-        flexDirection: 'column',
+      flexDirection: 'column',
     }
   },
 });
@@ -36,16 +37,21 @@ class SensorCards extends React.Component {
   }
 
   render() {
-    const {className} = this.props
-    const {sensors} = this.props
+    const { className } = this.props
+    const { sensors } = this.props
     return (
       <div className={className} id='sensors-to-buy'>
         {
           sensors.map((sensor, i) => {
-            return <ImageCard sensor={sensor} key={sensor.id} checked={true} onAddToCart={this.onAddToCart} onClick={()=> this.props.onSensorClicked(sensor)}/>
+            return <ImageCard
+              sensor={sensor}
+              key={sensor.id}
+              checked={true}
+              onAddToCart={this.onAddToCart}
+              component={RouterLink} to={"/product/" + sensor.id} />
           })
         }
-        
+
       </div>
     );
   }
@@ -61,7 +67,7 @@ class SensorsToBuy extends React.Component {
     //this.checked = useWindowPosition('header');
     this.onAddToCart = this.onAddToCart.bind(this);
     this.onProductAdded = this.props.onProductAdded.bind(this);
-    
+
   }
 
   onAddToCart(id) {
@@ -88,21 +94,25 @@ class SensorsToBuy extends React.Component {
   }
 
   render() {
-    const {classes} = this.props;
-    const {sensors} = this.state;
-    const {sensorToExpand} = this.state;
+    const { classes } = this.props;
+    const { sensors } = this.state;
+    const { sensorToExpand } = this.state;
     const quantity = 1; // Use this field if in future the user can choose the quantity directly in the card
-    if (sensorToExpand == null) {
-      return (
-        <SensorCards 
-          className={classes.root} 
-          sensors={sensors} 
-          onAddToCart={(id) => {this.onAddToCart(id); this.onProductAdded(quantity); }} 
-          onSensorClicked={ (sensor) => {this.setState({sensors: sensors, sensorToExpand: sensor})} }
-        />
-      );
-    }
+    /*if (sensorToExpand == null) {
+      
+    }*/
     return (
+      <div id="products-to-buy">
+        <SensorCards
+          className={classes.root}
+          sensors={sensors}
+          onAddToCart={(id) => { this.onAddToCart(id); this.onProductAdded(quantity); }}
+          onSensorClicked={(sensor) => { this.setState({ sensors: sensors, sensorToExpand: sensor }) }}
+        />
+      </div>
+
+    );
+    /*return (
       <div className={classes.root} id='sensors-to-buy'>
           <ImageCardExpanded
             sensor={sensorToExpand} 
@@ -113,8 +123,8 @@ class SensorsToBuy extends React.Component {
           />
       </div>
       
-      );
-    
+      );*/
+
   }
 }
 
