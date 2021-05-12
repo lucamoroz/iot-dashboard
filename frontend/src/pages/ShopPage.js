@@ -1,7 +1,6 @@
 import React, {useEffect, useState,useContext} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import { CssBaseline } from '@material-ui/core';
-import ShopHeader from '../components/ShopHeader';
 import SensorsToBuy from '../components/SensorsToBuy';
 
 import CustomerContext from "../CustomerContext";
@@ -49,12 +48,12 @@ export default function ShopPage(props) {
 
   useEffect(() => {
     console.log(numProdInCart);
+    props.handleSetCartCount(numProdInCart)
   }, [numProdInCart]);
   
   return (
     <div className={classes.root}>
         <CssBaseline />
-        <ShopHeader numProdInCart={numProdInCart}/>
         <SensorsToBuy onProductAdded={(quantity) => {setNumProdInCart(prev => prev + quantity)}}/>
     </div>
     

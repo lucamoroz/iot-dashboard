@@ -15,7 +15,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import {Link, Route, Switch, useRouteMatch} from "react-router-dom";
+import {Link as RouterLink, Link, Route, Switch, useRouteMatch} from "react-router-dom";
 import Profile from "./pages/Profile";
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import DashboardPage from "./pages/DashboardPage";
@@ -32,6 +32,7 @@ import OrderList from "./pages/OrderList";
 import Order from "./pages/Order";
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import HistoryIcon from '@material-ui/icons/History';
+import {Badge} from "@material-ui/core";
 
 const drawerWidth = 240;
 
@@ -95,11 +96,15 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         padding: theme.spacing(3),
     },
-    appBarTitle: {
-        flexGrow: '1',
-    },
     colorText: {
         color: '#5AFF3D'
+    },
+    title: {
+        flexGrow: '1',
+        display: 'none',
+        [theme.breakpoints.up('sm')]: {
+            display: 'block',
+        },
     },
 }));
 
@@ -113,6 +118,7 @@ function Dashboard(props) {
     }
 
     const [open, setOpen] = React.useState(true);
+    const [cartCount, setCartCount] = React.useState(0);
 
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -120,6 +126,10 @@ function Dashboard(props) {
 
     const handleDrawerClose = () => {
         setOpen(false);
+    };
+
+    const handleSetCartCount = (count) => {
+        setCartCount(count);
     };
 
     let match = useRouteMatch();
@@ -145,9 +155,15 @@ function Dashboard(props) {
                     >
                         <MenuIcon />
                     </IconButton>
-                    <Typography variant="h6" noWrap>
+                    <Typography className={classes.title} variant="h6" noWrap>
                         IoT<span className={classes.colorText}>-Dash</span>
                     </Typography>
+                    <IconButton component={RouterLink} to="/dashboard/shop/cart"
+                                aria-label="shopping cart" color="inherit">
+                        <Badge badgeContent={cartCount} color="secondary">
+                            <ShoppingCartIcon />
+                        </Badge>
+                    </IconButton>
                 </Toolbar>
             </AppBar>
             <Drawer
@@ -212,7 +228,9 @@ function Dashboard(props) {
                     <Route exact path={`${match.path}/profile`}  component={Profile} />
                     <Route exact path={`${match.path}/map`} component={MapPage} />
                     <Route exact path={`${match.path}/device/:id`} component={Device} />
-                    <Route exact path={`${match.path}/shop`} component={ShopPage} />
+                    <Route exact path={`${match.path}/shop`}>
+                        <ShopPage handleSetCartCount={handleSetCartCount}/>
+                    </Route>
                     <Route exact path={`${match.path}/shop/cart`} component={ShopCart} />
                     <Route exact path={`${match.path}/shop/orders`} component={OrderList} />
                     <Route exact path={`${match.path}/shop/order/:id`} component={Order} />
