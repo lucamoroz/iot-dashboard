@@ -1,7 +1,7 @@
 import React, {useState,useEffect,useContext} from "react";
 import {makeStyles} from "@material-ui/core/styles";
 
-import {Button,ButtonGroup, Container, TextField, Typography, Box} from "@material-ui/core";
+import { Container, Typography } from "@material-ui/core";
 
 // Table imports
 import Table from '@material-ui/core/Table';
@@ -11,8 +11,6 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-
-import SearchIcon from '@material-ui/icons/Search';
 
 import {useParams} from 'react-router-dom';
 

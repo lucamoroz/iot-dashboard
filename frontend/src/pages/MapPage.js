@@ -4,7 +4,7 @@ import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { latLngBounds } from 'leaflet';
-import { Card, CssBaseline, FormControl, InputLabel, MenuItem, Select, Typography } from '@material-ui/core';
+import { Card, CssBaseline, FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
 import PowerIcon from '@material-ui/icons/Power';
 import PowerOffIcon from '@material-ui/icons/PowerOff';
 import { green, red } from '@material-ui/core/colors';
