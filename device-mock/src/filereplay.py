@@ -10,11 +10,22 @@ from basepublisher import BasePublisher
 class FileReplay:
     _exit: Event
     _publisher: BasePublisher
+    _pub_frequency: int  # pub every 10 secs
+    _is_enabled: bool
     _data = None
+    _datatype_id = {
+        'temperature': 1,
+        'humidity': 2,
+        'pressure': 3,
+        'windSpeed': 4,
+        'windBearing': 5
+    }
 
-    def __init__(self, publisher: BasePublisher):
+    def __init__(self, publisher: BasePublisher, pub_frequency=10, is_enabled=False):
         self._publisher = publisher
         self._exit = Event()
+        self._pub_frequency = pub_frequency
+        self._is_enabled = is_enabled
 
     def load(self, path_to_file: str, columns: List[str], time_column: str = "time"):
         if not os.path.isfile(path_to_file):
@@ -39,34 +50,55 @@ class FileReplay:
 
         self._data = self._data.sort_index()
 
-    def play(self, replay_speed: float = 1.0):
+    def start(self):
         if self._data is None:
             print("No data to play\n Hint: use load(self, path_to_file: str) to load data from a csv file")
             return
-
-        print("Replaying %d measurements at speed %.2f\n" % (len(self._data), replay_speed))
+        print("=== STARTING DATA REPLAY SERVICE ===")
 
         row_iterator = self._data.iterrows()
         last_index, last_row = row_iterator.__next__()
         for index, row in row_iterator:
-            # Calculating timeout from last index to current index
-            timeout = (index - last_index).total_seconds() / replay_speed
-            print(last_row.to_dict())
-            print("\n-----")
             # Converting row into dict before publishing
             data_dict = last_row.to_dict()
+
+            body = []
+            for key, value in data_dict.items():
+                type_id = FileReplay.data_type_to_id(key)
+                if type_id:
+                    measurement = {
+                        'value': value,
+                        'dataType': {'id': type_id}
+                    }
+                    body.append(measurement)
+
             data_dict.update(time=str(last_index.to_pydatetime()))
-            self._publisher.publish(data_dict)
+            if self._is_enabled:
+                self._publisher.publish(body)
+            else:
+                print("Device disabled: data not published")
 
             # Setting current values to be published next
             last_index = index
             last_row = row
 
-            self._exit.wait(timeout)
+            self._exit.wait(self._pub_frequency)
             if self._exit.is_set():
                 self._publisher.shutdown()
                 return
 
+    def set_config(self, update_frequency: int, is_enabled: bool):
+        print("FileReplay new config: update_freq %d, is_enabled %s" % (update_frequency, is_enabled))
+        self._pub_frequency = update_frequency
+        self._is_enabled = is_enabled
+
     def stop(self):
         self._exit.set()
-        print("Will stop playing after sleep cycle")
+        print("FileReplay will stop playing after sleep cycle")
+
+    @staticmethod
+    def data_type_to_id(name: str):
+        if name in FileReplay._datatype_id.keys():
+            return FileReplay._datatype_id[name]
+        else:
+            return None
