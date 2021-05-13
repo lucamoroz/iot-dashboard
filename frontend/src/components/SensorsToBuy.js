@@ -81,6 +81,7 @@ class SensorsToBuy extends React.Component {
     super(props);
     this.state = {
       sensors: [],
+      isLoading: true,
     };
     //this.checked = useWindowPosition('header');
     this.onAddToCart = this.onAddToCart.bind(this);
@@ -102,7 +103,7 @@ class SensorsToBuy extends React.Component {
       .then((res) => {
         this.setState({
           sensors: res.data,
-          sensorToExpand: null
+          isLoading: false,
         });
         console.log(res);
       })
@@ -114,18 +115,21 @@ class SensorsToBuy extends React.Component {
   render() {
     const { classes } = this.props;
     const { sensors } = this.state;
-    const { sensorToExpand } = this.state;
+    const { isLoading } = this.state;
     const quantity = 1; // Use this field if in future the user can choose the quantity directly in the card
-    /*if (sensorToExpand == null) {
-      
-    }*/
+    if (isLoading == null) {
+      return (
+        <div>
+          Loading Data
+        </div>
+      );
+    }
     return (
       <div id="products-to-buy">
         <SensorCards
           className={classes.root}
           sensors={sensors}
           onAddToCart={(id) => { this.onAddToCart(id); this.onProductAdded(quantity); }}
-          onSensorClicked={(sensor) => { this.setState({ sensors: sensors, sensorToExpand: sensor }) }}
         />
       </div>
 

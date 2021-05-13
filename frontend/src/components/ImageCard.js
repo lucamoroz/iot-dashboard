@@ -89,7 +89,7 @@ export default function ImageCard({ sensor, checked, onAddToCart, onClick, compo
                 {capitalized(sensor.name)}
               </Typography>
               <Typography className={classes.price}>
-                {sensor.price}
+                {sensor.price}$
               </Typography>
           </CardContent>
         </CardActionArea>

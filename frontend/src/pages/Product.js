@@ -25,11 +25,12 @@ const useStyles = makeStyles((theme) => ({
     //minHeight: '60vh',
     //width: '70%',
     height: '100%',
-    maxWidth: '80%',
+    width: '80%',
     display: 'flex',
     justifyContent: 'flex-top',
     alignItems: 'flext-end',
     flexDirection: 'column',
+    borderRadius: 15,
   },
 
   topContent: {
@@ -170,7 +171,7 @@ function Product(props) {
                 </Typography>
 
                 <Typography className={classes.productPrice}>
-                  {state.product.price}€
+                  {state.product.price}$
               </Typography>
 
                 <Typography className={classes.taxes}>
