@@ -88,9 +88,6 @@ const useStyles = makeStyles((theme) => ({
             display:'none',
         },
     },
-    nested: {
-        paddingLeft: theme.spacing.unit * 4,
-    },
     toolbar: {
         display: 'flex',
         alignItems: 'center',

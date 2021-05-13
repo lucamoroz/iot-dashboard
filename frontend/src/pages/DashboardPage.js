@@ -125,6 +125,12 @@ function Device (props) {
     const deviceStatus = props.deviceData["device"]["deviceStatus"];
     const productName = props.deviceData["product_name"];
     const groups = props.deviceData["groups"];
+
+    const capitalize = (s) => {
+        if (typeof s !== 'string') return ''
+        return s.charAt(0).toUpperCase() + s.slice(1)
+    }
+
     return (
         <Grid container alignItems="center">
             <Grid item xs={11}>
@@ -140,15 +146,15 @@ function Device (props) {
                             </Paper>
                             {
                                 groups.map(group =>
-                                    <DeviceGroups key={group["id"]} groupName={group["name"]}/>
+                                    <DeviceGroups key={group["id"]} groupName={capitalize(group["name"])}/>
                                 )
                             }
                                 <Paper className={classes.paper}>
-                                    <Typography noWrap>{productName}</Typography>
+                                    <Typography noWrap>{capitalize(productName)}</Typography>
                                 </Paper>
                             {
                                 Object.keys(deviceData).map(key =>
-                                    <DeviceData key={key} dataType={key} value={deviceData[key]}/>
+                                    <DeviceData key={key} dataType={capitalize(key)} value={deviceData[key]}/>
                                 )
                             }
                         </CardContent>
