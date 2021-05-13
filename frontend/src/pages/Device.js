@@ -9,7 +9,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import {Grid, Typography} from "@material-ui/core";
+import {Container, Grid, Typography} from "@material-ui/core";
 import { green, red } from '@material-ui/core/colors';
 import PowerIcon from '@material-ui/icons/Power';
 import PowerOffIcon from '@material-ui/icons/PowerOff';
@@ -174,77 +174,73 @@ function DeviceEnabledIndicator(props) {
 
 function DeviceTable(props) {
     return (
-        <TableContainer>
-            <Table aria-label="simple table">
-                <TableBody>
-                    <TableRow key="id">
-                        <TableCell key="id_key" align="left">ID</TableCell>
-                        <TableCell key="id_value" align="left">{props.id}</TableCell>
-                    </TableRow>
-                    <TableRow key="status">
-                        <TableCell key="status_key" align="left">Status</TableCell>
-                        <TableCell key="status_value" align="left">
-                            <DeviceEnabledIndicator enabled={props.config !== null ? props.config.enabled : true}/>
-                        </TableCell>
-                    </TableRow>
-                    <TableRow key="battery">
-                        <TableCell key="battery_key" align="left">Battery</TableCell>
-                        <TableCell key="battery_value" align="left">{props.deviceStatus !== null ? props.deviceStatus.battery : ''}%</TableCell>
-                    </TableRow>
-                    <TableRow key="version">
-                        <TableCell key="version_key" align="left">Version</TableCell>
-                        <TableCell key="version_value" align="left">{props.deviceStatus !== null ? props.deviceStatus.version : ''}</TableCell>
-                    </TableRow>
-                    <TableRow key="last_update">
-                        <TableCell key="last_update_key" align="left">Last update</TableCell>
-                        <TableCell key="last_update_value" align="left">{props.deviceStatus !== null ? timestampFormat(props.deviceStatus.last_update) : ''}</TableCell>
-                    </TableRow>
-                    <TableRow key="update_frequency">
-                        <TableCell key="update_frequency_key" align="left">Update frequency</TableCell>
-                        <TableCell key="update_frequency_value" align="left">{props.config !== null ? props.config.update_frequency : ''}</TableCell>
-                    </TableRow>
-                    <TableRow key="token">
-                        <TableCell key="token_key" align="left">Token</TableCell>
-                        <TableCell key="token_value" align="left">{props.config !== null ? props.config.token : ''}</TableCell>
-                    </TableRow>
-                    <TableRow key="latitude">
-                        <TableCell key="latitude_key" align="left">Latitude</TableCell>
-                        <TableCell key="latitude_value" align="left">{props.config !== null ? props.config.latitude : ''}</TableCell>
-                    </TableRow>
-                    <TableRow key="longitude">
-                        <TableCell key="longitude_key" align="left">Longitude</TableCell>
-                        <TableCell key="longitude_value" align="left">{props.config !== null ? props.config.longitude : ''}</TableCell>
-                    </TableRow>
-                </TableBody>
-            </Table>
-        </TableContainer>
+        <Table>
+            <TableBody>
+                <TableRow key="id">
+                    <TableCell key="id_key" align="left">ID</TableCell>
+                    <TableCell key="id_value" align="left">{props.id}</TableCell>
+                </TableRow>
+                <TableRow key="status">
+                    <TableCell key="status_key" align="left">Status</TableCell>
+                    <TableCell key="status_value" align="left">
+                        <DeviceEnabledIndicator enabled={props.config !== null ? props.config.enabled : true}/>
+                    </TableCell>
+                </TableRow>
+                <TableRow key="battery">
+                    <TableCell key="battery_key" align="left">Battery</TableCell>
+                    <TableCell key="battery_value" align="left">{props.deviceStatus !== null ? props.deviceStatus.battery : ''}%</TableCell>
+                </TableRow>
+                <TableRow key="version">
+                    <TableCell key="version_key" align="left">Version</TableCell>
+                    <TableCell key="version_value" align="left">{props.deviceStatus !== null ? props.deviceStatus.version : ''}</TableCell>
+                </TableRow>
+                <TableRow key="last_update">
+                    <TableCell key="last_update_key" align="left">Last update</TableCell>
+                    <TableCell key="last_update_value" align="left">{props.deviceStatus !== null ? timestampFormat(props.deviceStatus.last_update) : ''}</TableCell>
+                </TableRow>
+                <TableRow key="update_frequency">
+                    <TableCell key="update_frequency_key" align="left">Update frequency</TableCell>
+                    <TableCell key="update_frequency_value" align="left">{props.config !== null ? props.config.update_frequency : ''}</TableCell>
+                </TableRow>
+                <TableRow key="token">
+                    <TableCell key="token_key" align="left">Token</TableCell>
+                    <TableCell key="token_value" align="left">{props.config !== null ? props.config.token : ''}</TableCell>
+                </TableRow>
+                <TableRow key="latitude">
+                    <TableCell key="latitude_key" align="left">Latitude</TableCell>
+                    <TableCell key="latitude_value" align="left">{props.config !== null ? props.config.latitude : ''}</TableCell>
+                </TableRow>
+                <TableRow key="longitude">
+                    <TableCell key="longitude_key" align="left">Longitude</TableCell>
+                    <TableCell key="longitude_value" align="left">{props.config !== null ? props.config.longitude : ''}</TableCell>
+                </TableRow>
+            </TableBody>
+        </Table>
     );
 }
 
 function DataTable(props) {
     return (
-        <TableContainer>
-            <Table aria-label="simple table">
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Timestamp</TableCell>
-                        {props.dataLabels.map((data) => (
-                            <TableCell key={data}>{dataLabelsFormat(data)}</TableCell>
+        <Table>
+            <TableHead>
+                <TableRow>
+                    <TableCell>Timestamp</TableCell>
+                    {props.dataLabels.map((data) => (
+                        <TableCell key={data}>{dataLabelsFormat(data)}</TableCell>
+                    ))}
+                </TableRow>
+            </TableHead>
+            <TableBody>
+                {(props.tableRows.length === 0) ? <TableRow key="noData"><TableCell key="noDataCell">No data</TableCell></TableRow> : null}
+                {props.tableRows.map((tableRow) => (
+                    <TableRow key={tableRow[0]}>
+                        {tableRow.map((data, index) => (
+                            <TableCell key={tableRow+data} align={index === 0 ? "left" : "right"}>{data}</TableCell>
                         ))}
                     </TableRow>
-                </TableHead>
-                <TableBody>
-                    {(props.tableRows.length === 0) ? <TableRow key="noData"><TableCell key="noDataCell">No data</TableCell></TableRow> : null}
-                    {props.tableRows.map((tableRow) => (
-                        <TableRow key={tableRow[0]}>
-                            {tableRow.map((data, index) => (
-                                <TableCell key={tableRow+data} align={index === 0 ? "left" : "right"}>{data}</TableCell>
-                            ))}
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
+                ))}
+            </TableBody>
+        </Table>
     );
 }
 
@@ -430,13 +426,13 @@ class Device extends React.Component {
         } else {
             return (
                 <Grid container spacing={2}>
-                    <Grid item xs={12} container>
+                    <Grid item xs={12} container style={{width: 'calc(100% - 57px)'}}>
                         <Typography variant={"h4"}>Device</Typography>
                         <IconButton component={RouterLink} to={"/dashboard/device/"+this.props.match.params.id+"/config"}>
                             <SettingsIcon/>
                         </IconButton>
                     </Grid>
-                    <Grid item key="left" md={7} sm={12}>
+                    <Grid item key="left" md={7} sm={12} style={{width: 'calc(100% - 57px)'}}>
                         <Grid item xs={12}>
                             <Graph graphData={this.state.graphData}/>
                         </Grid>
@@ -446,8 +442,8 @@ class Device extends React.Component {
                             </Paper>
                         </Grid>
                     </Grid>
-                    <Grid item key="right" md={5} sm={12}>
-                        <Paper>
+                    <Grid item key="right" md={5} sm={12} style={{width: 'calc(100% - 57px)'}}>
+                        <Paper style={{overflowX: "auto"}}>
                             <DataTable dataLabels={this.state.dataLabels} tableRows={this.state.tableRows}/>
                         </Paper>
                     </Grid>
