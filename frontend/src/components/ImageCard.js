@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
-import { CardActionArea, Collapse } from '@material-ui/core';
+import { CardActionArea, Zoom } from '@material-ui/core';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
-import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import { Link as RouterLink } from 'react-router-dom';
+import {capitalized} from '../hook/util';
 
 
 
 const useStyles = makeStyles({
   root: {
     maxWidth: 645,
-    background: 'rgba(0,0,0,0.5)',
-    margin: '20px'
+    background: 'rgba(0,0,255,0.7)',
+    margin: '20px',
+    borderRadius: 15,
   },
   media: {
     height: 440,
@@ -23,7 +23,8 @@ const useStyles = makeStyles({
     fontFamily: 'Roboto',
     fontWeight: 'bold',
     fontSize: '2rem',
-    color: '#fff'
+    color: '#fff',
+    marginRight: 20,
   },
   description: {
     fontFamily: 'Roboto',
@@ -50,13 +51,13 @@ const useStyles = makeStyles({
   },
   cardContent: {
     display: 'flex',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
 
   }
 });
 
-export default function ImageCard({ sensor, checked, onAddToCart, onClick, component, to }) {
+export default function ImageCard({ sensor, checked, onAddToCart, onClick, component, to, delay }) {
   const classes = useStyles();
   const [raiseState, setRaiseState] = useState({
     raised: false,
@@ -65,7 +66,7 @@ export default function ImageCard({ sensor, checked, onAddToCart, onClick, compo
   // Not good. Get the image id or the image directly from backend
   const imageUrl = sensor.id === 1 ? process.env.PUBLIC_URL + '/assets/temp_sensor.jpg' : process.env.PUBLIC_URL + '/assets/wind_sensor.jpg';
   return (
-    <Collapse in={checked}>
+    <Zoom in={checked} style={{ transitionDelay: checked ? delay : '0ms' }}>
       <Card className={classes.root}
         onMouseOver={() => setRaiseState({ raised: true, shadow: 5 })}
         onMouseOut={() => setRaiseState({ raised: false, shadow: 1 })}
@@ -85,21 +86,15 @@ export default function ImageCard({ sensor, checked, onAddToCart, onClick, compo
                 variant="h5"
                 component="h1"
                 className={classes.title}>
-                {sensor.name}
+                {capitalized(sensor.name)}
               </Typography>
               <Typography className={classes.price}>
-                {sensor.price}$
+                {sensor.price}
               </Typography>
-
-            {/*<Button className={classes.addToCartButton} onClick={() => onAddToCart(sensor.id)}>
-                <Typography className={classes.buttonText}>
-                  Add to cart
-                </Typography>
-              </Button>*/}
           </CardContent>
         </CardActionArea>
 
       </Card>
-    </Collapse>
+    </Zoom>
   );
 }

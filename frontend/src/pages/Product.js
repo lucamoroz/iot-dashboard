@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Button, Card, CardContent, CardMedia, CssBaseline, IconButton, Typography } from '@material-ui/core';
-import LandingHeader from '../components/LandingHeader';
+import { Button, Card, CardContent, CardMedia, Grow, Typography } from '@material-ui/core';
 import axios from 'axios';
-import ImageCardExpanded from '../components/ImageCardExpanded';
-import {Link as RouterLink, Link, Route, Switch, useRouteMatch} from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
+import { capitalized } from '../hook/util'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -20,44 +19,78 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
+    flexDirection: 'column',
   },
   card1: {
-    minHeight: '70vh',
-    width: '80%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: '10px',
-
-  },
-  card2: {
-
-    minHeight: '70vh',
-    width: '20%',
+    //minHeight: '60vh',
+    //width: '70%',
+    height: '100%',
+    maxWidth: '80%',
     display: 'flex',
+    justifyContent: 'flex-top',
+    alignItems: 'flext-end',
     flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: '10px',
+  },
 
+  topContent: {
+    display: 'flex',
+    justifyContent: 'flex-top',
+    alignItems: 'flex-top',
   },
   productImage: {
-    height: '50%',
-    width: '50%',
+    height: '50vh',
+    width: '50vh',
     display: 'flex',
   },
- 
+
   description: {
-    margin: '20px',
+    //margin: '20px',
   },
   productName: {
+    marginTop: 20,
+    marginBottom: 10,
     fontSize: '2rem',
-  },
-  availableText: {
-    color: 'green',
   },
   freeShippingDeliveryText: {
     color: 'black',
-    
+
+  },
+
+  productPrice: {
+    marginBottom: 10,
+    fontSize: '1.5rem',
+    color: 'red',
+  },
+
+  taxes: {
+    marginBottom: 10,
+  },
+  availableText: {
+    marginBottom: 10,
+    color: 'green',
+  },
+  shippingTime: {
+    marginBottom: 10,
+  },
+  secureTransactions: {
+    marginRight: 10,
+    fontSize: '0.9rem',
+  },
+  shippedby: {
+    marginBottom: 20,
+    fontSize: '0.8rem',
+  },
+  addToCartButton: {
+    //marginTop: '50%',
+    marginRight: 5,
+  },
+  buyNowButton: {
+    marginLeft: 5,
+  },
+  buttonsContent: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    alignItems: 'center'
   }
 
 }));
@@ -74,6 +107,7 @@ function onAddToCart(id) {
 function Product(props) {
   const classes = useStyles();
   const [state, setState] = useState({ loading: true, product: null, imageUrl: "" });
+  const [checked, setChecked] = useState(false);
   useEffect(() => {
     axios.get("/products/" + props.match.params.id)
       .then((res) => {
@@ -81,6 +115,7 @@ function Product(props) {
 
         var imageUrl = res.data.id === 1 ? process.env.PUBLIC_URL + '/assets/temp_sensor.jpg' : process.env.PUBLIC_URL + '/assets/wind_sensor.jpg';
         setState({ loading: false, product: res.data, imageUrl: imageUrl });
+        setChecked(true);
       }).catch((err) => {
         console.log(err);
       })
@@ -116,85 +151,64 @@ function Product(props) {
     );
   } else {
     return (
-      <div className={classes.root}>
-        <Card className={classes.card1}>
+      <Grow in={checked} >
+        <div className={classes.root}>
+          <Card className={classes.card1}>
+            <CardContent className={classes.topContent}>
+              <CardMedia
+                className={classes.productImage}
+                component="img"
+                height="80"
+                image={state.imageUrl}
 
-          <CardContent className={classes.cardContent1}>
+              />
 
-            <CardMedia
-              className={classes.productImage}
-              component="img"
-              height="80"
-              image={state.imageUrl}
+              <CardContent className={classes.cardContent1}>
 
-            />
+                <Typography className={classes.productName}>
+                  {capitalized(state.product.name)}
+                </Typography>
 
-            <CardContent >
-
-              <Typography className={classes.productName} >
-                {state.product.name}
+                <Typography className={classes.productPrice}>
+                  {state.product.price}€
               </Typography>
 
-              <Typography>
-                  {state.product.price}
+                <Typography className={classes.taxes}>
+                  All prices include IVA
               </Typography>
 
-              <Typography className={classes.freeShippingDeliveryText}>
-                 Free shipping delivery
+                <Typography className={classes.availableText}>
+                  Immediately Available.
               </Typography>
-              
 
+                <Typography className={classes.shippingTime}>
+                  Delivered in 7-10 days
+              </Typography>
+
+                <Typography className={classes.description} style={{ whiteSpace: "pre-wrap" }}>
+                  {state.product.description}
+                </Typography>
+              </CardContent>
             </CardContent>
 
-          </CardContent>
+            <CardContent className={classes.buttonsContent}>
 
-          <Typography className={classes.description}>
-            {state.product.description}
-          </Typography>
+              <Typography className={classes.secureTransactions}>
+                Secure transactions
+            </Typography>
 
+              <Button className={classes.addToCartButton} variant="contained" color="primary" onClick={() => { onAddToCart(state.product.id); setNumProdInCart(numProdInCart + quantity) }}>
+                AddToCart
+           </Button>
 
-        </Card>
-
-        <Card className={classes.card2} childStyle={{margin: 8}}>
-
-          <Typography >
-            {state.product.name}
-          </Typography>
-
-          <Typography >
-            {state.product.price}
-          </Typography>
-
-          <Typography >
-            All prices include IVA
-          </Typography>
-
-          <Typography className={classes.availableText}>
-            Immediately Available.
-          </Typography>
-
-          <Typography >
-            Delivered in 7-10 days
-          </Typography>
-
-          <Button variant="contained" color="primary" onClick={() => { onAddToCart(state.product.id); setNumProdInCart(numProdInCart + quantity) }}>
-            AddToCart
+              <Button className={classes.buyNowButton} variant="contained" color="primary" component={RouterLink} to="/dashboard/shop/cart" onClick={() => { onAddToCart(state.product.id); setNumProdInCart(numProdInCart + quantity) }}>
+                Buy Now
           </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </Grow>
 
-          <Button variant="contained" color="primary" component={RouterLink} to="/dashboard/shop/cart" onClick={() => { onAddToCart(state.product.id); setNumProdInCart(numProdInCart + quantity) }}>
-            Buy Now
-          </Button>
-
-          <Typography>
-            Secure transactions
-          </Typography>
-
-          <Typography>
-            Sold and Shipped by Iot-Dash
-          </Typography>
-
-        </Card>
-      </div>
     );
   }
 }

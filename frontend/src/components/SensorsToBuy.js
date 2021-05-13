@@ -3,6 +3,9 @@ import { withStyles } from '@material-ui/core/styles';
 import ImageCard from './ImageCard';
 import ImageCardExpanded from './ImageCardExpanded';
 import { Link as RouterLink } from 'react-router-dom';
+import { Zoom } from '@material-ui/core';
+import { useState } from 'react';
+import { useEffect } from 'react';
 
 const axios = require('axios').default
 
@@ -18,7 +21,7 @@ const styles = theme => ({
   },
 });
 
-class SensorCards extends React.Component {
+/*class SensorCards extends React.Component {
   constructor(props) {
     super(props);
     this.onAddToCart = props.onAddToCart.bind(this);
@@ -31,18 +34,46 @@ class SensorCards extends React.Component {
       <div className={className} id='sensors-to-buy'>
         {
           sensors.map((sensor, i) => {
-            return <ImageCard
+            return <Zoom
+            in={true} style={{ transitionDelay: i *100 }}>
+              <ImageCard
               sensor={sensor}
               key={sensor.id}
               checked={true}
               onAddToCart={this.onAddToCart}
               component={RouterLink} to={"/dashboard/shop/product/" + sensor.id} />
+            </Zoom>
           })
         }
 
       </div>
     );
   }
+}*/
+
+function SensorCards(props) {
+  const [checked, setChecked] = useState(false);
+  const { className } = props;
+  const { sensors } = props;
+  useEffect(() => {
+    setChecked(true);
+  }, []);
+  return (
+    <div className={className} id='sensors-to-buy'>
+      {
+        sensors.map((sensor, i) => {
+          return <ImageCard
+          sensor={sensor}
+          key={sensor.id}
+          checked={checked}
+          delay={i * 100}
+          onAddToCart={props.onAddToCart}
+          component={RouterLink} to={"/dashboard/shop/product/" + sensor.id} />
+        })
+      }
+
+    </div>
+  );
 }
 
 class SensorsToBuy extends React.Component {
@@ -50,7 +81,6 @@ class SensorsToBuy extends React.Component {
     super(props);
     this.state = {
       sensors: [],
-      sensorToExpand: null
     };
     //this.checked = useWindowPosition('header');
     this.onAddToCart = this.onAddToCart.bind(this);

@@ -9,6 +9,7 @@ import PowerIcon from '@material-ui/icons/Power';
 import PowerOffIcon from '@material-ui/icons/PowerOff';
 import { green, red } from '@material-ui/core/colors';
 import CustomerContext from "../CustomerContext";
+import {capitalized} from '../hook/util';
 
 const axios = require('axios').default
 
@@ -32,10 +33,6 @@ const useStyles = makeStyles((theme) => ({
   },
 
 }));
-
-String.prototype.capitalize = function () {
-  return this.charAt(0).toUpperCase() + this.slice(1);
-}
 
 function timestampFormat(timestamp) {
   return new Date(Date.parse(timestamp)).toLocaleString();
@@ -80,7 +77,7 @@ export default function MapPage(props) {
   const [group, setGroup] = useState("");
   const [product, setProduct] = useState([]);
   const [products, setProducts] = useState([]);
-  const center = [51.505, -0.09] // Just a
+  const center = [45.416667, 11.883333] // Padova default coordinates
 
   const customerContext = useContext(CustomerContext);
 
@@ -191,7 +188,7 @@ export default function MapPage(props) {
             <Marker key={item.device.id} position={[item.device.config.latitude, item.device.config.longitude]}>
               <Popup>
                 {item.device.config.enabled ? <PowerIcon style={{ color: green[500] }} /> : <PowerOffIcon style={{ color: red[500] }} />}
-                <h2 >{item.product_name.capitalize()}</h2>
+                <h2 >{capitalized(item.product_name)}</h2>
                 <h3>Device info:</h3>
                 <ul>
                   <li>Lat: {item.device.config.latitude}</li>
@@ -218,7 +215,7 @@ export default function MapPage(props) {
                   <ul>
                     {
                       Object.keys(item.data).map((key) => (
-                        <li key={key}>{key.capitalize()}: {item.data[key]}</li>
+                        <li key={key}>{capitalized(key)}: {item.data[key]}</li>
                       ))
                     }
                   </ul>
