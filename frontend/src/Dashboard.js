@@ -231,12 +231,15 @@ function Dashboard(props) {
                     <Typography className={classes.title} variant="h6" noWrap>
                         IoT<span className={classes.colorText}>-Dash</span>
                     </Typography>
-                    <IconButton component={RouterLink} to="/dashboard/shop/cart"
-                                aria-label="shopping cart" color="inherit">
-                        <Badge badgeContent={cartCount} color="secondary">
-                            <ShoppingCartIcon />
-                        </Badge>
-                    </IconButton>
+                    {
+                        cartCount > 0 &&
+                        <IconButton component={RouterLink} to="/dashboard/shop/cart"
+                                    aria-label="shopping cart" color="inherit">
+                            <Badge badgeContent={cartCount} color="secondary">
+                                <ShoppingCartIcon/>
+                            </Badge>
+                        </IconButton>
+                    }
                 </Toolbar>
             </AppBar>
             <Drawer
