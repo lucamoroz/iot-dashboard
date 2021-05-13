@@ -58,7 +58,9 @@ export default function Profile(props) {
             });
     }, [customerContext]);
 
-
+    ///////////////////////////////////////////////
+    // Delete customer MECHANISM
+    const [openDelete, setOpenDelete] = useState(false);    //Dialog open/closed
     function deleteCustomer() {
         axios.delete('/customer/me')
             .then((res) => {
@@ -69,7 +71,32 @@ export default function Profile(props) {
                 const errorMsg = err.response ? err.response.data.description : "No response from backend";
                 setError(errorMsg);
             });
-    }
+    };
+    const handleClickDeleteOpen = () => {
+        setOpenDelete(true);  // open dialog
+    };
+    const handleDeleteClose = () => {
+        setOpenDelete(false); //close dialog
+    };
+    function dialogConfirmDelete(){
+        return (
+            <Dialog
+                open={openDelete}
+                onClose={handleDeleteClose}
+                >
+                <DialogTitle id="alert-dialog-title">{"Are you sure to Log-Out?"}</DialogTitle>
+                
+                <DialogActions>
+                    <Button onClick={handleDeleteClose} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={deleteCustomer} color="primary" autoFocus>
+                        Confirm
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        )
+    };
 
     ///////////////////////////////////////////////
     // LOGOUT MECHANISM
@@ -145,7 +172,7 @@ export default function Profile(props) {
                             variant="contained"
                             color="secondary"
                             startIcon={<DeleteForeverIcon />}
-                            onClick={deleteCustomer}
+                            onClick={handleClickDeleteOpen}
                         >
                             Delete
                         </Button>
@@ -161,6 +188,7 @@ export default function Profile(props) {
             />
 
             {dialogConfirmLogOut()}
+            {dialogConfirmDelete()}
         </Container>
     )
 }
