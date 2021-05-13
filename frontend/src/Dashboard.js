@@ -136,6 +136,73 @@ function Dashboard(props) {
 
     let match = useRouteMatch();
 
+    const drawer = (
+        <div>
+            <div className={classes.toolbar}>
+                <List>
+                    <ListItem button key="home" component={Link} to="/">
+                        <ListItemIcon><HomeIcon/></ListItemIcon>
+                        <ListItemText primary="Home page" />
+                    </ListItem>
+                </List>
+                <IconButton onClick={handleDrawerClose}>
+                    {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+                </IconButton>
+            </div>
+            <Divider />
+            <List>
+                <ListItem button key="Dashboard" component={Link} to={`${match.url}`}>
+                    <ListItemIcon><DashboardIcon/></ListItemIcon>
+                    <ListItemText primary="Dashboard" />
+                </ListItem>
+                <ListItem button key="Map" component={Link} to={`${match.path}/map`}>
+                    <ListItemIcon><MapIcon/></ListItemIcon>
+                    <ListItemText primary="Map" />
+                </ListItem>
+                <Divider />
+                <ListItem button key="Shop" component={Link} to="/dashboard/shop">
+                    <ListItemIcon><ShopIcon/></ListItemIcon>
+                    <ListItemText primary="Shop" />
+                </ListItem>
+                <ListItem button key="ShopCart" component={Link} to="/dashboard/shop/cart">
+                    <ListItemIcon><ShoppingCartIcon/></ListItemIcon>
+                    <ListItemText primary="Shopping cart" />
+                </ListItem>
+                <ListItem button key="Orders" component={Link} to="/dashboard/shop/orders">
+                    <ListItemIcon><HistoryIcon/></ListItemIcon>
+                    <ListItemText primary="Orders history" />
+                </ListItem>
+                <Divider />
+                <ListItem button key="Profile" component={Link} to={`${match.path}/profile`}>
+                    <ListItemIcon><AccountCircleIcon/></ListItemIcon>
+                    <ListItemText primary="Profile" />
+                </ListItem>
+
+            </List>
+        </div>
+    );
+
+    const main = (
+        <main className={classes.content}>
+            <div className={classes.toolbar} />
+            <Switch>
+                <Route exact path={`${match.path}`}  component={DashboardPage} />
+                <Route exact path={`${match.path}/profile`}  component={Profile} />
+                <Route exact path={`${match.path}/map`} component={MapPage} />
+                <Route exact path={`${match.path}/device/:id`} component={Device} />
+                <Route exact
+                       path={`${match.path}/shop`}
+                       render={(props) => (
+                           <ShopPage {...props} handleSetCartCount={handleSetCartCount}/>
+                       )}
+                />
+                <Route exact path={`${match.path}/shop/cart`} component={ShopCart} />
+                <Route exact path={`${match.path}/shop/orders`} component={OrderList} />
+                <Route exact path={`${match.path}/shop/order/:id`} component={Order} />
+            </Switch>
+        </main>
+    );
+
     return (
         <div className={classes.root}>
             <CssBaseline />
@@ -181,66 +248,9 @@ function Dashboard(props) {
                     }),
                 }}
             >
-                <div className={classes.toolbar}>
-                    <List>
-                        <ListItem button key="home" component={Link} to="/">
-                            <ListItemIcon><HomeIcon/></ListItemIcon>
-                            <ListItemText primary="Home page" />
-                        </ListItem>
-                    </List>
-                    <IconButton onClick={handleDrawerClose}>
-                        {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-                    </IconButton>
-                </div>
-                <Divider />
-                <List>
-                    <ListItem button key="Dashboard" component={Link} to={`${match.url}`}>
-                        <ListItemIcon><DashboardIcon/></ListItemIcon>
-                        <ListItemText primary="Dashboard" />
-                    </ListItem>
-                    <ListItem button key="Map" component={Link} to={`${match.path}/map`}>
-                        <ListItemIcon><MapIcon/></ListItemIcon>
-                        <ListItemText primary="Map" />
-                    </ListItem>
-                    <Divider />
-                    <ListItem button key="Shop" component={Link} to="/dashboard/shop">
-                        <ListItemIcon><ShopIcon/></ListItemIcon>
-                        <ListItemText primary="Shop" />
-                    </ListItem>
-                    <ListItem button key="ShopCart" component={Link} to="/dashboard/shop/cart">
-                        <ListItemIcon><ShoppingCartIcon/></ListItemIcon>
-                        <ListItemText primary="Shopping cart" />
-                    </ListItem>
-                    <ListItem button key="Orders" component={Link} to="/dashboard/shop/orders">
-                        <ListItemIcon><HistoryIcon/></ListItemIcon>
-                        <ListItemText primary="Orders history" />
-                    </ListItem>
-                    <Divider />
-                    <ListItem button key="Profile" component={Link} to={`${match.path}/profile`}>
-                        <ListItemIcon><AccountCircleIcon/></ListItemIcon>
-                        <ListItemText primary="Profile" />
-                    </ListItem>
-
-                </List>
+                {drawer}
             </Drawer>
-            <main className={classes.content}>
-                <div className={classes.toolbar} />
-                <Switch>
-                    <Route exact path={`${match.path}`}  component={DashboardPage} />
-                    <Route exact path={`${match.path}/profile`}  component={Profile} />
-                    <Route exact path={`${match.path}/map`} component={MapPage} />
-                    <Route exact path={`${match.path}/device/:id`} component={Device} />
-                    <Route exact
-                           path={`${match.path}/shop`}
-                           render={(props) => (
-                               <ShopPage {...props} handleSetCartCount={handleSetCartCount}/>
-                           )}
-                    />
-                    <Route exact path={`${match.path}/shop/cart`} component={ShopCart} />
-                    <Route exact path={`${match.path}/shop/orders`} component={OrderList} />
-                    <Route exact path={`${match.path}/shop/order/:id`} component={Order} />
-                </Switch>
-            </main>
+            {main}
         </div>
     );
 }
