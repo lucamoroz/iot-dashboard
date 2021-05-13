@@ -301,8 +301,7 @@ class Device extends React.Component {
      */
     loadData() {
         //Gets device data from the API
-        axios.get('/devices/1/data')
-        //axios.get('/devices/'+this.props.match.params.id+'/data')
+        axios.get('/devices/'+this.props.match.params.id+'/data')
             .then((res) => {
                 //Request received correctly
 
@@ -398,8 +397,7 @@ class Device extends React.Component {
             });
 
         //Gets device config and status from the API
-        axios.get('devices/1')
-        //axios.get('devices/'+this.props.match.params.id)
+        axios.get('devices/'+this.props.match.params.id)
             .then((resp) => {
                 //Request received correctly
 
