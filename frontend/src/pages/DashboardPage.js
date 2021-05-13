@@ -311,7 +311,7 @@ function DashboardPage(props) {
         <div className={classes.dashboard}>
 
                 <FormControl component="fieldset">
-                    <FormLabel component="legend">Visualization</FormLabel>
+                    <FormLabel component="legend">View</FormLabel>
                     <RadioGroup row aria-label="gender"
                                 name="visualization"
                                 value={visualization}

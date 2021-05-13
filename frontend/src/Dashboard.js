@@ -123,7 +123,7 @@ function Dashboard(props) {
         props.history.push('/signin');
     }
 
-    const [open, setOpen] = React.useState(true);
+    const [open, setOpen] = React.useState(window.innerWidth >= 620);
     const [cartCount, setCartCount] = React.useState(0);
 
     const handleDrawerOpen = () => {
