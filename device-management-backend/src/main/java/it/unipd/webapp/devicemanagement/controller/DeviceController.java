@@ -128,6 +128,20 @@ public class DeviceController {
     }
 
     /**
+     * Get device config
+     * @return a ResponseEntity message containing current device configuration
+     */
+    @Secured("ROLE_DEVICE")
+    @GetMapping("/device/config")
+    public ResponseEntity<DeviceConfig> getDeviceConfig() {
+        DeviceAuthenticationToken deviceAuth = (DeviceAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        Device device = deviceAuth.getDevice();
+
+        DeviceConfig deviceConfig = device.getConfig();
+        return ResponseEntity.ok(deviceConfig);
+    }
+
+    /**
      * Get a single device with status and config
      * @param deviceId Id of the device
      * @return Response with device info
