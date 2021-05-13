@@ -83,6 +83,13 @@ const useStyles = makeStyles((theme) => ({
         [theme.breakpoints.up('sm')]: {
             width: theme.spacing(9) + 1,
         },
+        [theme.breakpoints.down('xs')]: {
+            width: 0,
+            display:'none',
+        },
+    },
+    nested: {
+        paddingLeft: theme.spacing.unit * 4,
     },
     toolbar: {
         display: 'flex',
