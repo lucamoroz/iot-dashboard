@@ -5,6 +5,11 @@ import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import {ExitToApp} from "@material-ui/icons";
 import SnackbarAlert from "../components/SnackbarAlert";
 
+//Dialog pop-up imports
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
 import CustomerContext from "../CustomerContext";
 
 const axios = require('axios').default
@@ -66,6 +71,9 @@ export default function Profile(props) {
             });
     }
 
+    ///////////////////////////////////////////////
+    // LOGOUT MECHANISM
+    const [open, setOpen] = useState(false);    //Dialog open/closed
     function logoutCustomer() {
         axios.post('/customer/logout')
             .then((res) => {
@@ -75,7 +83,32 @@ export default function Profile(props) {
                 const errorMsg = err.response ? err.response.data.description : "No response from backend";
                 setError(errorMsg);
             })
-    }
+    };
+    const handleClickOpen = () => {
+        setOpen(true);  // open dialog
+    };
+    const handleClose = () => {
+        setOpen(false); //close dialog
+    };
+    function dialogConfirmLogOut(){
+        return (
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                >
+                <DialogTitle id="alert-dialog-title">{"Are you sure to Log-Out?"}</DialogTitle>
+                
+                <DialogActions>
+                    <Button onClick={handleClose} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={logoutCustomer} color="primary" autoFocus>
+                        Confirm
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        )
+    };
 
     return (
         <Container className={classes.root} maxWidth={"sm"}>
@@ -102,7 +135,7 @@ export default function Profile(props) {
                             variant="contained"
                             color="primary"
                             startIcon={<ExitToApp />}
-                            onClick={logoutCustomer}
+                            onClick={handleClickOpen}
                         >
                             Logout
                         </Button>
@@ -126,6 +159,8 @@ export default function Profile(props) {
                 severity="error"
                 message={error}
             />
+
+            {dialogConfirmLogOut()}
         </Container>
     )
 }
