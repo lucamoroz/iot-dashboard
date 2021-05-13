@@ -279,17 +279,30 @@ class Device extends React.Component {
             config: null,
             graphData: [],
         };
+
+        this.loadData = this.loadData.bind(this);
+    }
+
+    componentDidMount() {
+        this._isMounted = true;
+
+        this.loadData();
+
+        setInterval(this.loadData, 3000);
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
     }
 
     /**
      * Takes care of the data retrival from the API.
      * This is the function called after the Component is called where React advice to make remote calls.
      */
-    componentDidMount() {
-        this._isMounted = true;
-
+    loadData() {
         //Gets device data from the API
-        axios.get('/devices/'+this.props.match.params.id+'/data')
+        axios.get('/devices/1/data')
+        //axios.get('/devices/'+this.props.match.params.id+'/data')
             .then((res) => {
                 //Request received correctly
 
@@ -311,12 +324,15 @@ class Device extends React.Component {
                     dataLabels.push(dataLabel);
                 }
 
+
                 //Sets the dataLabels in the State
                 this.setState({
                     dataLabels: dataLabels,
                 })
 
+
                 //Creates the rows for the table
+                this.state.tableRows = [];
                 for (let timestamp in res.data) {
                     let tableRow = [];
                     tableRow.push(timestampFormat(timestamp));
@@ -382,7 +398,8 @@ class Device extends React.Component {
             });
 
         //Gets device config and status from the API
-        axios.get('devices/'+this.props.match.params.id)
+        axios.get('devices/1')
+        //axios.get('devices/'+this.props.match.params.id)
             .then((resp) => {
                 //Request received correctly
 
@@ -399,10 +416,6 @@ class Device extends React.Component {
                     error: error,
                 })
             })
-    }
-
-    componentWillUnmount() {
-        this._isMounted = false;
     }
 
     render() {
