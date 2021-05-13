@@ -93,8 +93,8 @@ export default function Order(props){
             <Container maxWidth={"sm"}>
                 
                 <Typography variant="h4">Order ID = {orderId}</Typography>
-                <Typography variant="subtitle1"><b>Delivered at:</b> {order.address}</Typography>
-                <Typography variant="subtitle1"><b>Paid on:</b> {timestampFormat(order.timestamp)}</Typography>
+                <Typography variant="subtitle1">Delivered at: {order.address}</Typography>
+                <Typography variant="subtitle1">Paid on: {timestampFormat(order.timestamp)}</Typography>
 
                 <br/>
                 
