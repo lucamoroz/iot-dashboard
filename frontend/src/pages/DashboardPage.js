@@ -13,7 +13,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Card from '@material-ui/core/Card';
-import {CardActionArea, CardContent} from "@material-ui/core";
+import {CardActionArea, CardContent, Zoom} from "@material-ui/core";
 import {
     BatteryAlert,
     Battery20,
@@ -26,6 +26,7 @@ import {
 } from "@material-ui/icons";
 import Typography from "@material-ui/core/Typography";
 import CustomerContext from "../CustomerContext";
+import { useEffect } from "react";
 
 const axios = require('axios').default
 
@@ -125,8 +126,11 @@ function Device (props) {
     const deviceStatus = props.deviceData["device"]["deviceStatus"];
     const productName = props.deviceData["product_name"];
     const groups = props.deviceData["groups"];
+    const {checked} = props;
+    const {delay} = props;
     return (
-        <Grid container alignItems="center">
+        <Zoom in={checked} style={{ transitionDelay: checked ? delay : 0 }}>
+            <Grid container alignItems="center">
             <Grid item xs={11}>
                 <Card className={classes.deviceCard}>
                     <CardActionArea component={RouterLink} to={"/dashboard/device/"+deviceId}>
@@ -161,14 +165,22 @@ function Device (props) {
                 </IconButton>
             </Grid>
         </Grid>
+        </Zoom>
+        
     )
 }
 
 function Devices(props) {
+    const [checked, setChecked] = useState(false);
+    useEffect(() => {
+        setChecked(true);
+    }, []);
     if (props.devices.length > 0) {
+        
         return props.devices
-            .map(device =>
-                <Device key={device["device"]["id"]} deviceData={device}/>
+            .map((device, i) =>
+            <Device key={device["device"]["id"]} deviceData={device} checked={checked} delay={i * 50}/>
+                
             )
     } else {
         return <Typography>No devices</Typography>
