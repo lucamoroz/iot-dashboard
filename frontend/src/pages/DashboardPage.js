@@ -161,18 +161,16 @@ function Device (props) {
                                 {deviceId}
                             </Typography>
                         </div>
-                        <Typography variant="body2" color="textSecondary" component="p">
-                            {
-                                groups.map(group =>
-                                    <DeviceGroups key={group["id"]} groupName={capitalize(group["name"])}/>
-                                )
-                            }
-                            {
-                                Object.keys(deviceData).map(key =>
-                                    <DeviceData key={key} dataType={capitalize(key)} value={deviceData[key]}/>
-                                )
-                            }
-                        </Typography>
+                        {
+                            groups.map(group =>
+                                <DeviceGroups key={group["id"]} groupName={capitalize(group["name"])}/>
+                            )
+                        }
+                        {
+                            Object.keys(deviceData).map(key =>
+                                <DeviceData key={key} dataType={capitalize(key)} value={deviceData[key]}/>
+                            )
+                        }
                     </CardContent>
                 </Link>
             </CardActionArea>
