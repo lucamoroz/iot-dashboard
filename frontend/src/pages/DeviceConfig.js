@@ -59,25 +59,37 @@ function AddGroupDialog(props) {
     const [open, setOpen] = React.useState(false);
 
     const [groupsToBeAdded, setGroupsToBeAdded] = React.useState(
-        new Map(props.allGroups.map(
+        new Map(props.groupsCouldBeAdded.map(
                 g => [String(g.id), false])
             )
     );
 
     const handleClickOpen = () => {
       setOpen(true);
+      setGroupsToBeAdded(new Map(props.groupsCouldBeAdded.map(
+        g => [String(g.id), false]) // TODO: set to true if corresponding group is selected already
+      ))
     };
   
     const handleClose = () => {
       setOpen(false);
       //console.log(groupsToBeAdded);
-        props.whenDone(groupsToBeAdded);
+      let addedIds = [];
+      let notAddedIds = [];
+      //console.log(groupsToBeAdded);
+      for (const [k, v] of groupsToBeAdded) {
+        if (v === true) {
+            addedIds.push(Number(k));
+        }
+        else {
+            notAddedIds.push(Number(k));
+        }
+      }
+      props.whenDone(addedIds, notAddedIds);
     };
 
     const handleGroupsToBeAdded = (groups) => {
-        setGroupsToBeAdded(new Map(groups));
-        //console.log("prova");
-        //console.log(groupsToBeAdded);
+        setGroupsToBeAdded(groups);
     }
 
     return (
@@ -87,7 +99,7 @@ function AddGroupDialog(props) {
         </Button>
         <Dialog
           open={open}
-          onClose={handleClose}
+          //onClose={handleClose}
           aria-labelledby="add-group-dialog"
           aria-describedby="add-group-dialog-description"
         >
@@ -96,7 +108,7 @@ function AddGroupDialog(props) {
             <DialogContentText id="add-group-dialog-description">
               Select changes among your groups
             </DialogContentText>
-            <CheckboxLabels allGroups={props.allGroups} whenDone={handleGroupsToBeAdded}/>
+            <CheckboxLabels groupsCouldBeAdded={props.groupsCouldBeAdded} deviceGroups={props.deviceGroups} whenDone={handleGroupsToBeAdded}/>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose} color="primary">
@@ -111,37 +123,45 @@ function AddGroupDialog(props) {
 function CheckboxLabels(props) {
 
     const [groupsToBeAdded, setGroupsToBeAdded] = React.useState(
-        new Map(props.allGroups.map(
+        new Map(props.groupsCouldBeAdded.map(
                 g => [String(g.id), false]) // TODO: set to true if corresponding group is selected already
             )
     );
 
-    const updateGroups = (k,v) => {
+    const updateGroups = (k, v) => {
         setGroupsToBeAdded(new Map(groupsToBeAdded.set(k,v)));
+        for (const [k, v] of groupsToBeAdded) {
+            console.log("state of boxes"+k+"   "+v);
+        }
     }
 
     const handleChange = (event) => {
         updateGroups(event.target.name, event.target.checked);
         props.whenDone(groupsToBeAdded); // gets arguments to the father, i.e. the dialog box
-        //console.log(groupsToBeAdded);
+        
     };
     
     return (
       <FormGroup>
         {
-            props.allGroups.map(g => 
+            props.groupsCouldBeAdded.map(g => 
                 <FormControlLabel
                     control={
                         <Checkbox
                             checked={groupsToBeAdded.get(String(g.id))}
                             onChange={handleChange}
-                            name={g.id}
+                            name={String(g.id)}
                             color="primary"
                         />
                     }
                     label={g.name}
                     key={String(g.id)}
                 />
+            )
+        }
+        {
+            props.deviceGroups.map(g => 
+                <FormControlLabel disabled control={<Checkbox checked name="NULL" />} label={g.name} key={String(g.id)}/>
             )
         }
       </FormGroup>
@@ -169,7 +189,7 @@ class DeviceConfig extends React.Component {
         this.handleOnOff = this.handleOnOff.bind(this);
         this.handleToken = this.handleToken.bind(this);
         this.handleSave = this.handleSave.bind(this);
-        this.handleAddGroups = this.handleAddGroups(this);
+        //this.handleAddGroups = this.handleAddGroups(this);
     }
 
     componentDidMount() {
@@ -232,23 +252,32 @@ class DeviceConfig extends React.Component {
         this.setState({groups: newGroups})
     }
 
-    handleAddGroups = (groups) => { // map of groups returned by dialog box
-        for (let g in groups) {
-            this.setState({deviceGroups: [...this.state.deviceGroups, g]}); // adds selected groups
+    handleAddGroups = (addedIds, notAddedIds) => { // map of groups returned by dialog box
+        console.log("gotten ids"+addedIds);
+
+        for (let i = 0; i < addedIds.length; i++) {
+
+            // adds the group to the device
+            let indexToBeAdded = this.state.allGroups.findIndex(group => group.id === addedIds[i]);
+            let newGroupToBeAdded = this.state.allGroups[indexToBeAdded];
+            console.log("gotten group to add: "+newGroupToBeAdded.name);
+            let updatedDeviceGroups = [...this.state.deviceGroups, newGroupToBeAdded];
+            this.setState({deviceGroups: [...updatedDeviceGroups]}, () => {
+                console.log(this.state.deviceGroups, 'device groups added');
+            }); 
+
+            // removes the group to the groups that could still be added to the device
+            let indexToBeRemoved = this.state.groupsCouldBeAdded.findIndex(group => group.id === addedIds[i]);
+            let updatedDeviceGroupsCouldBeAdded = [...this.state.groupsCouldBeAdded];
+            updatedDeviceGroupsCouldBeAdded.splice(indexToBeRemoved, 1);
+            this.setState({groupsCouldBeAdded: [...updatedDeviceGroupsCouldBeAdded]}, () => {
+                console.log(this.state.groupsCouldBeAdded, 'device groups that could now be added');
+            }); 
         }
 
-        // updates groupsCouldBeAdded
-        let diff = [...this.state.allGroups];
-        for (let i = 0; i < this.state.deviceGroups.length; i++) {
-            let index = diff.findIndex(group => group.id === this.state.deviceGroups[i].id);
-            if (index !== -1) {
-                diff.splice(index, 1);
-            }
-        }
-        this.setState({groupsCouldBeAdded: [...diff]});
-        console.log(this.state.groupsCouldBeAdded);
-
-
+        console.log("--.-----------");
+        console.log(this.state.deviceGroups);
+        console.log("--.-----------");
     };
 
     handleToken(event) {
@@ -284,6 +313,7 @@ class DeviceConfig extends React.Component {
             console.log(error.response);
         })
         
+        // sets token
         if (this.state.newToken) {
             axios.put('devices/3/generatetoken/')
             .then((resp) => {
@@ -293,7 +323,17 @@ class DeviceConfig extends React.Component {
                 console.log(error.response);
             })
         }
-        
+
+        // sets groups
+        axios.put('devices/3/config/'+
+                '?updateFrequency='+this.state.refreshRate+
+                '&enabled='+this.state.enabled)
+        .then((resp) => {
+            console.log(resp);
+        })
+        .catch((error) => {
+            console.log(error.response);
+        })
     }
     
     render() {
@@ -317,15 +357,15 @@ class DeviceConfig extends React.Component {
                         </form>
                     </div>
                     { // creates as many group buttons as needed
-                        this.state.deviceGroups.map(gr => 
-                            <div className="group" key={gr.id}>
-                                {gr.name}
+                        this.state.deviceGroups.map(g => 
+                            <div className="group" key={g.id}>
+                                {g.name}
                             </div>
                         )
                     }
                     <div className="addgroup">
                         {console.log(this.state.groupsCouldBeAdded)}
-                        <AddGroupDialog allGroups={this.state.groupsCouldBeAdded} whenDone={this.handleAddGroups}/>
+                        <AddGroupDialog groupsCouldBeAdded={this.state.groupsCouldBeAdded} deviceGroups={this.state.deviceGroups} whenDone={this.handleAddGroups}/>
                     </div>
                     <div className="token">
                         <form onSubmit={this.handleToken} >
