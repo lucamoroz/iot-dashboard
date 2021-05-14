@@ -1,10 +1,13 @@
-import {NavLink, Route, Switch} from "react-router-dom";
+import {Route, Switch} from "react-router-dom";
 import {createMuiTheme, makeStyles, ThemeProvider} from '@material-ui/core/styles';
 
-import Home from "./pages/Home";
 import Signup from "./pages/Signup";
 import Signin from "./pages/Signin";
-import DeviceConfig from "./pages/DeviceConfig";
+import LandingPage from './pages/LandingPage';
+import {Backdrop, CircularProgress, CssBaseline} from "@material-ui/core";
+import React, {useContext, useEffect, useState} from "react";
+import CustomerContext from "./CustomerContext";
+import Dashboard from "./Dashboard";
 
 // Allow to customize theme (e.g. change primary, secondary colors, ... )
 const theme = createMuiTheme();
@@ -12,44 +15,74 @@ const theme = createMuiTheme();
 const useStyles = makeStyles({
     root: {
         display: "inline"
+    },
+    backdrop: {
+        zIndex: theme.zIndex.drawer + 1,
+        color: '#fff',
     }
 });
 
+const axios = require('axios').default
+axios.defaults.withCredentials = true
+axios.defaults.baseURL = 'http://localhost:8080'
+
+
 function App() {
     const classes = useStyles();
+    const customerContext = useContext(CustomerContext);
+    const [customer, setCustomer] = useState(customerContext.customer);
+    const [isLoggedIn, setIsLoggedIn] = useState(customerContext.isLoggedIn);
+
+    // Check if customer is logged in, update context if so (done on page refresh or close & open)
+    useEffect(() => {
+        axios.get('/customer/me')
+            .then((res) => {
+                console.log("App retrieved logged customer: " + res.data);
+                const newCus = res.data;
+                const prevCus = customer;
+
+                if (newCus.id !== prevCus.id || newCus.username !== prevCus.username || newCus.email !== prevCus.email
+                    || newCus.callsCount !== prevCus.callsCount || newCus.plan !== prevCus.plan) {
+                    setCustomer(newCus);
+                }
+                if (!isLoggedIn) {
+                    setIsLoggedIn(true);
+                }
+            })
+            .catch((err) => {
+                console.log("Customer not logged in");
+                setIsLoggedIn(false);
+            });
+    }, []);
+
     return (
         <ThemeProvider theme={theme}>
-            <div className={classes.root}>
-                <Navbar />
-                <Main />
-                <Footer />
-            </div>
+            <CssBaseline/>
+            <CustomerContext.Provider
+                value={{
+                    customer: customer,
+                    setCustomer: setCustomer,
+                    isLoggedIn: isLoggedIn,
+                    setIsLoggedIn: setIsLoggedIn}}
+            >
+                <div className={classes.root}>
+                    <Backdrop className={classes.backdrop} open={isLoggedIn === undefined}>
+                        <CircularProgress color="inherit" />
+                    </Backdrop>
+                    <Main />
+                </div>
+            </CustomerContext.Provider>
         </ThemeProvider>
     );
 }
 
-const Navbar = () => (
-    <nav>
-        <ul>
-            <li><NavLink to='/'>Home</NavLink></li>
-            <li><NavLink to='/signup'>Signup</NavLink></li>
-            <li><NavLink to='/signin'>Signin</NavLink></li>
-            <li><NavLink to='/deviceconfig'>DeviceConfig</NavLink></li>
-        </ul>
-    </nav>
-);
-
 const Main = () => (
     <Switch>  { /* Render only the first Route that matches the URL */ }
-        <Route exact path='/' component={Home} /> { /* Render component Home when the URL matches the path '/' */ }
+        <Route exact path='/' component={LandingPage} /> { /* Render component Home when the URL matches the path '/' */ }
         <Route exact path='/signup' component={Signup} /> { /* Note: removing 'exact' we could have a Rout with path='/device' that matches child paths e.g. '/device/status' */ }
         <Route exact path='/signin' component={Signin} />
-        <Route exact path='/deviceconfig' component={DeviceConfig} />
+        <Route path='/dashboard' component={Dashboard} />
     </Switch>
-);
-
-const Footer = () => (
-    <div>This is the footer</div>
 );
 
 
