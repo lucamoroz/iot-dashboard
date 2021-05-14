@@ -69,6 +69,8 @@ export default function OrderList(props){
                     ord["total"]=total;
 
                 });
+                //sort orders by id
+                ords.sort((a, b) => parseFloat(b.id) - parseFloat(a.id));
                 console.log("orders",ords);
                 setOrders(ords);
             })
