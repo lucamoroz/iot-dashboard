@@ -5,6 +5,7 @@ import {makeStyles} from "@material-ui/core/styles";
 import IconButton from '@material-ui/core/IconButton';
 import SettingsIcon from '@material-ui/icons/Settings';
 import PowerIcon from '@material-ui/icons/Power';
+import CachedIcon from '@material-ui/icons/Cached';
 import PowerOffIcon from '@material-ui/icons/PowerOff';
 import { green, red } from '@material-ui/core/colors';
 import {Link as RouterLink} from 'react-router-dom';
@@ -261,9 +262,10 @@ function DashboardPage(props) {
     const [group, setGroup] = useState("");
     const [devices, setDevices] = useState([]);
     const [groups, setGroups] = useState([]);
-    const [product, setProduct] = useState([]);
+    const [product, setProduct] = useState("");
     const [products, setProducts] = useState([]);
     const [sortby, setSortby] = useState("id");
+    const [reload, setReload] = useState(false);
     const [visualization, setVisualization] = useState(
         window.innerWidth < 620 ? "compact" : "wide"
     );
@@ -282,7 +284,7 @@ function DashboardPage(props) {
             .then(res => {
                 setGroups(res.data)
             })
-    }, []);
+    }, [reload]);
 
     useEffect(() => {
         // get user's products
@@ -290,7 +292,7 @@ function DashboardPage(props) {
             .then(res => {
                 setProducts(res.data)
             })
-    }, []);
+    }, [reload]);
 
     useEffect(() => {
         // get devices
@@ -307,7 +309,7 @@ function DashboardPage(props) {
             .then(res => {
                 setDevices(res.data);
             })
-    }, [group, product]);
+    }, [group, product, reload]);
 
     const sortByItems = {
         "id": (a,b) => a["device"]["id"] - b["device"]["id"],
@@ -315,8 +317,10 @@ function DashboardPage(props) {
         "enabled": (a,b) => a["device"]["config"]["enabled"] - b["device"]["config"]["enabled"]
     };
 
-    function handleVisualization(e) {
-        setVisualization(e.target.value);
+    const handleVisualization = (e) => setVisualization(e.target.value);
+    const handleOnReloadClick = (e) => {
+        setDevices([]);
+        setReload(!reload);
     }
 
     return (
@@ -390,6 +394,9 @@ function DashboardPage(props) {
                         }
                     </Select>
                 </FormControl>
+                <IconButton onClick={handleOnReloadClick}>
+                    <CachedIcon/>
+                </IconButton>
             </div>
             <div className={classes.devices}>
                 <Devices mode={visualization} devices={devices.sort(sortByItems[sortby])}/>
