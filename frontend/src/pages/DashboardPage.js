@@ -20,7 +20,8 @@ import {
     FormControlLabel,
     FormLabel,
     Link, Radio,
-    RadioGroup
+    RadioGroup,
+    Zoom
 } from "@material-ui/core";
 import {
     BatteryAlert,
@@ -34,8 +35,7 @@ import {
 } from "@material-ui/icons";
 import Typography from "@material-ui/core/Typography";
 import CustomerContext from "../CustomerContext";
-import Button from "@material-ui/core/Button";
-import CardMedia from "@material-ui/core/CardMedia";
+import { useEffect } from "react";
 
 const axios = require('axios').default
 
@@ -141,6 +141,8 @@ function Device (props) {
     const deviceStatus = props.deviceData["device"]["deviceStatus"];
     const productName = props.deviceData["product_name"];
     const groups = props.deviceData["groups"];
+    const {checked} = props;
+    const {delay} = props;
 
     const capitalize = (s) => {
         if (typeof s !== 'string') return ''
@@ -187,41 +189,43 @@ function Device (props) {
     );
 
     const wide = (
-        <Grid container alignItems="center">
-            <Grid item xs={11}>
-                <Card className={classes.deviceCard}>
-                    <CardActionArea component={RouterLink} to={"/dashboard/device/"+deviceId}>
-                        <CardContent className={classes.deviceContainer}>
-                            <Paper className={classes.paper} style={{width: "auto"}}>
-                                <DeviceEnabledIndicator enabled={deviceConfig["enabled"]}/>
-                                <Battery percentage={deviceStatus["battery"]}/>
-                            </Paper>
-                            <Paper className={classes.paper} style={{width: 70}}>
-                                <Typography>ID: {deviceId}</Typography>
-                            </Paper>
-                            {
-                                groups.map(group =>
-                                    <DeviceGroups key={group["id"]} groupName={capitalize(group["name"])}/>
-                                )
-                            }
-                                <Paper className={classes.paper}>
-                                    <Typography noWrap>{capitalize(productName)}</Typography>
+        <Zoom in={checked} style={{ transitionDelay: checked ? delay : 0 }}>
+            <Grid container alignItems="center">
+                <Grid item xs={11}>
+                    <Card className={classes.deviceCard}>
+                        <CardActionArea component={RouterLink} to={"/dashboard/device/"+deviceId}>
+                            <CardContent className={classes.deviceContainer}>
+                                <Paper className={classes.paper} style={{width: "auto"}}>
+                                    <DeviceEnabledIndicator enabled={deviceConfig["enabled"]}/>
+                                    <Battery percentage={deviceStatus["battery"]}/>
                                 </Paper>
-                            {
-                                Object.keys(deviceData).map(key =>
-                                    <DeviceData key={key} dataType={capitalize(key)} value={deviceData[key]}/>
-                                )
-                            }
-                        </CardContent>
-                    </CardActionArea>
-                </Card>
+                                <Paper className={classes.paper} style={{width: 70}}>
+                                    <Typography>ID: {deviceId}</Typography>
+                                </Paper>
+                                {
+                                    groups.map(group =>
+                                        <DeviceGroups key={group["id"]} groupName={capitalize(group["name"])}/>
+                                    )
+                                }
+                                    <Paper className={classes.paper}>
+                                        <Typography noWrap>{capitalize(productName)}</Typography>
+                                    </Paper>
+                                {
+                                    Object.keys(deviceData).map(key =>
+                                        <DeviceData key={key} dataType={capitalize(key)} value={deviceData[key]}/>
+                                    )
+                                }
+                            </CardContent>
+                        </CardActionArea>
+                    </Card>
+                </Grid>
+                <Grid item xs={1}>
+                    <IconButton component={RouterLink} to={"/dashboard/device/"+deviceId+"/config"} >
+                        <SettingsIcon/>
+                    </IconButton>
+                </Grid>
             </Grid>
-            <Grid item xs={1}>
-                <IconButton component={RouterLink} to={"/dashboard/device/"+deviceId+"/config"} >
-                    <SettingsIcon/>
-                </IconButton>
-            </Grid>
-        </Grid>
+        </Zoom>
     );
 
     if (props.mode === "compact") {
@@ -232,10 +236,14 @@ function Device (props) {
 }
 
 function Devices(props) {
+    const [checked, setChecked] = useState(false);
+    useEffect(() => {
+        setChecked(true);
+    }, []);
     if (props.devices.length > 0) {
         return props.devices
-            .map(device =>
-                <Device mode={props.mode} key={device["device"]["id"]} deviceData={device}/>
+            .map((device, i) =>
+                <Device mode={props.mode} key={device["device"]["id"]} deviceData={device} checked={checked} delay={i * 50}/>
             )
     } else {
         return <Typography>No devices</Typography>

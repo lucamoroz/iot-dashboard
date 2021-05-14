@@ -32,7 +32,8 @@ import OrderList from "./pages/OrderList";
 import Order from "./pages/Order";
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import HistoryIcon from '@material-ui/icons/History';
-import {Badge} from "@material-ui/core";
+import {Badge, Button} from "@material-ui/core";
+import Product from './pages/Product';
 
 const drawerWidth = 240;
 
@@ -203,6 +204,9 @@ function Dashboard(props) {
                 <Route exact path={`${match.path}/shop/cart`} component={ShopCart} />
                 <Route exact path={`${match.path}/shop/orders`} component={OrderList} />
                 <Route exact path={`${match.path}/shop/order/:id`} component={Order} />
+                <Route exact path={`${match.path}/shop/product/:id`} render={(props) => (
+                    <Product {...props} handleSetCartCount={handleSetCartCount} />
+                )} />
             </Switch>
         </main>
     );
