@@ -20,7 +20,7 @@ import IconButton from "@material-ui/core/IconButton";
 import { ResponsiveLine } from '@nivo/line'
 import {Link as RouterLink} from "react-router-dom";
 
-//import { dataLabelsFormat } from '../hook/util.js';
+import { dataLabelsSpace } from '../hook/util.js';
 
 
 const axios = require('axios').default
@@ -42,9 +42,8 @@ function timestampFormat(timestamp) {
  * @param dataLabel
  * @returns {string}
  */
-function dataLabels(dataLabel) {
-    //let dataLabelFormatted = dataLabelsFormat(dataLabel);
-    let dataLabelFormatted = dataLabel;
+function dataLabelsFormat(dataLabel) {
+    let dataLabelFormatted = dataLabelsSpace(dataLabel);
 
     switch (dataLabel) {
         case 'windBearing':
@@ -226,7 +225,7 @@ function DataTable(props) {
                 <TableRow>
                     <TableCell>Timestamp</TableCell>
                     {props.dataLabels.map((data) => (
-                        <TableCell key={data}>{dataLabels(data)}</TableCell>
+                        <TableCell key={data}>{dataLabelsFormat(data)}</TableCell>
                     ))}
                 </TableRow>
             </TableHead>
@@ -358,7 +357,7 @@ class Device extends React.Component {
                 for (let i = 0; i < dataLabels.length; i++) {
                     if (dataLabels[i] !== 'windBearing') {
                         let lineData = [];
-                        lineData['id'] = dataLabels(dataLabels[i]);
+                        lineData['id'] = dataLabelsFormat(dataLabels[i]);
                         lineData['data'] = [];
                         for (let timestamp in res.data) {
                             let data = res.data[timestamp];
