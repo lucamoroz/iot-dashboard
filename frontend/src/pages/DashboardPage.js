@@ -81,6 +81,11 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: "#EAEAEA",
         float: "left",
     },
+    devices: {
+        display: "flex",
+        flexFlow: "row wrap",
+        alignContent: "space-between"
+    }
 }));
 
 function DeviceEnabledIndicator(props) {
@@ -271,7 +276,7 @@ function DashboardPage(props) {
         props.history.push('/signin');
     }
 
-    React.useEffect(() => {
+    useEffect(() => {
         // get user's groups
         axios.get("/groups")
             .then(res => {
@@ -279,7 +284,7 @@ function DashboardPage(props) {
             })
     }, []);
 
-    React.useEffect(() => {
+    useEffect(() => {
         // get user's products
         axios.get("/products")
             .then(res => {
@@ -287,7 +292,7 @@ function DashboardPage(props) {
             })
     }, []);
 
-    React.useEffect(() => {
+    useEffect(() => {
         // get devices
         const params = {
             includeLastData: true,
@@ -386,9 +391,9 @@ function DashboardPage(props) {
                     </Select>
                 </FormControl>
             </div>
-            {
+            <div className={classes.devices}>
                 <Devices mode={visualization} devices={devices.sort(sortByItems[sortby])}/>
-            }
+            </div>
         </div>
     );
 }
