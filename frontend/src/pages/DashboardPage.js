@@ -77,7 +77,7 @@ const useStyles = makeStyles((theme) => ({
     },
     deviceCardCompact: {
         width: 230,
-        margin: 20,
+        margin: 10,
         backgroundColor: "#EAEAEA",
         float: "left",
     },
