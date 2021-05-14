@@ -8,49 +8,16 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
+import TextField from '@material-ui/core/TextField';
+import { Typography } from '@material-ui/core';
+import Switch from '@material-ui/core/Switch';
 
-//import { makeStyles } from '@material-ui/core/styles';
-//import TextField from '@material-ui/core/TextField';
-
-// const useStyles = makeStyles((theme) => ({
-//   root: {
-//     display: 'flex',
-//     flexWrap: 'wrap',
-//   },
-//   textField: {
-//     marginLeft: theme.spacing(1),
-//     marginRight: theme.spacing(1),
-//     width: '25ch',
-//   },
-// }));
-
-// function RefreshForm(props) {
-//   const classes = useStyles();
-
-//   return (
-//     <div className={classes.root}>
-//       <div>
-//         <TextField
-//           id="standard-full-width"
-//           label="New refresh rate"
-//           style={{ margin: 8 }}
-//           placeholder={props.rate}
-//           margin="normal"
-//           InputLabelProps={{
-//             shrink: true,
-//           }}
-//         />
-
-//       </div>
-//     </div>
-//   );
-// }
 
 const axios = require('axios').default
 
 const DeviceId = (props) => (
 	<div>
-  	    deviceID: {props.id}
+  	    <Typography>deviceID: {props.id} </Typography>
 	</div>
 );
 
@@ -94,7 +61,7 @@ function AddGroupDialog(props) {
 
     return (
       <div>
-        <Button variant="outlined" color="primary" onClick={handleClickOpen}>
+        <Button variant="contained" color="primary" onClick={handleClickOpen}>
           Customize groups
         </Button>
         <Dialog
@@ -194,7 +161,7 @@ class DeviceConfig extends React.Component {
 
     componentDidMount() {
 
-        axios.get('devices/3')
+        axios.get('devices/1')
         .then((resp) => {
             // Copies the groups name from the response
             let groups = [...resp.data.groups];
@@ -274,10 +241,6 @@ class DeviceConfig extends React.Component {
                 console.log(this.state.groupsCouldBeAdded, 'device groups that could now be added');
             }); 
         }
-
-        console.log("--.-----------");
-        console.log(this.state.deviceGroups);
-        console.log("--.-----------");
     };
 
     handleToken(event) {
@@ -303,7 +266,7 @@ class DeviceConfig extends React.Component {
     handleSave(event) {
 
         // sets frequency and enabled
-        axios.put('devices/3/config/'+
+        axios.put('devices/1/config/'+
                 '?updateFrequency='+this.state.refreshRate+
                 '&enabled='+this.state.enabled)
         .then((resp) => {
@@ -315,7 +278,7 @@ class DeviceConfig extends React.Component {
         
         // sets token
         if (this.state.newToken) {
-            axios.put('devices/3/generatetoken/')
+            axios.put('devices/1/generatetoken/')
             .then((resp) => {
                 console.log(resp);
             })
@@ -325,9 +288,12 @@ class DeviceConfig extends React.Component {
         }
 
         // sets groups
-        axios.put('devices/3/config/'+
-                '?updateFrequency='+this.state.refreshRate+
-                '&enabled='+this.state.enabled)
+        let groupsIds = []
+        for (let i = 0; i < this.state.deviceGroups.length; i++) {
+            groupsIds.push(Number(this.state.deviceGroups[i].id))
+        }
+        
+        axios.put('devices/1/group/', groupsIds)
         .then((resp) => {
             console.log(resp);
         })
@@ -346,20 +312,23 @@ class DeviceConfig extends React.Component {
         else {
             return (
                 <div className="deviceconfig">
-                    <DeviceId id="3" />
+                    <DeviceId id="1" />
                     <div className="refreshrate">
                         <form onChange={this.handleRefreshChange}>
-                            frequency={this.props.rate}
-                            <input 
-                                type="text" 
-                                placeholder={this.state.refreshRate}
+                            <TextField
+                                id="refreshratetext"
+                                label="Frequency"
+                                placeholder={this.props.refreshRate}
+                                helperText="Customize device's refesh rate"
+                                margin="normal"
                             />
                         </form>
+  
                     </div>
                     { // creates as many group buttons as needed
                         this.state.deviceGroups.map(g => 
                             <div className="group" key={g.id}>
-                                {g.name}
+                                <Typography>{g.name}</Typography>
                             </div>
                         )
                     }
@@ -368,21 +337,33 @@ class DeviceConfig extends React.Component {
                         <AddGroupDialog groupsCouldBeAdded={this.state.groupsCouldBeAdded} deviceGroups={this.state.deviceGroups} whenDone={this.handleAddGroups}/>
                     </div>
                     <div className="token">
-                        <form onSubmit={this.handleToken} >
-                            token={this.state.token}
-                            <button>{this.state.newToken ? "DONT GENERATE":"GENERATE NEW"}</button>
-                        </form>
+                        <TextField disabled id="standard-disabled" defaultValue={String(this.props.token)} />
+                           
+                        {
+                            this.state.newToken 
+                            ? 
+                                <Button onClick={this.handleToken} variant="contained" color="primary">Don't generate</Button> 
+                            : 
+                                <Button onClick={this.handleToken} variant="contained" color="primary">Generate</Button>
+                        }
                     </div>
                     <div className="enabledevice">
-                        <form onSubmit={this.handleOnOff} >
-                            {this.state.enabled ? "device ON":" device OFF"}
-                            <button>{this.state.enabled ? "OFF":"ON"}</button>
-                        </form>
+                        <FormControlLabel
+                            control={
+                            <Switch
+                                checked={this.state.enabled}
+                                onChange={this.handleOnOff}
+                                color="primary"
+                            />
+                            }
+                            label={this.state.enabled ? "device ON":" device OFF"}
+                        />
                     </div>
                     <div className="save">
-                        <form onSubmit={this.handleSave} >
-                            <button>SAVE CHANGES</button>
-                        </form>
+                        
+                        <Button onClick={this.handleSave} variant="contained" color="primary">
+                            Save Changes
+                        </Button>
                     </div>
                 </div>
             );
