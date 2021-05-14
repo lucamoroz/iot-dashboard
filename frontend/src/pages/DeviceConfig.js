@@ -161,7 +161,7 @@ class DeviceConfig extends React.Component {
 
     componentDidMount() {
 
-        axios.get('devices/1')
+        axios.get('devices/'+this.props.match.params.id)
         .then((resp) => {
             // Copies the groups name from the response
             let groups = [...resp.data.groups];
@@ -266,7 +266,7 @@ class DeviceConfig extends React.Component {
     handleSave(event) {
 
         // sets frequency and enabled
-        axios.put('devices/1/config/'+
+        axios.put('devices/'+this.props.match.params.id+'/config/'+
                 '?updateFrequency='+this.state.refreshRate+
                 '&enabled='+this.state.enabled)
         .then((resp) => {
@@ -278,7 +278,7 @@ class DeviceConfig extends React.Component {
         
         // sets token
         if (this.state.newToken) {
-            axios.put('devices/1/generatetoken/')
+            axios.put('devices/'+this.props.match.params.id+'/generatetoken/')
             .then((resp) => {
                 console.log(resp);
             })
@@ -293,7 +293,7 @@ class DeviceConfig extends React.Component {
             groupsIds.push(Number(this.state.deviceGroups[i].id))
         }
         
-        axios.put('devices/1/group/', groupsIds)
+        axios.put('devices/'+this.props.match.params.id+'/group/', groupsIds)
         .then((resp) => {
             console.log(resp);
         })
@@ -312,7 +312,7 @@ class DeviceConfig extends React.Component {
         else {
             return (
                 <div className="deviceconfig">
-                    <DeviceId id="1" />
+                    <DeviceId id={this.props.match.params.id} />
                     <div className="refreshrate">
                         <form onChange={this.handleRefreshChange}>
                             <TextField
