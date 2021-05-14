@@ -33,6 +33,7 @@ import Order from "./pages/Order";
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import HistoryIcon from '@material-ui/icons/History';
 import {Badge} from "@material-ui/core";
+import DeviceConfig from "./pages/DeviceConfig";
 
 const drawerWidth = 240;
 
@@ -239,6 +240,7 @@ function Dashboard(props) {
                     <Route exact path={`${match.path}/shop/cart`} component={ShopCart} />
                     <Route exact path={`${match.path}/shop/orders`} component={OrderList} />
                     <Route exact path={`${match.path}/shop/order/:id`} component={Order} />
+                    <Route exact path={`${match.path}/device/:id/config`} component={DeviceConfig} />
                 </Switch>
             </main>
         </div>
