@@ -5,6 +5,11 @@ import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import {ExitToApp} from "@material-ui/icons";
 import SnackbarAlert from "../components/SnackbarAlert";
 
+//Dialog pop-up imports
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
 import CustomerContext from "../CustomerContext";
 
 const axios = require('axios').default
@@ -24,6 +29,8 @@ export default function Profile(props) {
     const classes = useStyles();
     const customerContext = useContext(CustomerContext);
     const [error, setError] = useState("");
+    const [openLogoutDialog, setOpenLogoutDialog] = useState(false);
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
     const customer = customerContext.customer;
 
@@ -52,7 +59,6 @@ export default function Profile(props) {
                 setError(errorMsg);
             });
     }, [customerContext]);
-
 
     function deleteCustomer() {
         axios.delete('/customer/me')
@@ -102,7 +108,7 @@ export default function Profile(props) {
                             variant="contained"
                             color="primary"
                             startIcon={<ExitToApp />}
-                            onClick={logoutCustomer}
+                            onClick={() => setOpenLogoutDialog(true)}
                         >
                             Logout
                         </Button>
@@ -112,7 +118,7 @@ export default function Profile(props) {
                             variant="contained"
                             color="secondary"
                             startIcon={<DeleteForeverIcon />}
-                            onClick={deleteCustomer}
+                            onClick={() => setOpenDeleteDialog(true)}
                         >
                             Delete
                         </Button>
@@ -126,6 +132,37 @@ export default function Profile(props) {
                 severity="error"
                 message={error}
             />
+
+            <Dialog
+                open={openLogoutDialog}
+                onClose={() => setOpenLogoutDialog(false)}
+            >
+                <DialogTitle id="alert-dialog-title">{"Are you sure to Log-Out?"}</DialogTitle>
+
+                <DialogActions>
+                    <Button onClick={() => setOpenLogoutDialog(false)} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={logoutCustomer} color="primary" autoFocus>
+                        Confirm
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog
+                open={openDeleteDialog}
+                onClose={() => setOpenDeleteDialog(false)}
+            >
+                <DialogTitle id="alert-dialog-title">{"Are you sure to Log-Out?"}</DialogTitle>
+
+                <DialogActions>
+                    <Button onClick={() => setOpenDeleteDialog(false)} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={deleteCustomer} color="primary" autoFocus>
+                        Confirm
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Container>
     )
 }

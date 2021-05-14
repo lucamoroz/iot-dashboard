@@ -20,6 +20,8 @@ import IconButton from "@material-ui/core/IconButton";
 import { ResponsiveLine } from '@nivo/line'
 import {Link as RouterLink} from "react-router-dom";
 
+import { dataLabelsSpace } from '../hook/util.js';
+
 
 const axios = require('axios').default
 
@@ -36,15 +38,12 @@ function timestampFormat(timestamp) {
 }
 
 /**
- * Formats the labels adding spacing ("camelCase" to "Camel Case") and
- * add measurement units depending on the data type
- * @param dataLabel String representing the raw label
- * @returns {string} String of the formatted label
+ * Adds measurement units depending on the data type
+ * @param dataLabel
+ * @returns {string}
  */
 function dataLabelsFormat(dataLabel) {
-    let dataLabelFormatted = dataLabel
-        .replace(/([A-Z])/g, ' $1') // insert a space before all caps
-        .replace(/^./, function(str){ return str.toUpperCase(); }); // uppercase the first character
+    let dataLabelFormatted = dataLabelsSpace(dataLabel);
 
     switch (dataLabel) {
         case 'windBearing':
@@ -296,6 +295,7 @@ class Device extends React.Component {
      * This is the function called after the Component is called where React advice to make remote calls.
      */
     loadData() {
+
         //Gets device data from the API
         axios.get('/devices/'+this.props.match.params.id+'/data')
             .then((res) => {
@@ -426,13 +426,13 @@ class Device extends React.Component {
         } else {
             return (
                 <Grid container spacing={2}>
-                    <Grid item xs={12} container style={{width: 'calc(100% - 57px)'}}>
+                    <Grid item xs={12} container style={{width: '100%'}}>
                         <Typography variant={"h4"}>Device</Typography>
                         <IconButton component={RouterLink} to={"/dashboard/device/"+this.props.match.params.id+"/config"}>
                             <SettingsIcon/>
                         </IconButton>
                     </Grid>
-                    <Grid item key="left" md={7} sm={12} style={{width: 'calc(100% - 57px)'}}>
+                    <Grid item key="left" md={7} sm={12} style={{width: '100%'}}>
                         <Grid item xs={12}>
                             <Graph graphData={this.state.graphData}/>
                         </Grid>
@@ -442,7 +442,7 @@ class Device extends React.Component {
                             </Paper>
                         </Grid>
                     </Grid>
-                    <Grid item key="right" md={5} sm={12} style={{width: 'calc(100% - 57px)'}}>
+                    <Grid item key="right" md={5} sm={12} style={{width: '100%'}}>
                         <Paper style={{overflowX: "auto"}}>
                             <DataTable dataLabels={this.state.dataLabels} tableRows={this.state.tableRows}/>
                         </Paper>

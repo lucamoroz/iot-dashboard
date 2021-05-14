@@ -13,21 +13,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundSize: 'cover',
     backgroundPosition: 'center',
   },
-  nextSection: {
-    //minHeight: '100vh',
-    backgroundColor: 'red',
-    
-  }
 }));
-
-function NextSection() {
-    const classes = useStyles();
-    return (
-        <div className={classes.nextSection}>
-            Welcome to the future!
-        </div>
-    );
-}
 
 //Not optimized for network calls. For every render it calls the axiom.get function. TODO: Solve this by using react component
 export default function LandingPage(props) {
@@ -44,7 +30,6 @@ export default function LandingPage(props) {
     <div className={classes.root}>
         <CssBaseline />
         <LandingHeader/>
-        <NextSection />
     </div>
     
   );

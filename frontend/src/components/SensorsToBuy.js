@@ -1,21 +1,13 @@
 import React from 'react';
-import {withStyles} from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import ImageCard from './ImageCard';
 import ImageCardExpanded from './ImageCardExpanded';
+import { Link as RouterLink } from 'react-router-dom';
+import { Zoom } from '@material-ui/core';
+import { useState } from 'react';
+import { useEffect } from 'react';
 
 const axios = require('axios').default
-
-/*const useStyles = makeStyles((theme) => ({
-  root: {
-    minHeight: '100vh',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    [theme.breakpoints.down('md')]: {
-        flexDirection: 'column',
-    }
-  }
-}));*/
 
 const styles = theme => ({
   root: {
@@ -24,31 +16,64 @@ const styles = theme => ({
     justifyContent: 'center',
     alignItems: 'center',
     [theme.breakpoints.down('md')]: {
-        flexDirection: 'column',
+      flexDirection: 'column',
     }
   },
 });
 
-class SensorCards extends React.Component {
+/*class SensorCards extends React.Component {
   constructor(props) {
     super(props);
     this.onAddToCart = props.onAddToCart.bind(this);
   }
 
   render() {
-    const {className} = this.props
-    const {sensors} = this.props
+    const { className } = this.props
+    const { sensors } = this.props
     return (
       <div className={className} id='sensors-to-buy'>
         {
           sensors.map((sensor, i) => {
-            return <ImageCard sensor={sensor} key={sensor.id} checked={true} onAddToCart={this.onAddToCart} onClick={()=> this.props.onSensorClicked(sensor)}/>
+            return <Zoom
+            in={true} style={{ transitionDelay: i *100 }}>
+              <ImageCard
+              sensor={sensor}
+              key={sensor.id}
+              checked={true}
+              onAddToCart={this.onAddToCart}
+              component={RouterLink} to={"/dashboard/shop/product/" + sensor.id} />
+            </Zoom>
           })
         }
-        
+
       </div>
     );
   }
+}*/
+
+function SensorCards(props) {
+  const [checked, setChecked] = useState(false);
+  const { className } = props;
+  const { sensors } = props;
+  useEffect(() => {
+    setChecked(true);
+  }, []);
+  return (
+    <div className={className} id='sensors-to-buy'>
+      {
+        sensors.map((sensor, i) => {
+          return <ImageCard
+          sensor={sensor}
+          key={sensor.id}
+          checked={checked}
+          delay={i * 100}
+          onAddToCart={props.onAddToCart}
+          component={RouterLink} to={"/dashboard/shop/product/" + sensor.id} />
+        })
+      }
+
+    </div>
+  );
 }
 
 class SensorsToBuy extends React.Component {
@@ -56,12 +81,12 @@ class SensorsToBuy extends React.Component {
     super(props);
     this.state = {
       sensors: [],
-      sensorToExpand: null
+      isLoading: true,
     };
     //this.checked = useWindowPosition('header');
     this.onAddToCart = this.onAddToCart.bind(this);
     this.onProductAdded = this.props.onProductAdded.bind(this);
-    
+
   }
 
   onAddToCart(id) {
@@ -78,7 +103,7 @@ class SensorsToBuy extends React.Component {
       .then((res) => {
         this.setState({
           sensors: res.data,
-          sensorToExpand: null
+          isLoading: false,
         });
         console.log(res);
       })
@@ -88,56 +113,29 @@ class SensorsToBuy extends React.Component {
   }
 
   render() {
-    const {classes} = this.props;
-    const {sensors} = this.state;
-    const {sensorToExpand} = this.state;
+    const { classes } = this.props;
+    const { sensors } = this.state;
+    const { isLoading } = this.state;
     const quantity = 1; // Use this field if in future the user can choose the quantity directly in the card
-    if (sensorToExpand == null) {
+    if (isLoading == null) {
       return (
-        <SensorCards 
-          className={classes.root} 
-          sensors={sensors} 
-          onAddToCart={(id) => {this.onAddToCart(id); this.onProductAdded(quantity); }} 
-          onSensorClicked={ (sensor) => {this.setState({sensors: sensors, sensorToExpand: sensor})} }
-        />
+        <div>
+          Loading Data
+        </div>
       );
     }
     return (
-      <div className={classes.root} id='sensors-to-buy'>
-          <ImageCardExpanded
-            sensor={sensorToExpand} 
-            key={sensorToExpand.id} 
-            checked={true} 
-            onAddToCart={(id) => {this.onAddToCart(id); this.onProductAdded(quantity); }} 
-            onClose={() => {this.setState({sensors: sensors, sensorToExpand: null})}}
-          />
+      <div id="products-to-buy">
+        <SensorCards
+          className={classes.root}
+          sensors={sensors}
+          onAddToCart={(id) => { this.onAddToCart(id); this.onProductAdded(quantity); }}
+        />
       </div>
-      
-      );
-    
+
+    );
   }
 }
-
-/*export default function SensorsToBuy() {
-  const classes = useStyles();
-  const  checked = useWindowPosition('header');
-  const [sensorState, updateSensorState] = useState([])
-  axios.get("/products")
-    .then((res) => {
-      updateSensorState(res.data)
-      console.log(res);
-    })
-  return (
-    <div className={classes.root} id='sensors-to-buy'>
-      {
-        sensorState.map((sensor, i) => {
-          return <ImageCard sensor={sensor} checked={checked}/>
-        })
-      }
-      
-    </div>
-  );
-}*/
 
 //export default SensorsToBuy;
 export default withStyles(styles, { withTheme: true })(SensorsToBuy);

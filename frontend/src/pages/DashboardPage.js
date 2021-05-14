@@ -7,13 +7,22 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import PowerIcon from '@material-ui/icons/Power';
 import PowerOffIcon from '@material-ui/icons/PowerOff';
 import { green, red } from '@material-ui/core/colors';
-import { Link as RouterLink } from 'react-router-dom';
+import {Link as RouterLink} from 'react-router-dom';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Card from '@material-ui/core/Card';
-import {CardActionArea, CardContent} from "@material-ui/core";
+import {
+    CardActionArea,
+    CardActions,
+    CardContent,
+    FormControlLabel,
+    FormLabel,
+    Link, Radio,
+    RadioGroup,
+    Zoom
+} from "@material-ui/core";
 import {
     BatteryAlert,
     Battery20,
@@ -26,6 +35,7 @@ import {
 } from "@material-ui/icons";
 import Typography from "@material-ui/core/Typography";
 import CustomerContext from "../CustomerContext";
+import { useEffect } from "react";
 
 const axios = require('axios').default
 
@@ -64,7 +74,13 @@ const useStyles = makeStyles((theme) => ({
     },
     battery: {
         padding: 10
-    }
+    },
+    deviceCardCompact: {
+        width: 230,
+        margin: 20,
+        backgroundColor: "#EAEAEA",
+        float: "left",
+    },
 }));
 
 function DeviceEnabledIndicator(props) {
@@ -82,7 +98,7 @@ function DeviceEnabledIndicator(props) {
 function DeviceData(props) {
     const classes = useStyles();
     return (
-            <Paper className={classes.paper}>
+            <Paper className={classes.paper} style={{backgroundColor: "#77CBB9"}}>
                 <Typography noWrap>{props.dataType}: {props.value}</Typography>
             </Paper>
     )
@@ -91,8 +107,8 @@ function DeviceData(props) {
 function DeviceGroups(props) {
     const classes = useStyles();
     return (
-            <Paper className={classes.paper}>
-                <Typography>{props.groupName}</Typography>
+            <Paper className={classes.paper} style={{backgroundColor: "#DAD2BC"}}>
+                <Typography noWrap>{props.groupName}</Typography>
             </Paper>
     );
 }
@@ -125,50 +141,110 @@ function Device (props) {
     const deviceStatus = props.deviceData["device"]["deviceStatus"];
     const productName = props.deviceData["product_name"];
     const groups = props.deviceData["groups"];
-    return (
-        <Grid container alignItems="center">
-            <Grid item xs={11}>
-                <Card className={classes.deviceCard}>
-                    <CardActionArea component={RouterLink} to={"/dashboard/device/"+deviceId}>
-                        <CardContent className={classes.deviceContainer}>
-                            <Paper className={classes.paper} style={{width: "auto"}}>
-                                <DeviceEnabledIndicator enabled={deviceConfig["enabled"]}/>
-                                <Battery percentage={deviceStatus["battery"]}/>
-                            </Paper>
-                            <Paper className={classes.paper} style={{width: 70}}>
-                                <Typography>ID: {deviceId}</Typography>
-                            </Paper>
+    const {checked} = props;
+    const {delay} = props;
+
+    const capitalize = (s) => {
+        if (typeof s !== 'string') return ''
+        return s.charAt(0).toUpperCase() + s.slice(1)
+    }
+    const compact = (
+        <Zoom in={checked} style={{ transitionDelay: checked ? delay : 0 }}>
+            <Card className={classes.deviceCardCompact}>
+                <CardActionArea>
+                    <Link style={{color: 'inherit', textDecoration: 'inherit'}}
+                          component={RouterLink} to={"/dashboard/device/"+deviceId}>
+                        <CardContent>
+                            <div style={{display: "flex", justifyContent: "space-between"}}>
+                                <Typography noWrap gutterBottom variant="subtitle1">
+                                    {capitalize(productName)}
+                                </Typography>
+                                <Typography variant="h6">
+                                    {deviceId}
+                                </Typography>
+                            </div>
                             {
                                 groups.map(group =>
-                                    <DeviceGroups key={group["id"]} groupName={group["name"]}/>
+                                    <DeviceGroups key={group["id"]} groupName={capitalize(group["name"])}/>
                                 )
                             }
-                                <Paper className={classes.paper}>
-                                    <Typography noWrap>{productName}</Typography>
-                                </Paper>
                             {
                                 Object.keys(deviceData).map(key =>
-                                    <DeviceData key={key} dataType={key} value={deviceData[key]}/>
+                                    <DeviceData key={key} dataType={capitalize(key)} value={deviceData[key]}/>
                                 )
                             }
                         </CardContent>
-                    </CardActionArea>
-                </Card>
+                    </Link>
+                </CardActionArea>
+                <CardActions style={{display: "flex", justifyContent: "space-between"}}>
+                    <IconButton component={RouterLink} to={"/dashboard/device/"+deviceId+"/config"} >
+                        <SettingsIcon/>
+                    </IconButton>
+                    <div>
+                        <DeviceEnabledIndicator enabled={deviceConfig["enabled"]}/>
+                        <Battery percentage={deviceStatus["battery"]}/>
+                    </div>
+                </CardActions>
+            </Card>
+        </Zoom>
+    );
+
+    const wide = (
+        <Zoom in={checked} style={{ transitionDelay: checked ? delay : 0 }}>
+            <Grid container alignItems="center">
+                <Grid item xs={11}>
+                    <Card className={classes.deviceCard}>
+                        <CardActionArea component={RouterLink} to={"/dashboard/device/"+deviceId}>
+                            <CardContent className={classes.deviceContainer}>
+                                <Paper className={classes.paper} style={{width: "auto"}}>
+                                    <DeviceEnabledIndicator enabled={deviceConfig["enabled"]}/>
+                                    <Battery percentage={deviceStatus["battery"]}/>
+                                </Paper>
+                                <Paper className={classes.paper} style={{width: 70}}>
+                                    <Typography>ID: {deviceId}</Typography>
+                                </Paper>
+                                {
+                                    groups.map(group =>
+                                        <DeviceGroups key={group["id"]} groupName={capitalize(group["name"])}/>
+                                    )
+                                }
+                                    <Paper className={classes.paper}>
+                                        <Typography noWrap>{capitalize(productName)}</Typography>
+                                    </Paper>
+                                {
+                                    Object.keys(deviceData).map(key =>
+                                        <DeviceData key={key} dataType={capitalize(key)} value={deviceData[key]}/>
+                                    )
+                                }
+                            </CardContent>
+                        </CardActionArea>
+                    </Card>
+                </Grid>
+                <Grid item xs={1}>
+                    <IconButton component={RouterLink} to={"/dashboard/device/"+deviceId+"/config"} >
+                        <SettingsIcon/>
+                    </IconButton>
+                </Grid>
             </Grid>
-            <Grid item xs={1}>
-                <IconButton component={RouterLink} to={"/dashboard/device/"+deviceId+"/config"} >
-                    <SettingsIcon/>
-                </IconButton>
-            </Grid>
-        </Grid>
-    )
+        </Zoom>
+    );
+
+    if (props.mode === "compact") {
+        return compact;
+    } else {
+        return wide;
+    }
 }
 
 function Devices(props) {
+    const [checked, setChecked] = useState(false);
+    useEffect(() => {
+        setChecked(true);
+    }, []);
     if (props.devices.length > 0) {
         return props.devices
-            .map(device =>
-                <Device key={device["device"]["id"]} deviceData={device}/>
+            .map((device, i) =>
+                <Device mode={props.mode} key={device["device"]["id"]} deviceData={device} checked={checked} delay={i * 50}/>
             )
     } else {
         return <Typography>No devices</Typography>
@@ -183,6 +259,9 @@ function DashboardPage(props) {
     const [product, setProduct] = useState([]);
     const [products, setProducts] = useState([]);
     const [sortby, setSortby] = useState("id");
+    const [visualization, setVisualization] = useState(
+        window.innerWidth < 620 ? "compact" : "wide"
+    );
 
     const customerContext = useContext(CustomerContext);
 
@@ -231,68 +310,85 @@ function DashboardPage(props) {
         "enabled": (a,b) => a["device"]["config"]["enabled"] - b["device"]["config"]["enabled"]
     };
 
+    function handleVisualization(e) {
+        setVisualization(e.target.value);
+    }
+
     return (
         <div className={classes.dashboard}>
-            <FormControl className={classes.formControl}>
-                <InputLabel id="group-select-label">Group</InputLabel>
-                <Select
-                    labelId="group-select-label"
-                    id="group-select"
-                    value={group}
-                    onChange={(event) =>
-                        setGroup(event.target.value)
-                    }
+            <FormControl component="fieldset">
+                <FormLabel component="legend">View</FormLabel>
+                <RadioGroup row aria-label="gender"
+                            name="visualization"
+                            value={visualization}
+                            onChange={handleVisualization}
                 >
-                    <MenuItem value="">
-                        <em>None</em>
-                    </MenuItem>
-                    {
-                        groups.map(group =>
-                            <MenuItem key={group["id"]} value={group["id"]}>{group["name"]}</MenuItem>
-                        )
-                    }
-                </Select>
+                    <FormControlLabel value="wide" control={<Radio />} label="Wide" />
+                    <FormControlLabel value="compact" control={<Radio />} label="Compact" />
+                </RadioGroup>
             </FormControl>
-            <FormControl className={classes.formControl}>
-                <InputLabel id="product-select-label">Product</InputLabel>
-                <Select
-                    labelId="product-select-label"
-                    id="product-select"
-                    value={product}
-                    onChange={(event) =>
-                        setProduct(event.target.value)
-                    }
-                >
-                    <MenuItem value="">
-                        <em>None</em>
-                    </MenuItem>
-                    {
-                        products.map(prod =>
-                            <MenuItem key={prod["id"]} value={prod["id"]}>{prod["name"]}</MenuItem>
-                        )
-                    }
-                </Select>
-            </FormControl>
-            <FormControl className={classes.formControl}>
-                <InputLabel id="sortby-select-label">Sort by</InputLabel>
-                <Select
-                    labelId="sortby-select-label"
-                    id="sortby-select"
-                    value={sortby}
-                    onChange={(event) =>
-                        setSortby(event.target.value)
-                    }
-                >
-                    {
-                        Object.keys(sortByItems).map(item =>
-                            <MenuItem key={item} value={item}>{item}</MenuItem>
-                        )
-                    }
-                </Select>
-            </FormControl>
-                {
-                    <Devices devices={devices.sort(sortByItems[sortby])}/>
-                }
+            <div>
+                <FormControl className={classes.formControl}>
+                    <InputLabel id="group-select-label">Group</InputLabel>
+                    <Select
+                        labelId="group-select-label"
+                        id="group-select"
+                        value={group}
+                        onChange={(event) =>
+                            setGroup(event.target.value)
+                        }
+                    >
+                        <MenuItem value="">
+                            <em>None</em>
+                        </MenuItem>
+                        {
+                            groups.map(group =>
+                                <MenuItem key={group["id"]} value={group["id"]}>{group["name"]}</MenuItem>
+                            )
+                        }
+                    </Select>
+                </FormControl>
+                <FormControl className={classes.formControl}>
+                    <InputLabel id="product-select-label">Product</InputLabel>
+                    <Select
+                        labelId="product-select-label"
+                        id="product-select"
+                        value={product}
+                        onChange={(event) =>
+                            setProduct(event.target.value)
+                        }
+                    >
+                        <MenuItem value="">
+                            <em>None</em>
+                        </MenuItem>
+                        {
+                            products.map(prod =>
+                                <MenuItem key={prod["id"]} value={prod["id"]}>{prod["name"]}</MenuItem>
+                            )
+                        }
+                    </Select>
+                </FormControl>
+                <FormControl className={classes.formControl}>
+                    <InputLabel id="sortby-select-label">Sort by</InputLabel>
+                    <Select
+                        labelId="sortby-select-label"
+                        id="sortby-select"
+                        value={sortby}
+                        onChange={(event) =>
+                            setSortby(event.target.value)
+                        }
+                    >
+                        {
+                            Object.keys(sortByItems).map(item =>
+                                <MenuItem key={item} value={item}>{item}</MenuItem>
+                            )
+                        }
+                    </Select>
+                </FormControl>
+            </div>
+            {
+                <Devices mode={visualization} devices={devices.sort(sortByItems[sortby])}/>
+            }
         </div>
     );
 }
