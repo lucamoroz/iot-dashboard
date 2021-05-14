@@ -7,10 +7,6 @@ import LandingPage from './pages/LandingPage';
 import {Backdrop, CircularProgress, CssBaseline} from "@material-ui/core";
 import React, {useContext, useEffect, useState} from "react";
 import CustomerContext from "./CustomerContext";
-import ShopCart from "./pages/ShopCart";
-import OrderList from "./pages/OrderList";
-import Order from "./pages/Order";
-import Product from "./pages/Product"
 import Dashboard from "./Dashboard";
 
 // Allow to customize theme (e.g. change primary, secondary colors, ... )
@@ -85,11 +81,6 @@ const Main = () => (
         <Route exact path='/' component={LandingPage} /> { /* Render component Home when the URL matches the path '/' */ }
         <Route exact path='/signup' component={Signup} /> { /* Note: removing 'exact' we could have a Rout with path='/device' that matches child paths e.g. '/device/status' */ }
         <Route exact path='/signin' component={Signin} />
-        <Route exact path='/landing' component={LandingPage} />
-        <Route exact path='/shop/cart' component={ShopCart} />
-        <Route exact path='/shop/orders' component={OrderList} />
-        <Route exact path='/shop/order/:id' component={Order} />
-        <Route exact path='/product/:id' component={Product} />
         <Route path='/dashboard' component={Dashboard} />
     </Switch>
 );
