@@ -29,6 +29,8 @@ export default function Profile(props) {
     const classes = useStyles();
     const customerContext = useContext(CustomerContext);
     const [error, setError] = useState("");
+    const [openLogoutDialog, setOpenLogoutDialog] = useState(false);
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
     const customer = customerContext.customer;
 
@@ -58,9 +60,6 @@ export default function Profile(props) {
             });
     }, [customerContext]);
 
-    ///////////////////////////////////////////////
-    // Delete customer MECHANISM
-    const [openDelete, setOpenDelete] = useState(false);    //Dialog open/closed
     function deleteCustomer() {
         axios.delete('/customer/me')
             .then((res) => {
@@ -71,36 +70,8 @@ export default function Profile(props) {
                 const errorMsg = err.response ? err.response.data.description : "No response from backend";
                 setError(errorMsg);
             });
-    };
-    const handleClickDeleteOpen = () => {
-        setOpenDelete(true);  // open dialog
-    };
-    const handleDeleteClose = () => {
-        setOpenDelete(false); //close dialog
-    };
-    function dialogConfirmDelete(){
-        return (
-            <Dialog
-                open={openDelete}
-                onClose={handleDeleteClose}
-                >
-                <DialogTitle id="alert-dialog-title">{"Are you sure to Log-Out?"}</DialogTitle>
-                
-                <DialogActions>
-                    <Button onClick={handleDeleteClose} color="primary">
-                        Cancel
-                    </Button>
-                    <Button onClick={deleteCustomer} color="primary" autoFocus>
-                        Confirm
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        )
-    };
+    }
 
-    ///////////////////////////////////////////////
-    // LOGOUT MECHANISM
-    const [open, setOpen] = useState(false);    //Dialog open/closed
     function logoutCustomer() {
         axios.post('/customer/logout')
             .then((res) => {
@@ -110,32 +81,7 @@ export default function Profile(props) {
                 const errorMsg = err.response ? err.response.data.description : "No response from backend";
                 setError(errorMsg);
             })
-    };
-    const handleClickOpen = () => {
-        setOpen(true);  // open dialog
-    };
-    const handleClose = () => {
-        setOpen(false); //close dialog
-    };
-    function dialogConfirmLogOut(){
-        return (
-            <Dialog
-                open={open}
-                onClose={handleClose}
-                >
-                <DialogTitle id="alert-dialog-title">{"Are you sure to Log-Out?"}</DialogTitle>
-                
-                <DialogActions>
-                    <Button onClick={handleClose} color="primary">
-                        Cancel
-                    </Button>
-                    <Button onClick={logoutCustomer} color="primary" autoFocus>
-                        Confirm
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        )
-    };
+    }
 
     return (
         <Container className={classes.root} maxWidth={"sm"}>
@@ -162,7 +108,7 @@ export default function Profile(props) {
                             variant="contained"
                             color="primary"
                             startIcon={<ExitToApp />}
-                            onClick={handleClickOpen}
+                            onClick={() => setOpenLogoutDialog(true)}
                         >
                             Logout
                         </Button>
@@ -172,7 +118,7 @@ export default function Profile(props) {
                             variant="contained"
                             color="secondary"
                             startIcon={<DeleteForeverIcon />}
-                            onClick={handleClickDeleteOpen}
+                            onClick={() => setOpenDeleteDialog(true)}
                         >
                             Delete
                         </Button>
@@ -187,8 +133,36 @@ export default function Profile(props) {
                 message={error}
             />
 
-            {dialogConfirmLogOut()}
-            {dialogConfirmDelete()}
+            <Dialog
+                open={openLogoutDialog}
+                onClose={() => setOpenLogoutDialog(false)}
+            >
+                <DialogTitle id="alert-dialog-title">{"Are you sure to Log-Out?"}</DialogTitle>
+
+                <DialogActions>
+                    <Button onClick={() => setOpenLogoutDialog(false)} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={logoutCustomer} color="primary" autoFocus>
+                        Confirm
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog
+                open={openDeleteDialog}
+                onClose={() => setOpenDeleteDialog(false)}
+            >
+                <DialogTitle id="alert-dialog-title">{"Are you sure to Log-Out?"}</DialogTitle>
+
+                <DialogActions>
+                    <Button onClick={() => setOpenDeleteDialog(false)} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={deleteCustomer} color="primary" autoFocus>
+                        Confirm
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Container>
     )
 }
