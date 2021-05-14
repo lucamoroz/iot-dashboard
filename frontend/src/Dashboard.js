@@ -32,7 +32,7 @@ import OrderList from "./pages/OrderList";
 import Order from "./pages/Order";
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import HistoryIcon from '@material-ui/icons/History';
-import {Badge, Button} from "@material-ui/core";
+import {Badge} from "@material-ui/core";
 import Product from './pages/Product';
 
 const drawerWidth = 240;

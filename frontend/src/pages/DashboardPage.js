@@ -148,44 +148,45 @@ function Device (props) {
         if (typeof s !== 'string') return ''
         return s.charAt(0).toUpperCase() + s.slice(1)
     }
-
     const compact = (
-        <Card className={classes.deviceCardCompact}>
-            <CardActionArea>
-                <Link style={{color: 'inherit', textDecoration: 'inherit'}}
-                      component={RouterLink} to={"/dashboard/device/"+deviceId}>
-                    <CardContent>
-                        <div style={{display: "flex", justifyContent: "space-between"}}>
-                            <Typography noWrap gutterBottom variant="subtitle1">
-                                {capitalize(productName)}
-                            </Typography>
-                            <Typography variant="h6">
-                                {deviceId}
-                            </Typography>
-                        </div>
-                        {
-                            groups.map(group =>
-                                <DeviceGroups key={group["id"]} groupName={capitalize(group["name"])}/>
-                            )
-                        }
-                        {
-                            Object.keys(deviceData).map(key =>
-                                <DeviceData key={key} dataType={capitalize(key)} value={deviceData[key]}/>
-                            )
-                        }
-                    </CardContent>
-                </Link>
-            </CardActionArea>
-            <CardActions style={{display: "flex", justifyContent: "space-between"}}>
-                <IconButton component={RouterLink} to={"/dashboard/device/"+deviceId+"/config"} >
-                    <SettingsIcon/>
-                </IconButton>
-                <div>
-                    <DeviceEnabledIndicator enabled={deviceConfig["enabled"]}/>
-                    <Battery percentage={deviceStatus["battery"]}/>
-                </div>
-            </CardActions>
-        </Card>
+        <Zoom in={checked} style={{ transitionDelay: checked ? delay : 0 }}>
+            <Card className={classes.deviceCardCompact}>
+                <CardActionArea>
+                    <Link style={{color: 'inherit', textDecoration: 'inherit'}}
+                          component={RouterLink} to={"/dashboard/device/"+deviceId}>
+                        <CardContent>
+                            <div style={{display: "flex", justifyContent: "space-between"}}>
+                                <Typography noWrap gutterBottom variant="subtitle1">
+                                    {capitalize(productName)}
+                                </Typography>
+                                <Typography variant="h6">
+                                    {deviceId}
+                                </Typography>
+                            </div>
+                            {
+                                groups.map(group =>
+                                    <DeviceGroups key={group["id"]} groupName={capitalize(group["name"])}/>
+                                )
+                            }
+                            {
+                                Object.keys(deviceData).map(key =>
+                                    <DeviceData key={key} dataType={capitalize(key)} value={deviceData[key]}/>
+                                )
+                            }
+                        </CardContent>
+                    </Link>
+                </CardActionArea>
+                <CardActions style={{display: "flex", justifyContent: "space-between"}}>
+                    <IconButton component={RouterLink} to={"/dashboard/device/"+deviceId+"/config"} >
+                        <SettingsIcon/>
+                    </IconButton>
+                    <div>
+                        <DeviceEnabledIndicator enabled={deviceConfig["enabled"]}/>
+                        <Battery percentage={deviceStatus["battery"]}/>
+                    </div>
+                </CardActions>
+            </Card>
+        </Zoom>
     );
 
     const wide = (
@@ -315,18 +316,17 @@ function DashboardPage(props) {
 
     return (
         <div className={classes.dashboard}>
-
-                <FormControl component="fieldset">
-                    <FormLabel component="legend">View</FormLabel>
-                    <RadioGroup row aria-label="gender"
-                                name="visualization"
-                                value={visualization}
-                                onChange={handleVisualization}
-                    >
-                        <FormControlLabel value="wide" control={<Radio />} label="Wide" />
-                        <FormControlLabel value="compact" control={<Radio />} label="Compact" />
-                    </RadioGroup>
-                </FormControl>
+            <FormControl component="fieldset">
+                <FormLabel component="legend">View</FormLabel>
+                <RadioGroup row aria-label="gender"
+                            name="visualization"
+                            value={visualization}
+                            onChange={handleVisualization}
+                >
+                    <FormControlLabel value="wide" control={<Radio />} label="Wide" />
+                    <FormControlLabel value="compact" control={<Radio />} label="Compact" />
+                </RadioGroup>
+            </FormControl>
             <div>
                 <FormControl className={classes.formControl}>
                     <InputLabel id="group-select-label">Group</InputLabel>
@@ -386,9 +386,9 @@ function DashboardPage(props) {
                     </Select>
                 </FormControl>
             </div>
-                {
-                    <Devices mode={visualization} devices={devices.sort(sortByItems[sortby])}/>
-                }
+            {
+                <Devices mode={visualization} devices={devices.sort(sortByItems[sortby])}/>
+            }
         </div>
     );
 }
