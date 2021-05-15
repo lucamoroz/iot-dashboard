@@ -266,6 +266,7 @@ function DashboardPage(props) {
     const [products, setProducts] = useState([]);
     const [sortby, setSortby] = useState("id");
     const [reload, setReload] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [visualization, setVisualization] = useState(
         window.innerWidth < 620 ? "compact" : "wide"
     );
@@ -295,6 +296,7 @@ function DashboardPage(props) {
     }, [reload]);
 
     useEffect(() => {
+        setLoading(true);
         // get devices
         const params = {
             includeLastData: true,
@@ -308,6 +310,7 @@ function DashboardPage(props) {
         axios.get("/devices", {params})
             .then(res => {
                 setDevices(res.data);
+                setLoading(false);
             })
     }, [group, product, reload]);
 
@@ -318,10 +321,7 @@ function DashboardPage(props) {
     };
 
     const handleVisualization = (e) => setVisualization(e.target.value);
-    const handleOnReloadClick = (e) => {
-        setDevices([]);
-        setReload(!reload);
-    }
+    const handleOnReloadClick = (e) => setReload(!reload);
 
     return (
         <div className={classes.dashboard}>
@@ -399,7 +399,11 @@ function DashboardPage(props) {
                 </IconButton>
             </div>
             <div className={classes.devices}>
-                <Devices mode={visualization} devices={devices.sort(sortByItems[sortby])}/>
+                {
+                    loading ? <Typography>Loading</Typography>
+                            : <Devices mode={visualization} devices={devices.sort(sortByItems[sortby])}/>
+
+                }
             </div>
         </div>
     );
