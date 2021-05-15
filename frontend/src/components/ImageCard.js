@@ -18,6 +18,7 @@ const useStyles = makeStyles({
   },
   media: {
     maxWidth: 450,
+    maxHeight: 300,
   },
   title: {
     fontFamily: 'Roboto',
