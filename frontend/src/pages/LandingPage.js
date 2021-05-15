@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useState} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import {AppBar, Box, Button, Collapse, CssBaseline, Toolbar} from '@material-ui/core';
 import CustomerContext from "../CustomerContext";
-import {Link as RouterLink, Route, Switch, useRouteMatch} from "react-router-dom";
+import {Link as RouterLink, NavLink, Route, Switch, useRouteMatch} from "react-router-dom";
 import Signup from "./Signup";
 import Signin from "./Signin";
 
@@ -44,7 +44,6 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '4.5rem',
     },
     subtitle: {
-        color: '#fff',
         fontSize: '1.5rem',
     },
     container: {
@@ -59,8 +58,7 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '4rem'
     },
     paper: {
-        backgroundColor: 'rgba(55, 55, 55, 0.5)',
-        color: '#fff',
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
     },
     buttonsStyle: {
         borderRadius: 50
@@ -70,7 +68,6 @@ const useStyles = makeStyles((theme) => ({
 //Not optimized for network calls. For every render it calls the axiom.get function. TODO: Solve this by using react component
 export default function LandingPage(props) {
     const classes = useStyles();
-    let match = useRouteMatch();
 
     const customerContext = useContext(CustomerContext);
     if (customerContext.isLoggedIn === undefined) {
@@ -112,7 +109,9 @@ export default function LandingPage(props) {
             <CssBaseline/>
             <AppBar className={classes.appbar} elevation={0}>
                 <Toolbar className={classes.appBarWrapper}>
-                    <h1 className={classes.appBarTitle}>IoT<span className={classes.colorText}>-Dash</span></h1>
+                    <NavLink to="/" className={classes.appBarTitle} style={{textDecoration: "none", color: 'inherit'}}>
+                        <h1>IoT<span className={classes.colorText}>-Dash</span></h1>
+                    </NavLink>
                     <Box m="0.5rem">
                         <Button component={RouterLink} to="/dashboard/shop" variant="outlined" color="primary"
                                 style={{borderRadius: 50}}>Shop</Button>

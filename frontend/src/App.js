@@ -75,8 +75,8 @@ function App() {
 
 const Main = () => (
     <Switch>  { /* Render only the first Route that matches the URL */ }
-        <Route path='/' component={LandingPage} /> { /* Render component Home when the URL matches the path '/' */ }
         <Route path='/dashboard' component={Dashboard} />
+        <Route path='/' component={LandingPage} /> { /* Render component Home when the URL matches the path '/' */ }
     </Switch>
 );
 
