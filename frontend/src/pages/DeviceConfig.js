@@ -14,7 +14,6 @@ import Switch from '@material-ui/core/Switch';
 import Icon from '@material-ui/core/Icon';
 
 
-
 const axios = require('axios').default
 
 const DeviceId = (props) => (
@@ -466,6 +465,8 @@ class DeviceConfig extends React.Component {
             })
         }
 
+
+
     }
 
     handleCancel() {
@@ -488,7 +489,7 @@ class DeviceConfig extends React.Component {
                             <TextField
                                 id="refreshratetext"
                                 label="Frequency"
-                                placeholder={this.props.refreshRate}
+                                placeholder={String(this.state.refreshRate)}
                                 helperText="Customize device's refesh rate"
                                 margin="normal"
                             />
@@ -517,14 +518,19 @@ class DeviceConfig extends React.Component {
                         <AddNewGroupDialog whenDone={this.handleAddNewGroup} />
                     </div>
                     <div className="token">
-                        <TextField disabled id="standard-disabled" defaultValue={String(this.props.token)} />
-                           
+                        <TextField
+                            disabled
+                            id="tokenlabel"
+                            label={String(this.state.token)}
+                            helperText="Current token"
+                            margin="normal"
+                        />
                         {
                             this.state.newToken 
                             ? 
                                 <Button onClick={this.handleToken} variant="contained" color="primary">Don't generate</Button> 
                             : 
-                                <Button onClick={this.handleToken} variant="contained" color="primary">Generate</Button>
+                                <Button onClick={this.handleToken} variant="contained" color="primary">Generate new</Button>
                         }
                     </div>
                     <div className="enabledevice">
