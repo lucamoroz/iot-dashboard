@@ -265,7 +265,6 @@ function DashboardPage(props) {
     const [product, setProduct] = useState("");
     const [products, setProducts] = useState([]);
     const [sortby, setSortby] = useState("id");
-    const [reload, setReload] = useState(false);
     const [loading, setLoading] = useState(true);
     const [visualization, setVisualization] = useState(
         window.innerWidth < 620 ? "compact" : "wide"
@@ -280,39 +279,44 @@ function DashboardPage(props) {
     }
 
     useEffect(() => {
-        // get user's groups
-        axios.get("/groups")
-            .then(res => {
-                setGroups(res.data)
-            })
-    }, [reload]);
+        if (loading) {
+            // get user's groups
+            axios.get("/groups")
+                .then(res => {
+                    setGroups(res.data)
+                })
+        }
+    }, [loading]);
 
     useEffect(() => {
-        // get user's products
-        axios.get("/products")
-            .then(res => {
-                setProducts(res.data)
-            })
-    }, [reload]);
+        if (loading) {
+            // get user's products
+            axios.get("/products")
+                .then(res => {
+                    setProducts(res.data)
+                })
+        }
+    }, [loading]);
 
     useEffect(() => {
-        setLoading(true);
-        // get devices
-        const params = {
-            includeLastData: true,
+        if (loading) {
+            // get devices
+            const params = {
+                includeLastData: true,
+            }
+            if (group) {
+                params["groupId"] = group;
+            }
+            if (product) {
+                params["productId"] = product;
+            }
+            axios.get("/devices", {params})
+                .then(res => {
+                    setDevices(res.data);
+                    setLoading(false);
+                })
         }
-        if (group) {
-            params["groupId"] = group;
-        }
-        if (product) {
-            params["productId"] = product;
-        }
-        axios.get("/devices", {params})
-            .then(res => {
-                setDevices(res.data);
-                setLoading(false);
-            })
-    }, [group, product, reload]);
+    }, [group, product, loading]);
 
     const sortByItems = {
         "id": (a,b) => a["device"]["id"] - b["device"]["id"],
@@ -321,7 +325,7 @@ function DashboardPage(props) {
     };
 
     const handleVisualization = (e) => setVisualization(e.target.value);
-    const handleOnReloadClick = (e) => setReload(!reload);
+    const handleOnReloadClick = (e) => setLoading(true);
 
     return (
         <div className={classes.dashboard}>
