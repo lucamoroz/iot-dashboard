@@ -155,6 +155,8 @@ public class DeviceController {
      * @param deviceId Id of the device we want to config
      * @param updateFrequency New update frequency
      * @param enabled Enable/disable the device
+     * @param latitude Latitude of the location of the device
+     * @param longitude Longitude of the location of the device
      * @return A ResponseEntity with message
      * @throws ResourceNotFoundException In case no device with specified id is owned by the user
      */
@@ -162,7 +164,9 @@ public class DeviceController {
     public ResponseEntity<ClientMessage> updateDeviceConfig(
             @PathVariable(value = "id") long deviceId,
             @RequestParam long updateFrequency,
-            @RequestParam boolean enabled)
+            @RequestParam boolean enabled,
+            @RequestParam float latitude,
+            @RequestParam float longitude)
             throws ResourceNotFoundException {
         Customer customer = currentLoggedUser();
         Device device = repository.findCustomerDeviceById(customer.getId(), deviceId)
@@ -173,6 +177,8 @@ public class DeviceController {
         DeviceConfig deviceConfig = device.getConfig();
         deviceConfig.setEnabled(enabled);
         deviceConfig.setUpdate_frequency(updateFrequency);
+        deviceConfig.setLatitude(latitude);
+        deviceConfig.setLongitude(longitude);
         repository.save(device);
         ClientMessage clientMessage = new ClientMessage("Device configuration updated");
         return ResponseEntity.ok(clientMessage);
