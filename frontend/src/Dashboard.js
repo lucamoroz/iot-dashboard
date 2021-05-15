@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import clsx from 'clsx';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -32,8 +32,15 @@ import OrderList from "./pages/OrderList";
 import Order from "./pages/Order";
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import HistoryIcon from '@material-ui/icons/History';
-import {Badge} from "@material-ui/core";
+import {Badge, Button} from "@material-ui/core";
 import Product from './pages/Product';
+import SnackbarAlert from "./components/SnackbarAlert";
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogActions from "@material-ui/core/DialogActions";
+import {ExitToApp} from "@material-ui/icons";
+
+const axios = require('axios').default
 
 const drawerWidth = 240;
 
@@ -114,8 +121,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Dashboard(props) {
-    const classes = useStyles();
-    const theme = useTheme();
 
     const customerContext = useContext(CustomerContext);
     if (customerContext.isLoggedIn === undefined) {
@@ -124,8 +129,14 @@ function Dashboard(props) {
         props.history.push('/signin');
     }
 
+    const classes = useStyles();
+    const theme = useTheme();
+    let match = useRouteMatch();
     const [open, setOpen] = React.useState(window.innerWidth >= 620);
     const [cartCount, setCartCount] = React.useState(0);
+    const [error, setError] = useState("");
+    const [message, setMessage] = useState("");
+    const [openLogoutDialog, setOpenLogoutDialog] = useState(false);
 
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -139,7 +150,16 @@ function Dashboard(props) {
         setCartCount(count);
     };
 
-    let match = useRouteMatch();
+    function logoutCustomer() {
+        axios.post('/customer/logout')
+            .then((res) => {
+                customerContext.setIsLoggedIn(false);
+            })
+            .catch((err) => {
+                const errorMsg = err.response ? err.response.data.description : "No response from backend";
+                setError(errorMsg);
+            })
+    }
 
     const drawer = (
         <div>
@@ -182,7 +202,10 @@ function Dashboard(props) {
                     <ListItemIcon><AccountCircleIcon/></ListItemIcon>
                     <ListItemText primary="Profile" />
                 </ListItem>
-
+                <ListItem button key="Logout" onClick={() => setOpenLogoutDialog(true)}>
+                    <ListItemIcon><ExitToApp/></ListItemIcon>
+                    <ListItemText primary="Logout" />
+                </ListItem>
             </List>
         </div>
     );
@@ -195,11 +218,9 @@ function Dashboard(props) {
                 <Route exact path={`${match.path}/profile`}  component={Profile} />
                 <Route exact path={`${match.path}/map`} component={MapPage} />
                 <Route exact path={`${match.path}/device/:id`} component={Device} />
-                <Route exact
-                       path={`${match.path}/shop`}
-                       render={(props) => (
-                           <ShopPage {...props} handleSetCartCount={handleSetCartCount}/>
-                       )}
+                <Route exact path={`${match.path}/shop`} render={(props) => (
+                       <ShopPage {...props} handleSetCartCount={handleSetCartCount}/>
+                   )}
                 />
                 <Route exact path={`${match.path}/shop/cart`} component={ShopCart} />
                 <Route exact path={`${match.path}/shop/orders`} component={OrderList} />
@@ -258,7 +279,39 @@ function Dashboard(props) {
             >
                 {drawer}
             </Drawer>
+
             {main}
+
+            <SnackbarAlert
+                open={error !== ""}
+                autoHideDuration={3000}
+                onTimeout={() => setError("")}
+                severity="error"
+                message={error}
+            />
+            <SnackbarAlert
+                open={message !== ""}
+                autoHideDuration={3000}
+                onTimeout={() => setMessage("")}
+                severity="success"
+                message={message}
+            />
+
+            <Dialog
+                open={openLogoutDialog}
+                onClose={() => setOpenLogoutDialog(false)}
+            >
+                <DialogTitle id="alert-dialog-title">{"Are you sure you want to log out?"}</DialogTitle>
+
+                <DialogActions>
+                    <Button onClick={() => setOpenLogoutDialog(false)} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={logoutCustomer} color="primary" autoFocus>
+                        Confirm
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </div>
     );
 }

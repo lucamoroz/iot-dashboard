@@ -5,6 +5,7 @@ import {makeStyles} from "@material-ui/core/styles";
 import IconButton from '@material-ui/core/IconButton';
 import SettingsIcon from '@material-ui/icons/Settings';
 import PowerIcon from '@material-ui/icons/Power';
+import CachedIcon from '@material-ui/icons/Cached';
 import PowerOffIcon from '@material-ui/icons/PowerOff';
 import { green, red } from '@material-ui/core/colors';
 import {Link as RouterLink} from 'react-router-dom';
@@ -13,6 +14,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Card from '@material-ui/core/Card';
+import { dataLabelsSpace } from '../hook/util.js';
 import {
     CardActionArea,
     CardActions,
@@ -77,10 +79,15 @@ const useStyles = makeStyles((theme) => ({
     },
     deviceCardCompact: {
         width: 230,
-        margin: 20,
+        margin: 10,
         backgroundColor: "#EAEAEA",
         float: "left",
     },
+    devices: {
+        display: "flex",
+        flexFlow: "row wrap",
+        alignContent: "space-between"
+    }
 }));
 
 function DeviceEnabledIndicator(props) {
@@ -143,11 +150,7 @@ function Device (props) {
     const groups = props.deviceData["groups"];
     const {checked} = props;
     const {delay} = props;
-
-    const capitalize = (s) => {
-        if (typeof s !== 'string') return ''
-        return s.charAt(0).toUpperCase() + s.slice(1)
-    }
+    
     const compact = (
         <Zoom in={checked} style={{ transitionDelay: checked ? delay : 0 }}>
             <Card className={classes.deviceCardCompact}>
@@ -157,7 +160,7 @@ function Device (props) {
                         <CardContent>
                             <div style={{display: "flex", justifyContent: "space-between"}}>
                                 <Typography noWrap gutterBottom variant="subtitle1">
-                                    {capitalize(productName)}
+                                    {dataLabelsSpace(productName)}
                                 </Typography>
                                 <Typography variant="h6">
                                     {deviceId}
@@ -165,12 +168,12 @@ function Device (props) {
                             </div>
                             {
                                 groups.map(group =>
-                                    <DeviceGroups key={group["id"]} groupName={capitalize(group["name"])}/>
+                                    <DeviceGroups key={group["id"]} groupName={dataLabelsSpace(group["name"])}/>
                                 )
                             }
                             {
                                 Object.keys(deviceData).map(key =>
-                                    <DeviceData key={key} dataType={capitalize(key)} value={deviceData[key]}/>
+                                    <DeviceData key={key} dataType={dataLabelsSpace(key)} value={deviceData[key]}/>
                                 )
                             }
                         </CardContent>
@@ -205,15 +208,15 @@ function Device (props) {
                                 </Paper>
                                 {
                                     groups.map(group =>
-                                        <DeviceGroups key={group["id"]} groupName={capitalize(group["name"])}/>
+                                        <DeviceGroups key={group["id"]} groupName={dataLabelsSpace(group["name"])}/>
                                     )
                                 }
                                     <Paper className={classes.paper}>
-                                        <Typography noWrap>{capitalize(productName)}</Typography>
+                                        <Typography noWrap>{dataLabelsSpace(productName)}</Typography>
                                     </Paper>
                                 {
                                     Object.keys(deviceData).map(key =>
-                                        <DeviceData key={key} dataType={capitalize(key)} value={deviceData[key]}/>
+                                        <DeviceData key={key} dataType={dataLabelsSpace(key)} value={deviceData[key]}/>
                                     )
                                 }
                             </CardContent>
@@ -256,9 +259,10 @@ function DashboardPage(props) {
     const [group, setGroup] = useState("");
     const [devices, setDevices] = useState([]);
     const [groups, setGroups] = useState([]);
-    const [product, setProduct] = useState([]);
+    const [product, setProduct] = useState("");
     const [products, setProducts] = useState([]);
     const [sortby, setSortby] = useState("id");
+    const [loading, setLoading] = useState(true);
     const [visualization, setVisualization] = useState(
         window.innerWidth < 620 ? "compact" : "wide"
     );
@@ -271,38 +275,45 @@ function DashboardPage(props) {
         props.history.push('/signin');
     }
 
-    React.useEffect(() => {
-        // get user's groups
-        axios.get("/groups")
-            .then(res => {
-                setGroups(res.data)
-            })
-    }, []);
+    useEffect(() => {
+        if (loading) {
+            // get user's groups
+            axios.get("/groups")
+                .then(res => {
+                    setGroups(res.data)
+                })
+        }
+    }, [loading]);
 
-    React.useEffect(() => {
-        // get user's products
-        axios.get("/products")
-            .then(res => {
-                setProducts(res.data)
-            })
-    }, []);
+    useEffect(() => {
+        if (loading) {
+            // get user's products
+            axios.get("/products")
+                .then(res => {
+                    setProducts(res.data)
+                })
+        }
+    }, [loading]);
 
-    React.useEffect(() => {
-        // get devices
-        const params = {
-            includeLastData: true,
+    useEffect(() => {
+        if (loading) {
+            // get devices
+            const params = {
+                includeLastData: true,
+            }
+            if (group) {
+                params["groupId"] = group;
+            }
+            if (product) {
+                params["productId"] = product;
+            }
+            axios.get("/devices", {params})
+                .then(res => {
+                    setDevices(res.data);
+                    setLoading(false);
+                })
         }
-        if (group) {
-            params["groupId"] = group;
-        }
-        if (product) {
-            params["productId"] = product;
-        }
-        axios.get("/devices", {params})
-            .then(res => {
-                setDevices(res.data);
-            })
-    }, [group, product]);
+    }, [group, product, loading]);
 
     const sortByItems = {
         "id": (a,b) => a["device"]["id"] - b["device"]["id"],
@@ -310,9 +321,8 @@ function DashboardPage(props) {
         "enabled": (a,b) => a["device"]["config"]["enabled"] - b["device"]["config"]["enabled"]
     };
 
-    function handleVisualization(e) {
-        setVisualization(e.target.value);
-    }
+    const handleVisualization = (e) => setVisualization(e.target.value);
+    const handleOnReloadClick = (e) => setLoading(true);
 
     return (
         <div className={classes.dashboard}>
@@ -385,10 +395,17 @@ function DashboardPage(props) {
                         }
                     </Select>
                 </FormControl>
+                <IconButton onClick={handleOnReloadClick}>
+                    <CachedIcon/>
+                </IconButton>
             </div>
-            {
-                <Devices mode={visualization} devices={devices.sort(sortByItems[sortby])}/>
-            }
+            <div className={classes.devices}>
+                {
+                    loading ? <Typography>Loading</Typography>
+                            : <Devices mode={visualization} devices={devices.sort(sortByItems[sortby])}/>
+
+                }
+            </div>
         </div>
     );
 }
