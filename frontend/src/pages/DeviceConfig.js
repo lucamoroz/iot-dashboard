@@ -467,6 +467,10 @@ class DeviceConfig extends React.Component {
         }
 
     }
+
+    handleCancel() {
+        window.location.reload();
+    }
     
     render() {
 
@@ -535,10 +539,12 @@ class DeviceConfig extends React.Component {
                             label={this.state.enabled ? "device ON":" device OFF"}
                         />
                     </div>
-                    <div className="save">
-                        
+                    <div className="save">           
                         <Button onClick={this.handleSave} variant="contained" color="primary">
                             Save Changes
+                        </Button>
+                        <Button onClick={this.handleCancel} variant="contained" color="secondary">
+                            Cancel
                         </Button>
                     </div>
                 </div>
