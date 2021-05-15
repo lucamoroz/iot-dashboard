@@ -212,6 +212,7 @@ class DeviceConfig extends React.Component {
         this.handleOnOff = this.handleOnOff.bind(this);
         this.handleToken = this.handleToken.bind(this);
         this.handleSave = this.handleSave.bind(this);
+        this.handleAddGroups = this.handleAddGroups.bind(this);
     }
 
     componentDidMount() {
@@ -275,6 +276,9 @@ class DeviceConfig extends React.Component {
 
     handleAddGroups = (addedIds, notAddedIds) => { // map of groups returned by dialog box
 
+        console.log("ids to be added"+addedIds);
+        console.log("ids to be removed"+notAddedIds);
+
         // copy of device's groups states
         let updatedDeviceGroups = [...this.state.deviceGroups];
         let updatedDeviceGroupsCouldBeAdded = [...this.state.groupsCouldBeAdded];
@@ -291,16 +295,12 @@ class DeviceConfig extends React.Component {
             // adds the group to the local copy
             updatedDeviceGroups.push(newGroupToBeAdded);
 
-            // removes an array's element given an object
-            function arrayRemove(arr, value) { 
-                return arr.filter(function(ele) { 
-                    return ele !== value; 
-                });
+            // removes the element
+            for (let j = 0; j < updatedDeviceGroupsCouldBeAdded.length; j++) {
+                if (newGroupToBeAdded.id === updatedDeviceGroupsCouldBeAdded[j].id) {
+                    updatedDeviceGroupsCouldBeAdded.splice(j, 1)
+                }
             }
-
-            // performs the actual removing op on the local copy
-            updatedDeviceGroupsCouldBeAdded = 
-                arrayRemove(updatedDeviceGroupsCouldBeAdded, newGroupToBeAdded);
         }
 
         // removes unchecked groups
@@ -315,16 +315,12 @@ class DeviceConfig extends React.Component {
             // adds the group to the local copy
             updatedDeviceGroupsCouldBeAdded.push(newGroupToBeRemoved);
 
-            // removes an array's element given an object
-            function arrayRemove(arr, value) { 
-                return arr.filter(function(ele) { 
-                    return ele !== value; 
-                });
+            // removes the element
+            for (let j = 0; j < updatedDeviceGroups.length; j++) {
+                if (newGroupToBeRemoved.id === updatedDeviceGroups[j].id) {
+                    updatedDeviceGroups.splice(j, 1)
+                }
             }
-
-            // performs the actual removing op on the local copy
-            updatedDeviceGroups = 
-                arrayRemove(updatedDeviceGroups, newGroupToBeRemoved);
         }
 
         // Updates both the group states
@@ -380,11 +376,10 @@ class DeviceConfig extends React.Component {
         let groupsIds = []
         for (let i = 0; i < this.state.deviceGroups.length; i++) {
             groupsIds.push(Number(this.state.deviceGroups[i].id))
-            
         }
         console.log("pushing ids");
         console.log(groupsIds)
-        axios.put('devices/'+this.props.match.params.id+'/group/', groupsIds)
+        axios.post('devices/'+this.props.match.params.id+'/group/', groupsIds)
         .then((resp) => {
             console.log(resp);
         })
