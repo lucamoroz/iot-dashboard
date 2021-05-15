@@ -183,7 +183,7 @@ export default function Profile(props) {
                 open={openLogoutDialog}
                 onClose={() => setOpenLogoutDialog(false)}
             >
-                <DialogTitle id="alert-dialog-title">{"Are you sure to Log-Out?"}</DialogTitle>
+                <DialogTitle id="alert-dialog-title">{"Are you sure you want to log out?"}</DialogTitle>
 
                 <DialogActions>
                     <Button onClick={() => setOpenLogoutDialog(false)} color="primary">
@@ -198,7 +198,7 @@ export default function Profile(props) {
                 open={openDeleteDialog}
                 onClose={() => setOpenDeleteDialog(false)}
             >
-                <DialogTitle id="alert-dialog-title">{"Are you sure to Log-Out?"}</DialogTitle>
+                <DialogTitle id="alert-dialog-title">{"Are you sure you want to delete your account?"}</DialogTitle>
 
                 <DialogActions>
                     <Button onClick={() => setOpenDeleteDialog(false)} color="primary">
@@ -213,7 +213,9 @@ export default function Profile(props) {
                 open={openUpgradeDialog}
                 onClose={() => setOpenUpgradeDialog(false)}
             >
-                <DialogTitle id="alert-dialog-title">{"Do you want to upgrade your account? We will withdraw 10k from your personal balance "}</DialogTitle>
+                <DialogTitle id="alert-dialog-title">
+                    {"Do you want to upgrade your account? We will withdraw 10k from your personal balance "}
+                </DialogTitle>
 
                 <DialogActions>
                     <Button onClick={() => setOpenUpgradeDialog(false)} color="primary">
