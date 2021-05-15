@@ -283,11 +283,14 @@ class Device extends React.Component {
 
         this.loadData();
 
-        setInterval(this.loadData, 3000);
+        this.interval = setInterval(this.loadData, 3000);
     }
 
     componentWillUnmount() {
         this._isMounted = false;
+
+        //Stops the data refresh when the component is unmounted (leaving the page)
+        clearInterval(this.interval);
     }
 
     /**
