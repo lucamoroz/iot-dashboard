@@ -98,19 +98,19 @@ function CheckboxLabels(props) {
     const updateGroups = (k, v) => {
         setGroupsToBeAdded(new Map(groupsToBeAdded.set(k,v)));
         for (const [k, v] of groupsToBeAdded) {
-            console.log("state of boxes"+k+"   "+v);
+            console.log("state of checkboxes: "+k+"   "+v);
         }
     }
 
     const handleChange = (event) => {
         updateGroups(event.target.name, event.target.checked);
-        props.whenDone(groupsToBeAdded); // gets arguments to the father, i.e. the dialog box
-        
+        props.whenDone(groupsToBeAdded); // gets arguments to the father, i.e. the dialog box    
     };
     
     return (
       <FormGroup>
-        {
+        {   
+            // an unchecked checkbox for each group it could be added 
             props.groupsCouldBeAdded.map(g => 
                 <FormControlLabel
                     control={
@@ -126,9 +126,26 @@ function CheckboxLabels(props) {
                 />
             )
         }
-        {
+        {/* {
             props.deviceGroups.map(g => 
                 <FormControlLabel disabled control={<Checkbox checked name="NULL" />} label={g.name} key={String(g.id)}/>
+            )
+        } */}
+        {
+            // an checked checkbox for each group it could be added 
+            props.deviceGroups.map(g => 
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            checked={!groupsToBeAdded.get(String(g.id))}
+                            onChange={handleChange}
+                            name={String(g.id)}
+                            color="primary"
+                        />
+                    }
+                    label={g.name}
+                    key={String(g.id)}
+                />
             )
         }
       </FormGroup>
@@ -186,7 +203,6 @@ class DeviceConfig extends React.Component {
                     }
                 }
                 this.setState({groupsCouldBeAdded: [...diff]});
-                console.log(this.state.groupsCouldBeAdded);
             })
             .catch((error) => {
                 //Sets error state
@@ -222,25 +238,36 @@ class DeviceConfig extends React.Component {
     handleAddGroups = (addedIds, notAddedIds) => { // map of groups returned by dialog box
         console.log("gotten ids"+addedIds);
 
+        // copy of device's groups sstates
+        let updatedDeviceGroups = [...this.state.deviceGroups];
+        let updatedDeviceGroupsCouldBeAdded = [...this.state.groupsCouldBeAdded];
+
         for (let i = 0; i < addedIds.length; i++) {
 
-            // adds the group to the device
-            let indexToBeAdded = this.state.allGroups.findIndex(group => group.id === addedIds[i]);
-            let newGroupToBeAdded = this.state.allGroups[indexToBeAdded];
-            console.log("gotten group to add: "+newGroupToBeAdded.name);
-            let updatedDeviceGroups = [...this.state.deviceGroups, newGroupToBeAdded];
-            this.setState({deviceGroups: [...updatedDeviceGroups]}, () => {
-                console.log(this.state.deviceGroups, 'device groups added');
-            }); 
+            // finds group to be added given the index
+            let indexToBeAdded = 
+                this.state.allGroups.findIndex(group => group.id === addedIds[i]);
 
-            // removes the group to the groups that could still be added to the device
-            let indexToBeRemoved = this.state.groupsCouldBeAdded.findIndex(group => group.id === addedIds[i]);
-            let updatedDeviceGroupsCouldBeAdded = [...this.state.groupsCouldBeAdded];
-            updatedDeviceGroupsCouldBeAdded.splice(indexToBeRemoved, 1);
-            this.setState({groupsCouldBeAdded: [...updatedDeviceGroupsCouldBeAdded]}, () => {
-                console.log(this.state.groupsCouldBeAdded, 'device groups that could now be added');
-            }); 
+            let newGroupToBeAdded = this.state.allGroups[indexToBeAdded];
+
+            // adds the group to the local copy
+            updatedDeviceGroups.push(newGroupToBeAdded);
+
+            // removes an array's element given an object
+            function arrayRemove(arr, value) { 
+                return arr.filter(function(ele){ 
+                    return ele !== value; 
+                });
+            }
+
+            // performs the actual removing op on the local copy
+            updatedDeviceGroupsCouldBeAdded = 
+                arrayRemove(updatedDeviceGroupsCouldBeAdded, newGroupToBeAdded);
         }
+
+        // Updates both the group states
+        this.setState({deviceGroups: [...updatedDeviceGroups]});
+        this.setState({groupsCouldBeAdded: [...updatedDeviceGroupsCouldBeAdded]});
     };
 
     handleToken(event) {
@@ -291,8 +318,10 @@ class DeviceConfig extends React.Component {
         let groupsIds = []
         for (let i = 0; i < this.state.deviceGroups.length; i++) {
             groupsIds.push(Number(this.state.deviceGroups[i].id))
+            
         }
-        
+        console.log("pushing ids");
+        console.log(groupsIds)
         axios.put('devices/'+this.props.match.params.id+'/group/', groupsIds)
         .then((resp) => {
             console.log(resp);
@@ -333,7 +362,6 @@ class DeviceConfig extends React.Component {
                         )
                     }
                     <div className="addgroup">
-                        {console.log(this.state.groupsCouldBeAdded)}
                         <AddGroupDialog groupsCouldBeAdded={this.state.groupsCouldBeAdded} deviceGroups={this.state.deviceGroups} whenDone={this.handleAddGroups}/>
                     </div>
                     <div className="token">
