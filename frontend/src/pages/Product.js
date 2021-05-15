@@ -171,7 +171,7 @@ function Product(props) {
                 </Typography>
 
                 <Typography className={classes.productPrice}>
-                  {state.product.price}$
+                  {state.product.price.toFixed(2)}$
               </Typography>
 
                 <Typography className={classes.taxes}>
