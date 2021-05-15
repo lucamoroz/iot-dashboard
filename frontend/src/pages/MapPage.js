@@ -174,7 +174,7 @@ export default function MapPage(props) {
         </FormControl>
       </Card>
       <CssBaseline />
-      <MapContainer center={center} minZoom={0} maxZoom={13} zoom={6} scrollWheelZoom={false} markerZoomAnimation={true} className={classes.mapContainer}>
+      <MapContainer center={center} minZoom={0} maxZoom={18} zoom={6} scrollWheelZoom={false} markerZoomAnimation={true} className={classes.mapContainer}>
         <ChangeMapBounds bounds={state.bounds} />
         <TileLayer
           attribution=''
