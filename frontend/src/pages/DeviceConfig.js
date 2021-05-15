@@ -11,6 +11,8 @@ import Checkbox from "@material-ui/core/Checkbox";
 import TextField from '@material-ui/core/TextField';
 import { Typography } from '@material-ui/core';
 import Switch from '@material-ui/core/Switch';
+import Icon from '@material-ui/core/Icon';
+
 
 
 const axios = require('axios').default
@@ -21,19 +23,81 @@ const DeviceId = (props) => (
 	</div>
 );
 
-function AddGroupDialog(props) {
+function AddNewGroupDialog(props) {
 
-    // states capturing wether the dialog box is open or not
+    // state capturing wether the dialog box is open or not
     const [open, setOpen] = React.useState(false);
 
-    // states for adding groups, unchecked
+    // state capturing wether the dialog box is open or not
+    const [newGroupName, setNewGroupName] = React.useState('');
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    }
+
+    const handleCloseNotSave = () => {
+        setOpen(false);
+    }
+
+    const handleClose = () => {
+        setOpen(false);
+        props.whenDone(newGroupName)
+    }
+
+    const handleChange = (event) => {
+        setNewGroupName(event.target.value);
+    }
+
+    return (
+        <div>
+            <Button onClick={handleClickOpen}>
+                <Icon color="secondary" style={{ fontSize: 45 }}>add_circle</Icon>
+            </Button>
+            <Dialog
+                open={open}
+                onClose={handleCloseNotSave}
+                aria-labelledby="add-new-group-dialog"
+                aria-describedby="add-new-group-dialog-description"
+            >
+                <DialogTitle id="add-new-group-dialog">{"Add new group"}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="add-new-group-dialog-description">
+                        Type below a name for the new group
+                    </DialogContentText>
+                    <form onChange={handleChange}>
+                        <TextField
+                            id="newgrouptext"
+                            label="New group name"
+                            placeholder="Name"
+                            helperText="Add new group"
+                            margin="normal"
+                        />
+                    </form>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} color="secondary">
+                        add
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </div>
+    );
+
+}
+
+function AddGroupDialog(props) {
+
+    // state capturing wether the dialog box is open or not
+    const [open, setOpen] = React.useState(false);
+
+    // state for adding groups, unchecked
     const [groupsToBeAdded, setGroupsToBeAdded] = React.useState(
         new Map(props.groupsCouldBeAdded.map(
                 g => [String(g.id), false])
             )
     );
 
-    // states for removing groups, checked
+    // state for removing groups, checked
     const [groupsToBeRemoved, setGroupsToBeRemoved] = React.useState(
         new Map(props.deviceGroups.map(
                 g => [String(g.id), false]) 
@@ -119,14 +183,14 @@ function AddGroupDialog(props) {
 
 function CheckboxLabels(props) {
 
-    // states for adding groups, unchecked
+    // state for adding groups, unchecked
     const [groupsToBeAdded, setGroupsToBeAdded] = React.useState(
         new Map(props.groupsCouldBeAdded.map(
                 g => [String(g.id), false])
             )
     );
 
-    // states for removing groups, checked
+    // state for removing groups, checked
     const [groupsToBeRemoved, setGroupsToBeRemoved] = React.useState(
         new Map(props.deviceGroups.map(
                 g => [String(g.id), false])
@@ -205,6 +269,7 @@ class DeviceConfig extends React.Component {
             newToken: false,
             allGroups: [],
             groupsCouldBeAdded: [],
+            newGroupNames: [],  // reset?
         }
 
         this.handleRemoveGroup = this.handleRemoveGroup.bind(this);
@@ -212,7 +277,7 @@ class DeviceConfig extends React.Component {
         this.handleOnOff = this.handleOnOff.bind(this);
         this.handleToken = this.handleToken.bind(this);
         this.handleSave = this.handleSave.bind(this);
-        this.handleAddGroups = this.handleAddGroups.bind(this);
+        this.handleCustomizeGroups = this.handleCustomizeGroups.bind(this);
     }
 
     componentDidMount() {
@@ -274,7 +339,7 @@ class DeviceConfig extends React.Component {
         this.setState({groups: newGroups})
     }
 
-    handleAddGroups = (addedIds, notAddedIds) => { // map of groups returned by dialog box
+    handleCustomizeGroups = (addedIds, notAddedIds) => { // map of groups returned by dialog box
 
         console.log("ids to be added"+addedIds);
         console.log("ids to be removed"+notAddedIds);
@@ -326,7 +391,11 @@ class DeviceConfig extends React.Component {
         // Updates both the group states
         this.setState({deviceGroups: [...updatedDeviceGroups]});
         this.setState({groupsCouldBeAdded: [...updatedDeviceGroupsCouldBeAdded]});
-    };
+    }
+
+    handleAddNewGroup = (name) => {
+        this.setState({newGroupNames: [...this.state.newGroupNames, name]})
+    }
 
     handleToken(event) {
         if (this.state.newToken) {
@@ -377,8 +446,7 @@ class DeviceConfig extends React.Component {
         for (let i = 0; i < this.state.deviceGroups.length; i++) {
             groupsIds.push(Number(this.state.deviceGroups[i].id))
         }
-        console.log("pushing ids");
-        console.log(groupsIds)
+
         axios.post('devices/'+this.props.match.params.id+'/group/', groupsIds)
         .then((resp) => {
             console.log(resp);
@@ -386,6 +454,18 @@ class DeviceConfig extends React.Component {
         .catch((error) => {
             console.log(error.response);
         })
+
+        // sets new groups
+        for (let name = 0; name < this.state.newGroupNames.length; name++) {
+            axios.post('groups/add/'+this.state.newGroupNames[name])
+            .then((resp) => {
+                console.log(resp);
+            })
+            .catch((error) => {
+                console.log(error.response);
+            })
+        }
+
     }
     
     render() {
@@ -409,7 +489,6 @@ class DeviceConfig extends React.Component {
                                 margin="normal"
                             />
                         </form>
-  
                     </div>
                     { // creates as many group buttons as needed
                         this.state.deviceGroups.map(g => 
@@ -418,12 +497,20 @@ class DeviceConfig extends React.Component {
                             </div>
                         )
                     }
-                    <div className="addgroup">
+                    {
+                        this.state.newGroupNames.map(name =>
+                            <div className="group" key={name}>
+                                <Typography>{name}</Typography>
+                            </div>
+                        )
+                    }
+                    <div className="devicegroups">
                         <AddGroupDialog 
                             groupsCouldBeAdded={this.state.groupsCouldBeAdded}
                             deviceGroups={this.state.deviceGroups} 
-                            whenDone={this.handleAddGroups}
+                            whenDone={this.handleCustomizeGroups}
                         />
+                        <AddNewGroupDialog whenDone={this.handleAddNewGroup} />
                     </div>
                     <div className="token">
                         <TextField disabled id="standard-disabled" defaultValue={String(this.props.token)} />
