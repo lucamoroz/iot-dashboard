@@ -232,7 +232,7 @@ function DataTable(props) {
             <TableBody>
                 {(props.tableRows.length === 0) ? <TableRow key="noData"><TableCell key="noDataCell">No data</TableCell></TableRow> : null}
                 {props.tableRows.map((tableRow) => (
-                    <TableRow key={tableRow[0]}>
+                    <TableRow key={tableRow[0]} hover="true">
                         {tableRow.map((data, index) => (
                             <TableCell key={tableRow+data} align={index === 0 ? "left" : "right"}>{data}</TableCell>
                         ))}
