@@ -21,8 +21,8 @@ const styles = theme => ({
     paper: {
         margin: 20,
         padding: 5,
-        minHeight: 125,
-        minWidth: 200,
+        minHeight: 10,
+        minWidth: 300,
     },
     sub: {
         margin: 20,
@@ -36,7 +36,32 @@ const styles = theme => ({
         justifyContent: "flex-start",
         whiteSpace: "nowrap",
     
+    },
+    group: {
+        margin: 20,
+        padding: 0,
+        minHeight: 50,
+        minWidth: 100,
+        backgroundColor: "#EAEAEA",
+    },
+    groupButton: {
+        margin: 20,
+        marginTop: -10,
+        padding: 0,
+        float:"right",
+    },
+    saveButton: {
+        margin: 20,
+        padding: 0,
+        float:"left",
+    },
+    containerSave: {
+        marginTop: 20,
+        padding: 0,
+        float:"left",
     }
+
+
 });
 
 const axios = require('axios').default
@@ -69,8 +94,8 @@ function AddNewGroupDialog(props) {
 
     return (
         <div>
-            <Button onClick={handleClickOpen}>
-                <Icon color="secondary" style={{ fontSize: 45 }}>add_circle</Icon>
+            <Button variant="contained" color="secondary" onClick={handleClickOpen}>
+                New +
             </Button>
             <Dialog
                 open={open}
@@ -513,7 +538,6 @@ class DeviceConfig extends React.Component {
 
         const { classes } = this.props;
 
-
         if (this.state.errorState) {
             return (
                 <span>Error Loading data</span>
@@ -522,9 +546,8 @@ class DeviceConfig extends React.Component {
         else {
             return (
                 <div className="deviceconfig">
-                    <Grid container spacing={12} >
-                        <Grid container spacing={12}>
-                        <Grid item xs={3}>
+                    <Grid container xs={12}>
+                        <Grid item xs={12}>
                             <Paper className={classes.paper}>
                                 <div className={classes.box}>
                                     <div className={classes.sub}>
@@ -544,8 +567,6 @@ class DeviceConfig extends React.Component {
                                     </div>
                                 </div>
                             </Paper>
-                        </Grid>
-                        <Grid item xs={3}>
                             <Paper className={classes.paper}>
                                 <div className={classes.box}>
                                     <div className={classes.sub}>
@@ -561,8 +582,6 @@ class DeviceConfig extends React.Component {
                                     </div>
                                 </div>
                             </Paper>
-                        </Grid>
-                        <Grid item xs={6}>
                             <Paper className={classes.paper} >
                                 <div className={classes.box}>
                                     <div className={classes.sub}>
@@ -590,77 +609,78 @@ class DeviceConfig extends React.Component {
                                 </div>
                             </Paper>
                         </Grid>
+                        <Grid item xs={12}>
+                            <Paper className={classes.paper}>
+                                <Grid container xs={12}>
+                                    { 
+                                        // creates as many group papers as needed
+                                        this.state.deviceGroups.map(g => 
+                                            <Paper className={classes.group} key={g.id}>
+                                                <Typography>{g.name}</Typography>
+                                            </ Paper>
+                                        )
+                                    }
+                                    {
+                                        this.state.newGroupNames.map(name =>
+                                            <Paper className={classes.group} key={name}>
+                                                <Typography>{name}</Typography>
+                                            </ Paper>
+                                        )
+                                    }
+                                    
+                                </Grid>
+                            </Paper>
+                            <div className={classes.groupButton}>
+                                <AddGroupDialog 
+                                    groupsCouldBeAdded={this.state.groupsCouldBeAdded}
+                                    deviceGroups={this.state.deviceGroups} 
+                                    whenDone={this.handleCustomizeGroups}
+                                />
+                            </div>
+                            <div className={classes.groupButton}>
+                                <AddNewGroupDialog whenDone={this.handleAddNewGroup} />
+                            </div>
                         </Grid>
                         <Grid item xs={12}>
-                            <Grid container spacing={12}>
-                                { 
-                                    // creates as many group papers as needed
-                                    this.state.deviceGroups.map(g => 
-                                        <Paper className={classes.paper} key={g.id}>
-                                            <Typography>{g.name}</Typography>
-                                        </ Paper>
-                                    )
-                                }
-                                {
-                                    this.state.newGroupNames.map(name =>
-                                        <Paper className={classes.paper} key={name}>
-                                            <Typography>{name}</Typography>
-                                        </ Paper>
-                                    )
-                                }
-                                <div className="devicegroups">
-                                    <AddGroupDialog 
-                                        groupsCouldBeAdded={this.state.groupsCouldBeAdded}
-                                        deviceGroups={this.state.deviceGroups} 
-                                        whenDone={this.handleCustomizeGroups}
-                                    />
-                                    <AddNewGroupDialog whenDone={this.handleAddNewGroup} />
-                                </div>
-                            </Grid>
-                        </Grid>
-                        <Grid item xs={6}>
                             <Paper className={classes.paper}>
-                            <div className={classes.box}>
-                                <div className={classes.sub}>
-                                    <TextField
-                                        disabled
-                                        id="tokenlabel"
-                                        label={String(this.state.token)}
-                                        helperText="Current token"
-                                        margin="normal"
-                                    />
+                                <Grid container xs={12}>
+                                    <div className={classes.box}>
+                                        <div className={classes.sub}>
+                                            <TextField
+                                                disabled
+                                                id="tokenlabel"
+                                                label={String(this.state.token)}
+                                                helperText="Current token"
+                                                margin="normal"
+                                            />    
+                                        </div>
                                     </div>
-                                    <div className={classes.sub}>
-                                    {
-                                        this.state.newToken 
-                                        ? 
-                                            <Button onClick={this.handleToken} variant="contained" color="primary">Don't generate</Button> 
-                                        : 
-                                            <Button onClick={this.handleToken} variant="contained" color="primary">Generate new</Button>
-                                    }
-                                    </div>
-                                </div>
+                                </Grid>
                             </Paper>
+                            <div className={classes.groupButton}>
+                                {
+                                    this.state.newToken 
+                                    ? 
+                                        <Button onClick={this.handleToken} variant="contained" color="primary">Don't generate</Button> 
+                                    : 
+                                        <Button onClick={this.handleToken} variant="contained" color="primary">Generate new</Button>
+                                }
+                            </div>
                         </Grid>
-
-                        <Grid item xs={6}>
-                            <Grid
-                                container
-                                direction="row-reverse"
-                                justify="flex-start"
-                                alignItems="baseline"
-                            >
-                                <Grid item xs={3}>
+                        <Grid item xs={12}>
+                            <div className={classes.containerSave}>
+                                <div className={classes.saveButton}>
                                     <Button onClick={this.handleCancel} variant="contained" color="secondary">
                                         Cancel
                                     </Button>
-                                </Grid>
-                                <Grid item xs={3}>
+                                </div>
+                                <div className={classes.saveButton}>
+
                                     <Button onClick={this.handleSave} variant="contained" color="primary">
                                         Save Changes
                                     </Button>
-                                </Grid>
-                            </Grid>
+                                </div>
+                            </div>
                         
                         </Grid>
 
