@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
     //minHeight: '60vh',
     //width: '70%',
     height: '100%',
-    width: '80%',
+    width: '60%',
     display: 'flex',
     justifyContent: 'flex-top',
     alignItems: 'flext-end',
@@ -36,22 +36,27 @@ const useStyles = makeStyles((theme) => ({
 
   topContent: {
     display: 'flex',
-    justifyContent: 'flex-top',
-    alignItems: 'flex-top',
+    justifyContent: 'flex-start',
+    alignItems: 'flex.start',
+    width:  '100%',
   },
   productImage: {
-    height: '50vh',
-    width: '50vh',
+    height: 300,
+    width:  300,//`calc(max(100%, 100vh))`,
     display: 'flex',
   },
 
   description: {
     //margin: '20px',
+    color: '#757575',
+    margin: 50,
   },
   productName: {
     marginTop: 20,
-    marginBottom: 10,
+    marginBottom: 0,
+    fontFamily: 'Roboto',
     fontSize: '2rem',
+    fontWeight: 'bold',
   },
   freeShippingDeliveryText: {
     color: 'black',
@@ -59,24 +64,30 @@ const useStyles = makeStyles((theme) => ({
   },
 
   productPrice: {
-    marginBottom: 10,
+    marginBottom: 0,
     fontSize: '1.5rem',
-    color: 'red',
+    color: '#ef5350',
+    
   },
 
   taxes: {
-    marginBottom: 10,
+    marginBottom: 0,
   },
   availableText: {
-    marginBottom: 10,
-    color: 'green',
+    marginBottom: 5,
+    color: '#43A047',
+    fontFamily: 'Roboto',
+    fontWeight: 500,
   },
   shippingTime: {
-    marginBottom: 10,
+    //marginBottom: 10,
+    fontFamily: 'Roboto',
+    fontWeight: 500,
   },
   secureTransactions: {
     marginRight: 10,
     fontSize: '0.9rem',
+    color: '#9E9E9E'
   },
   shippedby: {
     marginBottom: 20,
@@ -191,23 +202,25 @@ function Product(props) {
                   Delivered in 7-10 days
               </Typography>
 
-                <Typography className={classes.description} style={{ whiteSpace: "pre-wrap" }}>
-                  {state.product.description}
-                </Typography>
-              </CardContent>
-            </CardContent>
-
-            <CardContent className={classes.buttonsContent}>
-
               <Typography className={classes.secureTransactions}>
                 Secure transactions
             </Typography>
+               
+              </CardContent>
+              
+            </CardContent>
 
-              <Button className={classes.addToCartButton} variant="contained" color="primary" onClick={() => { onAddToCart(state.product.id); setNumProdInCart(numProdInCart + quantity);setSnackSeverity("success"); setSnackMessage("Product added to cart!"); }}>
-                AddToCart
+            <Typography className={classes.description} style={{ whiteSpace: "pre-wrap" }}>
+                  {state.product.description}
+            </Typography>
+
+            <CardContent className={classes.buttonsContent}>
+
+              <Button className={classes.addToCartButton} variant="contained" color="primary" onClick={() => { onAddToCart(state.product.id); setNumProdInCart(numProdInCart + quantity);setSnackSeverity("success"); setSnackMessage("Product added to cart!"); }} style={{borderRadius: 50}}>
+                Add to Cart
            </Button>
 
-              <Button className={classes.buyNowButton} variant="contained" color="primary" component={RouterLink} to="/dashboard/shop/cart" onClick={() => { onAddToCart(state.product.id); setNumProdInCart(numProdInCart + quantity) }}>
+              <Button className={classes.buyNowButton} variant="contained" color="primary" component={RouterLink} to="/dashboard/shop/cart" onClick={() => { onAddToCart(state.product.id); setNumProdInCart(numProdInCart + quantity) }} style={{borderRadius: 50}}>
                 Buy Now
           </Button>
             </CardContent>

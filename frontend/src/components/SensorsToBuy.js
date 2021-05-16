@@ -3,7 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 import ImageCard from './ImageCard';
 import ImageCardExpanded from './ImageCardExpanded';
 import { Link as RouterLink } from 'react-router-dom';
-import { Zoom } from '@material-ui/core';
+import { Grid, Zoom } from '@material-ui/core';
 import { useState } from 'react';
 import { useEffect } from 'react';
 
@@ -59,7 +59,7 @@ function SensorCards(props) {
     setChecked(true);
   }, []);
   return (
-    <div className={className} id='sensors-to-buy'>
+    <Grid className={className} container id='sensors-to-buy'>
       {
         sensors.map((sensor, i) => {
           return <ImageCard
@@ -72,7 +72,7 @@ function SensorCards(props) {
         })
       }
 
-    </div>
+    </Grid>
   );
 }
 
