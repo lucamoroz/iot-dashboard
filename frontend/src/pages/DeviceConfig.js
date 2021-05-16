@@ -9,18 +9,40 @@ import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import TextField from '@material-ui/core/TextField';
-import { Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import Switch from '@material-ui/core/Switch';
 import Icon from '@material-ui/core/Icon';
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
+import { withStyles } from '@material-ui/styles';
 
+
+const styles = theme => ({
+    paper: {
+        margin: 20,
+        padding: 5,
+        minHeight: 125,
+        minWidth: 200
+    },
+    sub: {
+        margin: 20,
+        whiteSpace: "nowrap",
+        float:"left",
+
+    },
+    box:{
+        display: "flex",
+        flexFlow: "row wrap",
+        justifyContent: "flex-start",
+        whiteSpace: "nowrap",
+        
+
+
+    }
+});
 
 const axios = require('axios').default
 
-const DeviceId = (props) => (
-	<div>
-  	    <Typography>deviceID: {props.id} </Typography>
-	</div>
-);
 
 function AddNewGroupDialog(props) {
 
@@ -475,6 +497,9 @@ class DeviceConfig extends React.Component {
     
     render() {
 
+        const { classes } = this.props;
+
+
         if (this.state.errorState) {
             return (
                 <span>Error Loading data</span>
@@ -483,80 +508,145 @@ class DeviceConfig extends React.Component {
         else {
             return (
                 <div className="deviceconfig">
-                    <DeviceId id={this.props.match.params.id} />
-                    <div className="refreshrate">
-                        <form onChange={this.handleRefreshChange}>
-                            <TextField
-                                id="refreshratetext"
-                                label="Frequency"
-                                placeholder={String(this.state.refreshRate)}
-                                helperText="Customize device's refesh rate"
-                                margin="normal"
-                            />
-                        </form>
-                    </div>
-                    { // creates as many group buttons as needed
-                        this.state.deviceGroups.map(g => 
-                            <div className="group" key={g.id}>
-                                <Typography>{g.name}</Typography>
-                            </div>
-                        )
-                    }
-                    {
-                        this.state.newGroupNames.map(name =>
-                            <div className="group" key={name}>
-                                <Typography>{name}</Typography>
-                            </div>
-                        )
-                    }
-                    <div className="devicegroups">
-                        <AddGroupDialog 
-                            groupsCouldBeAdded={this.state.groupsCouldBeAdded}
-                            deviceGroups={this.state.deviceGroups} 
-                            whenDone={this.handleCustomizeGroups}
-                        />
-                        <AddNewGroupDialog whenDone={this.handleAddNewGroup} />
-                    </div>
-                    <div className="token">
-                        <TextField
-                            disabled
-                            id="tokenlabel"
-                            label={String(this.state.token)}
-                            helperText="Current token"
-                            margin="normal"
-                        />
-                        {
-                            this.state.newToken 
-                            ? 
-                                <Button onClick={this.handleToken} variant="contained" color="primary">Don't generate</Button> 
-                            : 
-                                <Button onClick={this.handleToken} variant="contained" color="primary">Generate new</Button>
-                        }
-                    </div>
-                    <div className="enabledevice">
-                        <FormControlLabel
-                            control={
-                            <Switch
-                                checked={this.state.enabled}
-                                onChange={this.handleOnOff}
-                                color="primary"
-                            />
-                            }
-                            label={this.state.enabled ? "device ON":" device OFF"}
-                        />
-                    </div>
-                    <div className="save">           
-                        <Button onClick={this.handleSave} variant="contained" color="primary">
-                            Save Changes
-                        </Button>
-                        <Button onClick={this.handleCancel} variant="contained" color="secondary">
-                            Cancel
-                        </Button>
-                    </div>
+                    <Grid container spacing={12} >
+                        <Grid item xs={3}>
+                            <Paper className={classes.paper}>
+                                <div className={classes.box}>
+                                    <div className={classes.sub}>
+                                        <Typography>deviceID: {this.props.match.params.id} </Typography>
+                                    </div>
+                                    <div className={classes.sub}>
+                                        <FormControlLabel
+                                            control={
+                                                <Switch
+                                                    checked={this.state.enabled}
+                                                    onChange={this.handleOnOff}
+                                                    color="primary"
+                                                />
+                                            }
+                                            label={this.state.enabled ? "ON":"OFF"}
+                                        />
+                                    </div>
+                                </div>
+                            </Paper>
+                        </Grid>
+                        <Grid item xs={3}>
+                            <Paper className={classes.paper}>
+                                <div className={classes.box}>
+                                    <div className={classes.sub}>
+                                        <form onChange={this.handleRefreshChange}>
+                                            <TextField
+                                                id="refreshratetext"
+                                                label="Frequency"
+                                                placeholder={String(this.state.refreshRate)}
+                                                helperText="Customize device's refesh rate"
+                                                margin="center"
+                                            />
+                                        </form>
+                                    </div>
+                                </div>
+                            </Paper>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Paper className={classes.paper} >
+                                <div className={classes.box}>
+                                    <div className={classes.sub}>
+                                        <form onChange={this.handleRefreshChange} css={{padding:"left"}}>
+                                            <TextField
+                                                id="lat"
+                                                label="Latitude"
+                                                placeholder={String(this.state.refreshRate)}
+                                                helperText="Customize device's latitude"
+                                                margin="center"
+                                            />
+                                        </form>
+                                    </div>
+                                    <div className={classes.sub}>
+                                        <form onChange={this.handleRefreshChange} css={{padding:"left"}}>
+                                            <TextField
+                                                id="lon"
+                                                label="Longitude"
+                                                placeholder={String(this.state.refreshRate)}
+                                                helperText="Customize device's longitude"
+                                                margin="center"
+                                            />
+                                        </form>
+                                    </div>
+                                </div>
+                            </Paper>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Grid container spacing={12}>
+                                { 
+                                    // creates as many group papers as needed
+                                    this.state.deviceGroups.map(g => 
+                                        <Paper className={classes.paper} key={g.id}>
+                                            <Typography>{g.name}</Typography>
+                                        </ Paper>
+                                    )
+                                }
+                                {
+                                    this.state.newGroupNames.map(name =>
+                                        <Paper className={classes.paper} key={name}>
+                                            <Typography>{name}</Typography>
+                                        </ Paper>
+                                    )
+                                }
+                                <div className="devicegroups">
+                                    <AddGroupDialog 
+                                        groupsCouldBeAdded={this.state.groupsCouldBeAdded}
+                                        deviceGroups={this.state.deviceGroups} 
+                                        whenDone={this.handleCustomizeGroups}
+                                    />
+                                    <AddNewGroupDialog whenDone={this.handleAddNewGroup} />
+                                </div>
+                            </Grid>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Paper className={classes.paper}>
+                                <TextField
+                                    disabled
+                                    id="tokenlabel"
+                                    label={String(this.state.token)}
+                                    helperText="Current token"
+                                    margin="normal"
+                                />
+                                {
+                                    this.state.newToken 
+                                    ? 
+                                        <Button onClick={this.handleToken} variant="contained" color="primary">Don't generate</Button> 
+                                    : 
+                                        <Button onClick={this.handleToken} variant="contained" color="primary">Generate new</Button>
+                                }
+                            </Paper>
+                        </Grid>
+
+                        <Grid item xs={6}>
+                            <Grid
+                                container
+                                direction="row-reverse"
+                                justify="flex-start"
+                                alignItems="baseline"
+                            >
+                                <Grid item xs={3}>
+                                    <Button onClick={this.handleCancel} variant="contained" color="secondary">
+                                        Cancel
+                                    </Button>
+                                </Grid>
+                                <Grid item xs={3}>
+                                    <Button onClick={this.handleSave} variant="contained" color="primary">
+                                        Save Changes
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        
+                        </Grid>
+
+                    </ Grid>
                 </div>
             );
         }
     }
 }
 
-export default DeviceConfig
+export default withStyles(styles)(DeviceConfig)
