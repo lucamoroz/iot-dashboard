@@ -17,7 +17,8 @@ const useStyles = makeStyles({
     borderRadius: 15,
   },
   media: {
-    height: 440,
+    maxWidth: 450,
+    maxHeight: 300,
   },
   title: {
     fontFamily: 'Roboto',
@@ -76,7 +77,7 @@ export default function ImageCard({ sensor, checked, onAddToCart, onClick, compo
           <CardMedia
             className={classes.media}
             component="img"
-            height="140"
+            width="10"
             image={imageUrl}
             onClick={onClick}
           />
@@ -89,7 +90,7 @@ export default function ImageCard({ sensor, checked, onAddToCart, onClick, compo
                 {capitalized(sensor.name)}
               </Typography>
               <Typography className={classes.price}>
-                {sensor.price}$
+                {sensor.price.toFixed(2)}$
               </Typography>
           </CardContent>
         </CardActionArea>
