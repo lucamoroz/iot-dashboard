@@ -315,7 +315,6 @@ class DeviceConfig extends React.Component {
             newToken: false,
             allGroups: [],
             groupsCouldBeAdded: [],
-            newGroupNames: [],  // reset?
         }
 
         this.handleRemoveGroup = this.handleRemoveGroup.bind(this);
@@ -444,7 +443,7 @@ class DeviceConfig extends React.Component {
     }
 
     handleAddNewGroup = (name) => {
-        this.setState({newGroupNames: [...this.state.newGroupNames, name]})
+        // TODO
     }
 
     handleToken(event) {
@@ -514,18 +513,6 @@ class DeviceConfig extends React.Component {
         .catch((error) => {
             console.log(error.response);
         })
-
-        // sets new groups
-        for (let name = 0; name < this.state.newGroupNames.length; name++) {
-            axios.post('groups/add/'+this.state.newGroupNames[name])
-            .then((resp) => {
-                console.log(resp);
-            })
-            .catch((error) => {
-                console.log(error.response);
-            })
-        }
-
 
 
     }
@@ -620,14 +607,6 @@ class DeviceConfig extends React.Component {
                                             </ Paper>
                                         )
                                     }
-                                    {
-                                        this.state.newGroupNames.map(name =>
-                                            <Paper className={classes.group} key={name}>
-                                                <Typography>{name}</Typography>
-                                            </ Paper>
-                                        )
-                                    }
-                                    
                                 </Grid>
                             </Paper>
                             <div className={classes.groupButton}>
