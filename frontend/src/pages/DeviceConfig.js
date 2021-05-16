@@ -5,13 +5,10 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Switch from '@material-ui/core/Switch';
-import Icon from '@material-ui/core/Icon';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/styles';
@@ -19,6 +16,8 @@ import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
+import Chip from '@material-ui/core/Chip';
+import DoneIcon from '@material-ui/icons/Done';
 
 
 const styles = theme => ({
@@ -143,12 +142,12 @@ class DeviceConfig extends React.Component {
         super(props);
         this.state = {
             errorState: false,
-            refreshRate: null,
+            refreshRate: "",
             deviceGroups: [],
-            token: null,
-            enabled: null,
-            latitude: null,
-            longitude: null,
+            token: "",
+            enabled: "",
+            latitude: "",
+            longitude: "",
             newToken: false,
             allGroups: [],
         }
@@ -201,20 +200,46 @@ class DeviceConfig extends React.Component {
         this.setState({refreshRate: event.target.value});
     }
 
-    handleRemoveGroup(event, id) {
-        //alert('removing group');
+    handleRemoveGroup(groupIdToRemove) {
         // copies groups in state
-        let newGroups = [...this.state.groups];
+        const newGroups = this.state.deviceGroups;
         // find correct index
-        let i = newGroups.findIndex(group => group.id === id);
+        const i = newGroups.findIndex(group => group.id === groupIdToRemove);
         // removes related group
         newGroups.splice(i, 1);
-        event.preventDefault();
         this.setState({groups: newGroups})
     }
 
-    handleAddNewGroup = (name) => {
-        // TODO
+    handleAddNewGroup = (groupName) => {
+
+        const setGroup = (name) => {
+            axios.get('groups/')
+                .then((resp) => {
+
+                    const allGroups = resp.data;
+
+                    this.setState({
+                        allGroups: allGroups
+                    });
+
+                    for (const [i,group] of Object.entries(allGroups)) {
+                        if (group["name"] === name) {
+                            const deviceGroups = this.state.deviceGroups;
+                            deviceGroups.push(group);
+                            console.log("setting " + group)
+                            this.setState({
+                                deviceGroups: deviceGroups
+                            })
+                        }
+                    }
+                    console.log(this.state)
+                })
+        }
+
+        axios.post('groups/add/'+groupName)
+            .then((resp) => {
+                setGroup(groupName);
+            })
     }
 
     handleSetGroup = (event) => {
@@ -313,9 +338,6 @@ class DeviceConfig extends React.Component {
                 diff.splice(index, 1);
             }
         }
-        console.log(this.state.allGroups)
-        console.log(this.state.deviceGroups)
-        console.log(diff)
         return diff
     }
 
@@ -361,7 +383,6 @@ class DeviceConfig extends React.Component {
                                                 label="Frequency"
                                                 placeholder={String(this.state.refreshRate)}
                                                 helperText="Customize device's refesh rate"
-                                                margin="center"
                                             />
                                         </form>
                                     </div>
@@ -376,7 +397,6 @@ class DeviceConfig extends React.Component {
                                                 label="Latitude"
                                                 placeholder={String(this.state.latitude)}
                                                 helperText="Customize device's latitude"
-                                                margin="center"
                                             />
                                         </form>
                                     </div>
@@ -387,7 +407,6 @@ class DeviceConfig extends React.Component {
                                                 label="Longitude"
                                                 placeholder={String(this.state.longitude)}
                                                 helperText="Customize device's longitude"
-                                                margin="center"
                                             />
                                         </form>
                                     </div>
@@ -396,13 +415,12 @@ class DeviceConfig extends React.Component {
                         </Grid>
                         <Grid item xs={12}>
                             <Paper className={classes.paper}>
-                                <Grid container xs={12}>
+                                <Grid container>
                                     { 
                                         // creates as many group papers as needed
                                         this.state.deviceGroups.map(g => 
-                                            <Paper className={classes.group} key={g.id}>
-                                                <Typography>{g.name}</Typography>
-                                            </ Paper>
+                                            <Chip key={g.id} label={g.name}
+                                                  onDelete={this.handleRemoveGroup.bind(this, g.id)}/>
                                         )
                                     }
                                     <FormControl className={classes.formControl}>
@@ -415,7 +433,9 @@ class DeviceConfig extends React.Component {
                                         >
                                             {
                                                 this.getGroupsCouldBeAdded().map(group =>
-                                                    <MenuItem value={group["id"]}>{group["id"] + group["name"]}</MenuItem>
+                                                    <MenuItem key={group["id"]} value={group["id"]}>
+                                                        {group["name"]}
+                                                    </MenuItem>
                                                 )
                                             }
                                         </Select>
