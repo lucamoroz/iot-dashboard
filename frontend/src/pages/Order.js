@@ -103,7 +103,7 @@ export default function Order(props){
                         </TableHead>
                         <TableBody>
                             {order.orderProducts.map((prod,index)=>
-                                <TableRow>
+                                <TableRow key={index}>
                                     <TableCell>{prod.product.name}</TableCell>
                                     <TableCell align="right">{prod.quantity}</TableCell>
                                     <TableCell align="right">{prod.product.price.toFixed(2)} $</TableCell>

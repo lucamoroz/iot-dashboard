@@ -113,7 +113,7 @@ export default function OrderList(props){
                 </TableHead>
                 <TableBody>
                     {orders.map((order,index)=>
-                        <TableRow>
+                        <TableRow key={index}>
                             <TableCell>{order.id}</TableCell>
                             <TableCell align="right">{timestampFormat(order.timestamp)}</TableCell>
                             <TableCell align="right">{(order.total).toFixed(2)} $</TableCell>
