@@ -5,11 +5,10 @@ import { Redirect } from "react-router";
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import {Container, Grid, Typography} from "@material-ui/core";
+import {Grid, Typography} from "@material-ui/core";
 import { green, red } from '@material-ui/core/colors';
 import PowerIcon from '@material-ui/icons/Power';
 import PowerOffIcon from '@material-ui/icons/PowerOff';
@@ -326,11 +325,9 @@ class Device extends React.Component {
                 //Sets the dataLabels in the State
                 this.setState({
                     dataLabels: dataLabels,
+                    tableRows: [] //Creates the rows for the table
                 })
 
-
-                //Creates the rows for the table
-                this.state.tableRows = [];
                 for (let timestamp in res.data) {
                     let tableRow = [];
                     tableRow.push(timestampFormat(timestamp));

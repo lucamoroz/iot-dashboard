@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useState} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import {AppBar, Box, Button, Collapse, CssBaseline, Toolbar} from '@material-ui/core';
 import CustomerContext from "../CustomerContext";
-import {Link as RouterLink, NavLink, Route, Switch, useRouteMatch} from "react-router-dom";
+import {Link as RouterLink, NavLink, Route, Switch} from "react-router-dom";
 import Signup from "./Signup";
 import Signin from "./Signin";
 
