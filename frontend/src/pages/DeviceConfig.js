@@ -22,7 +22,7 @@ const styles = theme => ({
         margin: 20,
         padding: 5,
         minHeight: 125,
-        minWidth: 200
+        minWidth: 200,
     },
     sub: {
         margin: 20,
@@ -35,9 +35,7 @@ const styles = theme => ({
         flexFlow: "row wrap",
         justifyContent: "flex-start",
         whiteSpace: "nowrap",
-        
-
-
+    
     }
 });
 
@@ -287,6 +285,8 @@ class DeviceConfig extends React.Component {
             deviceGroups: [],
             token: null,
             enabled: null,
+            latitude: null,
+            longitude: null,
             newToken: false,
             allGroups: [],
             groupsCouldBeAdded: [],
@@ -294,9 +294,11 @@ class DeviceConfig extends React.Component {
         }
 
         this.handleRemoveGroup = this.handleRemoveGroup.bind(this);
-        this.handleRefreshChange = this.handleRefreshChange.bind(this);
+        this.handleRefreshRate = this.handleRefreshRate.bind(this);
         this.handleOnOff = this.handleOnOff.bind(this);
         this.handleToken = this.handleToken.bind(this);
+        this.handleRefreshLatitude = this.handleRefreshLatitude.bind(this);
+        this.handleRefreshLongitude = this.handleRefreshLongitude.bind(this);
         this.handleSave = this.handleSave.bind(this);
         this.handleCustomizeGroups = this.handleCustomizeGroups.bind(this);
     }
@@ -312,6 +314,8 @@ class DeviceConfig extends React.Component {
                 deviceGroups: groups,
                 token: resp.data.device.config.token,
                 enabled: resp.data.device.config.enabled,
+                latitude: resp.data.device.config.latitude,
+                longitude: resp.data.device.config.longitude
             })
             axios.get('groups/')
             .then((resp2) => {
@@ -344,7 +348,7 @@ class DeviceConfig extends React.Component {
         })
     }
 
-    handleRefreshChange(event) {
+    handleRefreshRate(event) {
         this.setState({refreshRate: event.target.value});
     }
 
@@ -438,12 +442,22 @@ class DeviceConfig extends React.Component {
         event.preventDefault();
     }
 
+    handleRefreshLatitude (event) {
+        this.setState({latitude: event.target.value});
+    }
+
+    handleRefreshLongitude (event) {
+        this.setState({longitude: event.target.value});
+    }
+
     handleSave(event) {
 
         // sets frequency and enabled
         axios.put('devices/'+this.props.match.params.id+'/config/'+
                 '?updateFrequency='+this.state.refreshRate+
-                '&enabled='+this.state.enabled)
+                '&enabled='+this.state.enabled+
+                '&latitude='+this.state.latitude+
+                '&longitude='+this.state.longitude)
         .then((resp) => {
             console.log(resp);
         })
@@ -509,6 +523,7 @@ class DeviceConfig extends React.Component {
             return (
                 <div className="deviceconfig">
                     <Grid container spacing={12} >
+                        <Grid container spacing={12}>
                         <Grid item xs={3}>
                             <Paper className={classes.paper}>
                                 <div className={classes.box}>
@@ -534,7 +549,7 @@ class DeviceConfig extends React.Component {
                             <Paper className={classes.paper}>
                                 <div className={classes.box}>
                                     <div className={classes.sub}>
-                                        <form onChange={this.handleRefreshChange}>
+                                        <form onChange={this.handleRefreshRate}>
                                             <TextField
                                                 id="refreshratetext"
                                                 label="Frequency"
@@ -551,22 +566,22 @@ class DeviceConfig extends React.Component {
                             <Paper className={classes.paper} >
                                 <div className={classes.box}>
                                     <div className={classes.sub}>
-                                        <form onChange={this.handleRefreshChange} css={{padding:"left"}}>
+                                        <form onChange={this.handleRefreshLatitude} css={{padding:"left"}}>
                                             <TextField
                                                 id="lat"
                                                 label="Latitude"
-                                                placeholder={String(this.state.refreshRate)}
+                                                placeholder={String(this.state.latitude)}
                                                 helperText="Customize device's latitude"
                                                 margin="center"
                                             />
                                         </form>
                                     </div>
                                     <div className={classes.sub}>
-                                        <form onChange={this.handleRefreshChange} css={{padding:"left"}}>
+                                        <form onChange={this.handleRefreshLongitude} css={{padding:"left"}}>
                                             <TextField
                                                 id="lon"
                                                 label="Longitude"
-                                                placeholder={String(this.state.refreshRate)}
+                                                placeholder={String(this.state.longitude)}
                                                 helperText="Customize device's longitude"
                                                 margin="center"
                                             />
@@ -574,6 +589,7 @@ class DeviceConfig extends React.Component {
                                     </div>
                                 </div>
                             </Paper>
+                        </Grid>
                         </Grid>
                         <Grid item xs={12}>
                             <Grid container spacing={12}>
@@ -602,22 +618,28 @@ class DeviceConfig extends React.Component {
                                 </div>
                             </Grid>
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item xs={6}>
                             <Paper className={classes.paper}>
-                                <TextField
-                                    disabled
-                                    id="tokenlabel"
-                                    label={String(this.state.token)}
-                                    helperText="Current token"
-                                    margin="normal"
-                                />
-                                {
-                                    this.state.newToken 
-                                    ? 
-                                        <Button onClick={this.handleToken} variant="contained" color="primary">Don't generate</Button> 
-                                    : 
-                                        <Button onClick={this.handleToken} variant="contained" color="primary">Generate new</Button>
-                                }
+                            <div className={classes.box}>
+                                <div className={classes.sub}>
+                                    <TextField
+                                        disabled
+                                        id="tokenlabel"
+                                        label={String(this.state.token)}
+                                        helperText="Current token"
+                                        margin="normal"
+                                    />
+                                    </div>
+                                    <div className={classes.sub}>
+                                    {
+                                        this.state.newToken 
+                                        ? 
+                                            <Button onClick={this.handleToken} variant="contained" color="primary">Don't generate</Button> 
+                                        : 
+                                            <Button onClick={this.handleToken} variant="contained" color="primary">Generate new</Button>
+                                    }
+                                    </div>
+                                </div>
                             </Paper>
                         </Grid>
 
