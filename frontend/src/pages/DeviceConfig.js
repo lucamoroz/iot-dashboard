@@ -280,11 +280,14 @@ class DeviceConfig extends React.Component {
     handleSave(event) {
 
         // sets frequency and enabled
-        axios.put('devices/'+this.props.match.params.id+'/config/'+
-                '?updateFrequency='+this.state.refreshRate+
-                '&enabled='+this.state.enabled+
-                '&latitude='+this.state.latitude+
-                '&longitude='+this.state.longitude)
+        axios.put('devices/'+this.props.match.params.id+'/config', null, {
+            params: {
+                "updateFrequency": parseInt(this.state.refreshRate),
+                "enabled": this.state.enabled,
+                "latitude": parseFloat(this.state.latitude),
+                "longitude": parseFloat(this.state.longitude)
+            }
+        })
         .then((resp) => {
             console.log(resp);
         })
