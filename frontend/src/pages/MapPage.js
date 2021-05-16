@@ -9,7 +9,7 @@ import PowerIcon from '@material-ui/icons/Power';
 import PowerOffIcon from '@material-ui/icons/PowerOff';
 import { green, red } from '@material-ui/core/colors';
 import CustomerContext from "../CustomerContext";
-import {capitalized} from '../hook/util';
+import { capitalized, dataLabelsSpace } from '../hook/util';
 
 const axios = require('axios').default
 
@@ -69,6 +69,31 @@ function ChangeMapBounds({ bounds }) {
   return null;
 }
 
+function formattedData(data, unit) {
+  var value = data[unit];
+  switch (unit) {
+    case 'windBearing':
+      value = value + ' Degrees';
+      break;
+    case 'windSpeed':
+      value = value + ' Km/h';
+      break;
+    case 'temperature':
+      value = value + ' °C';
+      break;
+    case 'humidity':
+      value = value + ' %';
+      break;
+    case 'pressure':
+      value = value + ' kPa';
+      break;
+    default:
+      break;
+
+  }
+  return value;
+}
+
 
 export default function MapPage(props) {
   const classes = useStyles();
@@ -77,6 +102,7 @@ export default function MapPage(props) {
   const [group, setGroup] = useState("");
   const [product, setProduct] = useState([]);
   const [products, setProducts] = useState([]);
+  const [autoReload, setAutoReload] = useState(false);
   const center = [45.416667, 11.883333] // Padova default coordinates
 
   const customerContext = useContext(CustomerContext);
@@ -111,7 +137,15 @@ export default function MapPage(props) {
       .catch((err) => {
         console.log(err);
       });
-  }, [group, product]);
+  }, [group, product, autoReload]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setAutoReload(!autoReload);
+    }, 1000);
+    // clearing interval
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     // get user's groups
@@ -215,7 +249,7 @@ export default function MapPage(props) {
                   <ul>
                     {
                       Object.keys(item.data).map((key) => (
-                        <li key={key}>{capitalized(key)}: {item.data[key]}</li>
+                        <li key={key}>{capitalized(dataLabelsSpace(key))}: {formattedData(item.data, key)}</li>
                       ))
                     }
                   </ul>
