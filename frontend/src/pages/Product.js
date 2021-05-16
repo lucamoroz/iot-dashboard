@@ -4,6 +4,7 @@ import { Button, Card, CardContent, CardMedia, Grow, Typography } from '@materia
 import axios from 'axios';
 import { Link as RouterLink } from "react-router-dom";
 import { capitalized } from '../hook/util'
+import SnackbarAlert from "../components/SnackbarAlert";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -109,6 +110,9 @@ function Product(props) {
   const classes = useStyles();
   const [state, setState] = useState({ loading: true, product: null, imageUrl: "" });
   const [checked, setChecked] = useState(false);
+  const [snackMessage, setSnackMessage]=useState("");
+  const [snackSeverity,setSnackSeverity]=useState("success");
+
   useEffect(() => {
     axios.get("/products/" + props.match.params.id)
       .then((res) => {
@@ -132,6 +136,7 @@ function Product(props) {
           numProducts += orderProd.quantity
         });
         setNumProdInCart(numProducts);
+        
       })
       .catch((err) => {
         console.log(err);
@@ -171,7 +176,7 @@ function Product(props) {
                 </Typography>
 
                 <Typography className={classes.productPrice}>
-                  {state.product.price}$
+                  {state.product.price.toFixed(2)}$
               </Typography>
 
                 <Typography className={classes.taxes}>
@@ -198,7 +203,7 @@ function Product(props) {
                 Secure transactions
             </Typography>
 
-              <Button className={classes.addToCartButton} variant="contained" color="primary" onClick={() => { onAddToCart(state.product.id); setNumProdInCart(numProdInCart + quantity) }}>
+              <Button className={classes.addToCartButton} variant="contained" color="primary" onClick={() => { onAddToCart(state.product.id); setNumProdInCart(numProdInCart + quantity);setSnackSeverity("success"); setSnackMessage("Product added to cart!"); }}>
                 AddToCart
            </Button>
 
@@ -207,8 +212,20 @@ function Product(props) {
           </Button>
             </CardContent>
           </Card>
+
+            <SnackbarAlert
+              open={snackMessage !== ""}
+              autoHideDuration={1500}
+              onTimeout={() => setSnackMessage("")}
+              severity={snackSeverity}
+              message={snackMessage}
+          />
         </div>
+
+
+        
       </Grow>
+      
 
     );
   }

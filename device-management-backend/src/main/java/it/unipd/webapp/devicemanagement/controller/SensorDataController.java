@@ -61,7 +61,7 @@ public class SensorDataController {
     @GetMapping("/devices/{id}/data")
     public ResponseEntity<Map<Date, Map<String, Float>>> getDeviceData(
         @PathVariable(value = "id") Long deviceId,
-        @RequestParam(value = "limit", defaultValue = "50") int limit,
+        @RequestParam(value = "limit", defaultValue = "48") int limit,
         @RequestParam(value = "lastLast", defaultValue = "true") boolean lastLast) throws ResourceNotFoundException {
 
         Long customerId = getLoggedCustomerId();

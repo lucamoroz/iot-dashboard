@@ -232,7 +232,7 @@ function DataTable(props) {
             <TableBody>
                 {(props.tableRows.length === 0) ? <TableRow key="noData"><TableCell key="noDataCell">No data</TableCell></TableRow> : null}
                 {props.tableRows.map((tableRow) => (
-                    <TableRow key={tableRow[0]}>
+                    <TableRow key={tableRow[0]} hover="true">
                         {tableRow.map((data, index) => (
                             <TableCell key={tableRow+data} align={index === 0 ? "left" : "right"}>{data}</TableCell>
                         ))}
@@ -283,11 +283,14 @@ class Device extends React.Component {
 
         this.loadData();
 
-        setInterval(this.loadData, 3000);
+        this.interval = setInterval(this.loadData, 3000);
     }
 
     componentWillUnmount() {
         this._isMounted = false;
+
+        //Stops the data refresh when the component is unmounted (leaving the page)
+        clearInterval(this.interval);
     }
 
     /**
