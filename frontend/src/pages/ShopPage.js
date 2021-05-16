@@ -1,6 +1,6 @@
 import React, {useEffect, useState,useContext} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
-import { CssBaseline } from '@material-ui/core';
+import { CssBaseline, Typography } from '@material-ui/core';
 import SensorsToBuy from '../components/SensorsToBuy';
 
 import CustomerContext from "../CustomerContext";
@@ -10,14 +10,19 @@ const axios = require('axios').default
 const useStyles = makeStyles((theme) => ({
     root: {
         minHeight: '100vh',
-        backgroundImage:`url(${process.env.PUBLIC_URL + "/assets/bg.jpeg"})`,
-        backgroundRepeat:"no-repeat",
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    title: {
+        fontFamily: 'Roboto',
+        //fontSize: '3rem',
+        //fontWeight: 'bold',
+
     }
 }));
 
-//Not optimized for network calls. For every render it calls the axiom.get function. TODO: Solve this by using react component
 export default function ShopPage(props) {
 
     // IF user not logged in redirect
@@ -46,14 +51,18 @@ export default function ShopPage(props) {
         ;
     }, []);
 
+    const setCartCount = props.handleSetCartCount;
     useEffect(() => {
         console.log(numProdInCart);
-        props.handleSetCartCount(numProdInCart)
-    }, [numProdInCart]);
+        setCartCount(numProdInCart);
+    }, [numProdInCart, setCartCount]);
 
     return (
         <div className={classes.root}>
             <CssBaseline />
+            {/*<Typography variant='h4' className={classes.title}>
+                Check our awesome products
+            </Typography>*/}
             <SensorsToBuy onProductAdded={(quantity) => {setNumProdInCart(prev => prev + quantity)}}/>
         </div>
 

@@ -31,13 +31,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-
-
 export default function Order(props){
     const classes = useStyles();
 
     let { id } = useParams();
-    const [orderId,setOrderId]=useState(id);
+    const orderId = id;
     const [order,setOrder]=useState();
 
     // IF user not logged in redirect
@@ -49,12 +47,14 @@ export default function Order(props){
         props.history.push('/signin');
     }
 
-    //GET requests: completed orders of the current user
-    function completedOrders(){
+    //Code runned just once
+    useEffect(() => {
+        console.log("orderid:"+orderId);
+        //GET requests: completed orders of the current user
         axios.get('/order/completedOrders')
             .then((res) => {
                 console.log(res.data);
-                
+
                 //Find the order with id=orderId
                 var ord=res.data.find(element => String(element.id)===orderId);
 
@@ -71,14 +71,7 @@ export default function Order(props){
             .catch((err) => {
                 console.log(err.response);
             });
-    }
-
-    //Code runned just once
-    useEffect(() => {
-        //setOrderId(id);
-        console.log("orderid:"+orderId);
-        completedOrders();
-    }, [])
+    }, [orderId])
 
     function timestampFormat(timestamp) {
         return new Date(Date.parse(timestamp)).toLocaleString();
@@ -93,8 +86,8 @@ export default function Order(props){
             <Container maxWidth={"sm"}>
                 
                 <Typography variant="h4">Order ID = {orderId}</Typography>
-                <Typography variant="subtitle1">Delivered at: {order.address}</Typography>
-                <Typography variant="subtitle1">Paid on: {timestampFormat(order.timestamp)}</Typography>
+                <Typography variant="subtitle1"><b>Delivered at:</b> {order.address}</Typography>
+                <Typography variant="subtitle1"><b>Paid on:</b> {timestampFormat(order.timestamp)}</Typography>
 
                 <br/>
                 
@@ -110,7 +103,7 @@ export default function Order(props){
                         </TableHead>
                         <TableBody>
                             {order.orderProducts.map((prod,index)=>
-                                <TableRow>
+                                <TableRow key={index}>
                                     <TableCell>{prod.product.name}</TableCell>
                                     <TableCell align="right">{prod.quantity}</TableCell>
                                     <TableCell align="right">{prod.product.price.toFixed(2)} $</TableCell>
@@ -133,8 +126,3 @@ export default function Order(props){
 
     return renderOrder();
 }
-/*
-
-todo:
-
- */

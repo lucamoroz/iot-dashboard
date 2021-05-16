@@ -12,11 +12,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-
 import SearchIcon from '@material-ui/icons/Search';
-
-import Divider from '@material-ui/core/Divider';
-
 import { Link as RouterLink } from 'react-router-dom';
 import CustomerContext from "../CustomerContext";
 
@@ -69,6 +65,8 @@ export default function OrderList(props){
                     ord["total"]=total;
 
                 });
+                //sort orders by id
+                ords.sort((a, b) => parseFloat(b.id) - parseFloat(a.id));
                 console.log("orders",ords);
                 setOrders(ords);
             })
@@ -115,7 +113,7 @@ export default function OrderList(props){
                 </TableHead>
                 <TableBody>
                     {orders.map((order,index)=>
-                        <TableRow>
+                        <TableRow key={index}>
                             <TableCell>{order.id}</TableCell>
                             <TableCell align="right">{timestampFormat(order.timestamp)}</TableCell>
                             <TableCell align="right">{(order.total).toFixed(2)} $</TableCell>

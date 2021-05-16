@@ -1,9 +1,10 @@
-import {Button, Container, TextField, Typography, Box, Link} from "@material-ui/core";
+import {Button, Container, TextField, Typography, Box} from "@material-ui/core";
 import React, {useContext, useState} from "react";
 import {makeStyles} from "@material-ui/core/styles";
 import SnackbarAlert from "../components/SnackbarAlert";
 
 import CustomerContext from "../CustomerContext";
+import {NavLink} from "react-router-dom";
 
 const axios = require('axios').default
 
@@ -112,7 +113,7 @@ export default function Signin(props) {
             </form>
             <br/>
             <Typography align="center">
-                Don't have an account? <Link href="" onClick={() => props.history.push("/signup")}>Sign up</Link>
+                Don't have an account? <NavLink to="/signup">Sign up</NavLink>
             </Typography>
         </Container>
     )

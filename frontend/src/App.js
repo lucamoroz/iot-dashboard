@@ -1,8 +1,5 @@
 import {Route, Switch} from "react-router-dom";
 import {createMuiTheme, makeStyles, ThemeProvider} from '@material-ui/core/styles';
-
-import Signup from "./pages/Signup";
-import Signin from "./pages/Signin";
 import LandingPage from './pages/LandingPage';
 import {Backdrop, CircularProgress, CssBaseline} from "@material-ui/core";
 import React, {useContext, useEffect, useState} from "react";
@@ -53,7 +50,7 @@ function App() {
                 console.log("Customer not logged in");
                 setIsLoggedIn(false);
             });
-    }, []);
+    }, [customer, isLoggedIn]);
 
     return (
         <ThemeProvider theme={theme}>
@@ -78,10 +75,8 @@ function App() {
 
 const Main = () => (
     <Switch>  { /* Render only the first Route that matches the URL */ }
-        <Route exact path='/' component={LandingPage} /> { /* Render component Home when the URL matches the path '/' */ }
-        <Route exact path='/signup' component={Signup} /> { /* Note: removing 'exact' we could have a Rout with path='/device' that matches child paths e.g. '/device/status' */ }
-        <Route exact path='/signin' component={Signin} />
         <Route path='/dashboard' component={Dashboard} />
+        <Route path='/' component={LandingPage} /> { /* Render component Home when the URL matches the path '/' */ }
     </Switch>
 );
 

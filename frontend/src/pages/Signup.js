@@ -1,9 +1,10 @@
 import {makeStyles} from "@material-ui/core/styles";
-import {Button, Container, TextField, Typography, Box, Link} from "@material-ui/core";
+import {Button, Container, TextField, Typography, Box} from "@material-ui/core";
 import React, {useContext, useState} from "react";
 import axios from "axios";
 import SnackbarAlert from "../components/SnackbarAlert";
 import CustomerContext from "../CustomerContext";
+import {NavLink} from "react-router-dom";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -136,7 +137,7 @@ export default function Signup(props) {
             </form>
             <br/>
             <Typography align="center">
-                Already have an account? <Link href="" onClick={() => props.history.push("/signin")}>Sign in</Link>
+                Already have an account? <NavLink to="/signin">Sign in</NavLink>
             </Typography>
         </Container>
 
