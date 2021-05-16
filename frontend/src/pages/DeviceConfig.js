@@ -15,6 +15,10 @@ import Icon from '@material-ui/core/Icon';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from '@material-ui/styles';
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
 
 
 const styles = theme => ({
@@ -59,7 +63,11 @@ const styles = theme => ({
         marginTop: 20,
         padding: 0,
         float:"left",
-    }
+    },
+    formControl: {
+        margin: theme.spacing(1),
+        minWidth: 120,
+    },
 
 
 });
@@ -209,6 +217,19 @@ class DeviceConfig extends React.Component {
         // TODO
     }
 
+    handleSetGroup = (event) => {
+        const groupId = event.target.value;
+        for (const [id, group] of Object.entries(this.state.allGroups)) {
+            if (parseInt(id) === groupId) {
+                const newGroups = this.state.deviceGroups;
+                newGroups.push(group);
+                this.setState({
+                    deviceGroups: newGroups
+                })
+            }
+        }
+    }
+
     handleToken(event) {
         if (this.state.newToken) {
             this.setState({newToken: false});
@@ -283,7 +304,7 @@ class DeviceConfig extends React.Component {
     handleCancel() {
         window.location.reload();
     }
-    
+
     render() {
 
         const { classes } = this.props;
@@ -370,6 +391,21 @@ class DeviceConfig extends React.Component {
                                             </ Paper>
                                         )
                                     }
+                                    <FormControl className={classes.formControl}>
+                                        <InputLabel id="group-select-label">Add group</InputLabel>
+                                        <Select
+                                            labelId="group-select-label"
+                                            id="group-select"
+                                            value=""
+                                            onChange={this.handleSetGroup}
+                                        >
+                                            {
+                                                this.state.deviceGroups.map(group =>
+                                                    <MenuItem value={group["id"]}>{group["name"]}</MenuItem>
+                                                )
+                                            }
+                                        </Select>
+                                    </FormControl>
                                 </Grid>
                             </Paper>
 
