@@ -61,18 +61,9 @@ class FileReplay:
         for index, row in row_iterator:
             # Converting row into dict before publishing
             data_dict = last_row.to_dict()
-
-            body = []
-            for key, value in data_dict.items():
-                type_id = FileReplay.data_type_to_id(key)
-                if type_id:
-                    measurement = {
-                        'value': value,
-                        'dataType': {'id': type_id}
-                    }
-                    body.append(measurement)
-
             data_dict.update(time=str(last_index.to_pydatetime()))
+
+            body = FileReplay.prepare_body(data_dict)
             if self._is_enabled:
                 self._publisher.publish(body)
             else:
@@ -95,6 +86,25 @@ class FileReplay:
     def stop(self):
         self._exit.set()
         print("FileReplay will stop playing after sleep cycle")
+
+    @staticmethod
+    def prepare_body(data: dict):
+        body = []
+        for key, value in data.items():
+            type_id = FileReplay.data_type_to_id(key)
+            if type_id:
+                # to kPa
+                if key == 'pressure':
+                    value = value / 10
+                # Humidity to %
+                if key == 'humidity':
+                    value = value * 100
+                measurement = {
+                    'value': value,
+                    'dataType': {'id': type_id}
+                }
+                body.append(measurement)
+        return body
 
     @staticmethod
     def data_type_to_id(name: str):
