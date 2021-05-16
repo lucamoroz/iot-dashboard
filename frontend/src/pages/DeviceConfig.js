@@ -145,7 +145,7 @@ class DeviceConfig extends React.Component {
             refreshRate: "",
             deviceGroups: [],
             token: "",
-            enabled: "",
+            enabled: false,
             latitude: "",
             longitude: "",
             newToken: false,
@@ -266,13 +266,7 @@ class DeviceConfig extends React.Component {
     }
 
     handleOnOff(event) {
-        if (this.state.enabled) {
-            this.setState({enabled: false});
-        }
-        else {
-            this.setState({enabled: true})
-        }
-        event.preventDefault();
+        this.setState({enabled: !this.state.enabled});
     }
 
     handleRefreshLatitude (event) {
@@ -353,7 +347,7 @@ class DeviceConfig extends React.Component {
         else {
             return (
                 <div className="deviceconfig">
-                    <Grid container xs={12}>
+                    <Grid container>
                         <Grid item xs={12}>
                             <Paper className={classes.paper}>
                                 <div className={classes.box}>
@@ -449,7 +443,7 @@ class DeviceConfig extends React.Component {
                         </Grid>
                         <Grid item xs={12}>
                             <Paper className={classes.paper}>
-                                <Grid container xs={12}>
+                                <Grid container>
                                     <div className={classes.box}>
                                         <div className={classes.sub}>
                                             <TextField
