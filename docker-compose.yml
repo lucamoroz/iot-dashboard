@@ -30,3 +30,10 @@ services:
       - LOGGING_LEVEL_IT_UNIPD_WEBAPP_DEVICEMANAGEMENT=${APPLICATION_LOG_LEVEL}
       - FREE_PLAN_CALLS=${FREE_PLAN_CALLS}
       - PREMIUM_PLAN_CALLS=${PREMIUM_PLAN_CALLS}
+  device-management-frontend:
+    container_name: frontend
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
