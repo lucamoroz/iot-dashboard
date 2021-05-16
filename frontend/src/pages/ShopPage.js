@@ -51,10 +51,11 @@ export default function ShopPage(props) {
         ;
     }, []);
 
+    const setCartCount = props.handleSetCartCount;
     useEffect(() => {
         console.log(numProdInCart);
-        props.handleSetCartCount(numProdInCart)
-    }, [numProdInCart]);
+        setCartCount(numProdInCart);
+    }, [numProdInCart, setCartCount]);
 
     return (
         <div className={classes.root}>

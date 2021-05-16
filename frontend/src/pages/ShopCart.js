@@ -50,7 +50,6 @@ export default function ShopCart(props) {
     const [orderId,setOrderId]=useState(-1); 
     const [address,setAddress]=useState("");
     const [products,setProducts]=useState([]);
-    const [error, setError] = useState("");
     const [snackMessage, setSnackMessage]=useState("");
     const [snackSeverity,setSnackSeverity]=useState("error");
 
