@@ -1,6 +1,6 @@
 import React, {useEffect, useState,useContext} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
-import { CssBaseline } from '@material-ui/core';
+import { CssBaseline, Typography } from '@material-ui/core';
 import SensorsToBuy from '../components/SensorsToBuy';
 
 import CustomerContext from "../CustomerContext";
@@ -10,7 +10,16 @@ const axios = require('axios').default
 const useStyles = makeStyles((theme) => ({
     root: {
         minHeight: '100vh',
-        
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    title: {
+        fontFamily: 'Roboto',
+        //fontSize: '3rem',
+        //fontWeight: 'bold',
+
     }
 }));
 
@@ -50,6 +59,9 @@ export default function ShopPage(props) {
     return (
         <div className={classes.root}>
             <CssBaseline />
+            {/*<Typography variant='h4' className={classes.title}>
+                Check our awesome products
+            </Typography>*/}
             <SensorsToBuy onProductAdded={(quantity) => {setNumProdInCart(prev => prev + quantity)}}/>
         </div>
 

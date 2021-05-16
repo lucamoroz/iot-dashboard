@@ -11,20 +11,20 @@ import {capitalized} from '../hook/util';
 
 const useStyles = makeStyles({
   root: {
-    maxWidth: 645,
-    background: 'rgba(0,0,255,0.7)',
-    margin: '20px',
+    width: '45%',
+    //background: 'rgba(0,0,255,0.7)',
+    margin: '1%',
     borderRadius: 15,
   },
   media: {
-    maxWidth: 450,
-    maxHeight: 300,
+    width: '100%',
+    height: 400,
   },
   title: {
     fontFamily: 'Roboto',
     fontWeight: 'bold',
-    fontSize: '2rem',
-    color: '#fff',
+    fontSize: '1.5rem',
+    color: 'rgba(0,0,0,0.8)',
     marginRight: 20,
   },
   description: {
@@ -37,7 +37,7 @@ const useStyles = makeStyles({
     fontFamily: 'Roboto',
     fontWeight: 'regular',
     fontSize: '1.1rem',
-    color: '#fff'
+    color: 'black'
   },
   buttonText: {
     color: 'white',
