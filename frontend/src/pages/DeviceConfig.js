@@ -67,7 +67,10 @@ const styles = theme => ({
         margin: theme.spacing(1),
         minWidth: 120,
     },
-
+    chip: {
+        marginTop: 25,
+        margin: 5
+    }
 
 });
 
@@ -412,11 +415,12 @@ class DeviceConfig extends React.Component {
                         </Grid>
                         <Grid item xs={12}>
                             <Paper className={classes.paper}>
-                                <Grid container>
+                                <Typography variant="h6">Groups</Typography>
+                                <div className={classes.box}>
                                     { 
                                         // creates as many group papers as needed
                                         this.state.deviceGroups.map(g => 
-                                            <Chip key={g.id} label={g.name}
+                                            <Chip className={classes.chip} key={g.id} label={g.name}
                                                   onDelete={this.handleRemoveGroup.bind(this, g.id)}/>
                                         )
                                     }
@@ -437,7 +441,7 @@ class DeviceConfig extends React.Component {
                                             }
                                         </Select>
                                     </FormControl>
-                                </Grid>
+                                </div>
                             </Paper>
 
                             <div className={classes.groupButton}>
