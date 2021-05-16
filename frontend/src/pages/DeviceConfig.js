@@ -220,7 +220,7 @@ class DeviceConfig extends React.Component {
     handleSetGroup = (event) => {
         const groupId = event.target.value;
         for (const [id, group] of Object.entries(this.state.allGroups)) {
-            if (parseInt(id) === groupId) {
+            if (group["id"] === groupId) {
                 const newGroups = this.state.deviceGroups;
                 newGroups.push(group);
                 this.setState({
@@ -303,6 +303,20 @@ class DeviceConfig extends React.Component {
 
     handleCancel() {
         window.location.reload();
+    }
+
+    getGroupsCouldBeAdded() {
+        let diff = [...this.state.allGroups];
+        for (let i = 0; i < this.state.deviceGroups.length; i++) {
+            let index = diff.findIndex(group => group.id === this.state.deviceGroups[i].id);
+            if (index !== -1) {
+                diff.splice(index, 1);
+            }
+        }
+        console.log(this.state.allGroups)
+        console.log(this.state.deviceGroups)
+        console.log(diff)
+        return diff
     }
 
     render() {
@@ -400,8 +414,8 @@ class DeviceConfig extends React.Component {
                                             onChange={this.handleSetGroup}
                                         >
                                             {
-                                                this.state.deviceGroups.map(group =>
-                                                    <MenuItem value={group["id"]}>{group["name"]}</MenuItem>
+                                                this.getGroupsCouldBeAdded().map(group =>
+                                                    <MenuItem value={group["id"]}>{group["id"] + group["name"]}</MenuItem>
                                                 )
                                             }
                                         </Select>
