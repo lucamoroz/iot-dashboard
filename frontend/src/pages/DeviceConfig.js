@@ -375,7 +375,7 @@ class DeviceConfig extends React.Component {
                                             <TextField
                                                 id="refreshratetext"
                                                 label="Frequency"
-                                                placeholder={String(this.state.refreshRate)}
+                                                value={this.state.refreshRate}
                                                 helperText="Customize device's refesh rate"
                                             />
                                         </form>
@@ -389,7 +389,7 @@ class DeviceConfig extends React.Component {
                                             <TextField
                                                 id="lat"
                                                 label="Latitude"
-                                                placeholder={String(this.state.latitude)}
+                                                value={this.state.latitude}
                                                 helperText="Customize device's latitude"
                                             />
                                         </form>
@@ -399,7 +399,7 @@ class DeviceConfig extends React.Component {
                                             <TextField
                                                 id="lon"
                                                 label="Longitude"
-                                                placeholder={String(this.state.longitude)}
+                                                value={this.state.longitude}
                                                 helperText="Customize device's longitude"
                                             />
                                         </form>
