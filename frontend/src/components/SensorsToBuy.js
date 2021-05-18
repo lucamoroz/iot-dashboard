@@ -1,7 +1,6 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import ImageCard from './ImageCard';
-import ImageCardExpanded from './ImageCardExpanded';
 import { Link as RouterLink } from 'react-router-dom';
 import { Grid, Zoom } from '@material-ui/core';
 import { useState } from 'react';
@@ -20,36 +19,6 @@ const styles = theme => ({
     }
   },
 });
-
-/*class SensorCards extends React.Component {
-  constructor(props) {
-    super(props);
-    this.onAddToCart = props.onAddToCart.bind(this);
-  }
-
-  render() {
-    const { className } = this.props
-    const { sensors } = this.props
-    return (
-      <div className={className} id='sensors-to-buy'>
-        {
-          sensors.map((sensor, i) => {
-            return <Zoom
-            in={true} style={{ transitionDelay: i *100 }}>
-              <ImageCard
-              sensor={sensor}
-              key={sensor.id}
-              checked={true}
-              onAddToCart={this.onAddToCart}
-              component={RouterLink} to={"/dashboard/shop/product/" + sensor.id} />
-            </Zoom>
-          })
-        }
-
-      </div>
-    );
-  }
-}*/
 
 function SensorCards(props) {
   const [checked, setChecked] = useState(false);

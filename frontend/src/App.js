@@ -50,7 +50,7 @@ function App() {
                 console.log("Customer not logged in");
                 setIsLoggedIn(false);
             });
-    }, []);
+    }, [customer, isLoggedIn]);
 
     return (
         <ThemeProvider theme={theme}>

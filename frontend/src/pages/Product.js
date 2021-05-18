@@ -131,9 +131,9 @@ function Product(props) {
   const [checked, setChecked] = useState(false);
   const [snackMessage, setSnackMessage]=useState("");
   const [snackSeverity,setSnackSeverity]=useState("success");
-
+  const productId = props.match.params.id;
   useEffect(() => {
-    axios.get("/products/" + props.match.params.id)
+    axios.get("/products/" + productId)
       .then((res) => {
         console.log(res);
 
@@ -143,7 +143,7 @@ function Product(props) {
       }).catch((err) => {
         console.log(err);
       })
-  }, []);
+  }, [productId]);
 
   const [numProdInCart, setNumProdInCart] = useState(0);
   useEffect(() => {
@@ -163,10 +163,12 @@ function Product(props) {
       ;
   }, []);
 
+  const setCartCount = props.handleSetCartCount;
   useEffect(() => {
     console.log(numProdInCart);
-    props.handleSetCartCount(numProdInCart)
-  }, [numProdInCart]);
+    setCartCount(numProdInCart)
+  }, [numProdInCart, setCartCount]);
+
   const quantity = 1;
   if (state.loading) {
     return (
