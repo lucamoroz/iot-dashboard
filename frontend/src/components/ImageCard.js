@@ -26,7 +26,7 @@ const useStyles = makeStyles({
     fontWeight: 'bold',
     fontSize: '1.5vw',
     color: 'rgba(0,0,0,0.8)',
-    marginRight: 20,
+    marginRight: '0.5vw',
   },
   description: {
     fontFamily: 'Roboto',
