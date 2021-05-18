@@ -90,6 +90,11 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+/**
+ * Indicator showing device is on/off
+ * @param props Contains a boolean with device status in props.enabled
+ * @returns {JSX.Element}
+ */
 function DeviceEnabledIndicator(props) {
     if (props.enabled) {
         return (
@@ -102,6 +107,11 @@ function DeviceEnabledIndicator(props) {
     }
 }
 
+/**
+ * Show a single paper containing a data collected by the device
+ * @param props Type of data in props.datatype and the value in props.value
+ * @returns {JSX.Element}
+ */
 function DeviceData(props) {
     const classes = useStyles();
     return (
@@ -111,6 +121,11 @@ function DeviceData(props) {
     )
 }
 
+/**
+ * Show a paper containing a group associated to the device
+ * @param props The group name in props.groupName
+ * @returns {JSX.Element}
+ */
 function DeviceGroups(props) {
     const classes = useStyles();
     return (
@@ -120,6 +135,11 @@ function DeviceGroups(props) {
     );
 }
 
+/**
+ * A battery indicator icon showing the remaining battery in the device
+ * @param props Percentage of battery in props.percentage
+ * @returns {JSX.Element}
+ */
 function Battery(props) {
     const percentage = props.percentage
     if (percentage < 10)
@@ -140,6 +160,12 @@ function Battery(props) {
         return <BatteryFull/>
 }
 
+/**
+ * A single device showing enabled indicator, the battery, the associated groups and
+ * the last data collected by the device
+ * @param props Properties containing device info and data
+ * @returns {JSX.Element}
+ */
 function Device (props) {
     const classes = useStyles();
     const deviceId = props.deviceData["device"]["id"];
@@ -239,6 +265,11 @@ function Device (props) {
     }
 }
 
+/**
+ * Show all devices
+ * @param props Devices in props.devices. View mode in props.mode
+ * @returns {JSX.Element|*}
+ */
 function Devices(props) {
     const [checked, setChecked] = useState(false);
     useEffect(() => {
@@ -263,6 +294,7 @@ function DashboardPage(props) {
     const [products, setProducts] = useState([]);
     const [sortby, setSortby] = useState("id");
     const [loading, setLoading] = useState(true);
+    const [reload, setReload] = useState(false);
     const [visualization, setVisualization] = useState(
         window.innerWidth < 620 ? "compact" : "wide"
     );
@@ -276,45 +308,40 @@ function DashboardPage(props) {
     }
 
     useEffect(() => {
-        if (loading) {
-            // get user's groups
-            axios.get("/groups")
-                .then(res => {
-                    setGroups(res.data)
-                })
-        }
-    }, [loading]);
+        // get user's groups
+        axios.get("/groups")
+            .then(res => {
+                setGroups(res.data)
+            })
+    }, [reload]);
 
     useEffect(() => {
-        if (loading) {
-            // get user's products
-            axios.get("/products")
-                .then(res => {
-                    setProducts(res.data)
-                })
-        }
-    }, [loading]);
+        // get user's products
+        axios.get("/products")
+            .then(res => {
+                setProducts(res.data)
+            })
+    }, [reload]);
 
     useEffect(() => {
-        if (loading) {
-            // get devices
-            const params = {
-                includeLastData: true,
-            }
-            if (group) {
-                params["groupId"] = group;
-            }
-            if (product) {
-                params["productId"] = product;
-            }
-            axios.get("/devices", {params})
-                .then(res => {
-                    setDevices(res.data);
-                    setLoading(false);
-                })
+        // get devices
+        const params = {
+            includeLastData: true,
         }
-    }, [group, product, loading]);
+        if (group) {
+            params["groupId"] = group;
+        }
+        if (product) {
+            params["productId"] = product;
+        }
+        axios.get("/devices", {params})
+            .then(res => {
+                setDevices(res.data);
+                setLoading(false);
+            })
+    }, [group, product, reload]);
 
+    // dictionary where the key is the sorting key and value is a lambda which compares two devices
     const sortByItems = {
         "id": (a,b) => a["device"]["id"] - b["device"]["id"],
         "battery": (a,b) => a["device"]["deviceStatus"]["battery"] - b["device"]["deviceStatus"]["battery"],
@@ -322,7 +349,10 @@ function DashboardPage(props) {
     };
 
     const handleVisualization = (e) => setVisualization(e.target.value);
-    const handleOnReloadClick = (e) => setLoading(true);
+    const handleOnReloadClick = (e) => {
+        setLoading(true);
+        setReload(!reload);
+    }
 
     return (
         <div className={classes.dashboard}>
