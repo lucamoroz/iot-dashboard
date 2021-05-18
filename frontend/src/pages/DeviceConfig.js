@@ -23,7 +23,7 @@ import Divider from "@material-ui/core/Divider";
 
 const styles = theme => ({
     paper: {
-        margin: 80,
+        margin: 10,
         padding: theme.spacing(2),
         [theme.breakpoints.up(600 + theme.spacing(3) * 2)]: {
             padding: theme.spacing(3),
@@ -323,50 +323,54 @@ class DeviceConfig extends React.Component {
                         <Typography variant="subtitle1" align="center">
                             Device {this.props.match.params.id}
                         </Typography>
-                        <Typography variant="h6" gutterBottom>
-                            Settings
-                        </Typography>
-                        <Grid container spacing={3}>
-                            <Grid item xs={12}>
-                                <Typography display="inline">Enabled </Typography>
-                                <FormControlLabel
-                                    control={
-                                        <Switch
-                                            checked={this.state.enabled}
-                                            onChange={this.handleOnOff}
-                                            color="primary"
-                                        />
-                                    }
-                                    label={this.state.enabled ? "ON":"OFF"}
-                                />
+                        <div style={{margin: 20}}>
+                            <Typography variant="h6" gutterBottom>
+                                Settings
+                            </Typography>
+                            <Grid container spacing={3}>
+                                <Grid item xs={12}>
+                                    <Typography display="inline">Enabled </Typography>
+                                    <FormControlLabel
+                                        control={
+                                            <Switch
+                                                checked={this.state.enabled}
+                                                onChange={this.handleOnOff}
+                                                color="primary"
+                                            />
+                                        }
+                                        label={this.state.enabled ? "ON":"OFF"}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        id="refreshratetext"
+                                        label="Refresh interval"
+                                        value={this.state.refreshRate}
+                                        helperText="Customize device's refesh interval"
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        id="lat"
+                                        label="Latitude"
+                                        value={this.state.latitude}
+                                        helperText="Customize device's latitude"
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        id="lon"
+                                        label="Longitude"
+                                        value={this.state.longitude}
+                                        helperText="Customize device's longitude"
+                                    />
+                                </Grid>
                             </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    id="refreshratetext"
-                                    label="Refresh interval"
-                                    value={this.state.refreshRate}
-                                    helperText="Customize device's refesh interval"
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    id="lat"
-                                    label="Latitude"
-                                    value={this.state.latitude}
-                                    helperText="Customize device's latitude"
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    id="lon"
-                                    label="Longitude"
-                                    value={this.state.longitude}
-                                    helperText="Customize device's longitude"
-                                />
-                            </Grid>
-                        </Grid>
+                        </div>
 
-                        <div style={{marginTop: 20}}>
+                        <Divider/>
+
+                        <div style={{margin: 20}}>
                             <Typography variant="h6" gutterBottom>
                                 Groups
                             </Typography>
