@@ -112,17 +112,17 @@ export default function LandingPage(props) {
                     <NavLink to="/" className={classes.appBarTitle} style={{textDecoration: "none", color: 'inherit'}}>
                         <h1>IoT<span className={classes.colorText}>-Dash</span></h1>
                     </NavLink>
-                    <Box m="0.5rem">
+                    <Box m="0.5vw">
                         <Button component={RouterLink} to="/dashboard/shop" variant="outlined" color="primary"
-                                style={{borderRadius: 50}}>Shop</Button>
+                                style={{fontSize: '1vw', borderRadius: 50}}>Shop</Button>
                     </Box>
-                    <Box m="0.5rem">
+                    <Box m="0.5vw">
                         <Button component={RouterLink} to="/dashboard" variant="outlined" color="primary"
-                                style={{borderRadius: 50}}>Dashboard</Button>
+                                style={{fontSize: '1vw', borderRadius: 50}}>Dashboard</Button>
                     </Box>
-                    <Box m="0.5rem">
+                    <Box m="0.5vw">
                         <Button component={RouterLink} to="/signin" variant="contained" color="primary"
-                                style={{borderRadius: 50}}>LogIn</Button>
+                                style={{fontSize: '1vw', borderRadius: 50}}>LogIn</Button>
                     </Box>
                 </Toolbar>
             </AppBar>

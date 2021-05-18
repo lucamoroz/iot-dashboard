@@ -11,32 +11,33 @@ import {capitalized} from '../hook/util';
 
 const useStyles = makeStyles({
   root: {
-    width: '45%',
+    width: '35%',
     //background: 'rgba(0,0,255,0.7)',
     margin: '1%',
     borderRadius: 15,
   },
   media: {
     width: '100%',
-    height: 400,
+    height: undefined,
+    aspectRatio: 1,
   },
   title: {
     fontFamily: 'Roboto',
     fontWeight: 'bold',
-    fontSize: '1.5rem',
+    fontSize: '1.5vw',
     color: 'rgba(0,0,0,0.8)',
     marginRight: 20,
   },
   description: {
     fontFamily: 'Roboto',
     fontWeight: 'regular',
-    fontSize: '1.1rem',
+    fontSize: '1.1vw',
     color: '#ddd'
   },
   price: {
     fontFamily: 'Roboto',
     fontWeight: 'regular',
-    fontSize: '1.1rem',
+    fontSize: '1.1vw',
     color: 'black'
   },
   buttonText: {
