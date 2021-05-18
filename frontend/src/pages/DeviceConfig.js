@@ -19,6 +19,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Chip from '@material-ui/core/Chip';
 import DoneIcon from '@material-ui/icons/Done';
 import Divider from "@material-ui/core/Divider";
+import SnackbarAlert from "../components/SnackbarAlert";
 
 
 const styles = theme => ({
@@ -125,6 +126,7 @@ class DeviceConfig extends React.Component {
             latitude: "",
             longitude: "",
             allGroups: [],
+            snackMessage: ""
         }
 
         this.handleRemoveGroup = this.handleRemoveGroup.bind(this);
@@ -283,6 +285,9 @@ class DeviceConfig extends React.Component {
         axios.post('devices/'+this.props.match.params.id+'/group/', groupsIds)
         .then((resp) => {
             console.log(resp);
+            this.setState({
+                snackMessage: "Configuration saved successfully"
+            })
         })
         .catch((error) => {
             console.log(error.response);
@@ -415,8 +420,6 @@ class DeviceConfig extends React.Component {
                         </div>
                     </Paper>
 
-
-
                     <Paper className={classes.paper}>
                         <Typography variant="h6" gutterBottom>
                             Device token
@@ -433,6 +436,16 @@ class DeviceConfig extends React.Component {
                             </div>
                         </div>
                     </Paper>
+
+                    <SnackbarAlert
+                        open={this.state.snackMessage !== ""}
+                        autoHideDuration={3000}
+                        onTimeout={() => this.setState({
+                            snackMessage: ""
+                        })}
+                        severity="success"
+                        message={this.state.snackMessage}
+                    />
                 </div>
             );
         }
