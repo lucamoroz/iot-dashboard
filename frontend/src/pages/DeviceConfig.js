@@ -18,50 +18,16 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import Chip from '@material-ui/core/Chip';
 import DoneIcon from '@material-ui/icons/Done';
+import Divider from "@material-ui/core/Divider";
 
 
 const styles = theme => ({
     paper: {
-        margin: 20,
-        padding: 5,
-        minHeight: 10,
-        minWidth: 300,
-    },
-    sub: {
-        margin: 20,
-        whiteSpace: "nowrap",
-        float:"left",
-
-    },
-    box:{
-        display: "flex",
-        flexFlow: "row wrap",
-        justifyContent: "flex-start",
-        whiteSpace: "nowrap",
-    
-    },
-    group: {
-        margin: 20,
-        padding: 0,
-        minHeight: 50,
-        minWidth: 100,
-        backgroundColor: "#EAEAEA",
-    },
-    groupButton: {
-        margin: 20,
-        marginTop: -10,
-        padding: 0,
-        float:"right",
-    },
-    saveButton: {
-        margin: 20,
-        padding: 0,
-        float:"left",
-    },
-    containerSave: {
-        marginTop: 20,
-        padding: 0,
-        float:"left",
+        margin: 80,
+        padding: theme.spacing(2),
+        [theme.breakpoints.up(600 + theme.spacing(3) * 2)]: {
+            padding: theme.spacing(3),
+        },
     },
     formControl: {
         margin: theme.spacing(1),
@@ -70,8 +36,15 @@ const styles = theme => ({
     chip: {
         marginTop: 25,
         margin: 5
-    }
-
+    },
+    button: {
+        marginTop: theme.spacing(3),
+        marginLeft: theme.spacing(1),
+    },
+    buttons: {
+        display: 'flex',
+        justifyContent: 'flex-end',
+    },
 });
 
 const axios = require('axios').default
@@ -103,7 +76,7 @@ function AddNewGroupDialog(props) {
     }
 
     return (
-        <div>
+        <div style={{display: "inline"}}>
             <Button variant="contained" color="secondary" onClick={handleClickOpen}>
                 New +
             </Button>
@@ -151,7 +124,6 @@ class DeviceConfig extends React.Component {
             enabled: false,
             latitude: "",
             longitude: "",
-            newToken: false,
             allGroups: [],
         }
 
@@ -259,13 +231,17 @@ class DeviceConfig extends React.Component {
     }
 
     handleToken(event) {
-        if (this.state.newToken) {
-            this.setState({newToken: false});
-        }
-        else {
-            this.setState({newToken: true})
-        }
-        event.preventDefault();
+        // sets token
+        axios.put('devices/'+this.props.match.params.id+'/generatetoken/')
+            .then((resp) => {
+                console.log(resp);
+                this.setState({
+                    token: resp.data.token
+                })
+            })
+            .catch((error) => {
+                console.log(error.response);
+            })
     }
 
     handleOnOff(event) {
@@ -297,17 +273,6 @@ class DeviceConfig extends React.Component {
         .catch((error) => {
             console.log(error.response);
         })
-        
-        // sets token
-        if (this.state.newToken) {
-            axios.put('devices/'+this.props.match.params.id+'/generatetoken/')
-            .then((resp) => {
-                console.log(resp);
-            })
-            .catch((error) => {
-                console.log(error.response);
-            })
-        }
 
         // sets groups
         let groupsIds = []
@@ -322,8 +287,6 @@ class DeviceConfig extends React.Component {
         .catch((error) => {
             console.log(error.response);
         })
-
-
     }
 
     handleCancel() {
@@ -352,146 +315,120 @@ class DeviceConfig extends React.Component {
         }
         else {
             return (
-                <div className="deviceconfig">
-                    <Grid container>
-                        <Grid item xs={12}>
-                            <Paper className={classes.paper}>
-                                <div className={classes.box}>
-                                    <div className={classes.sub}>
-                                        <Typography>deviceID: {this.props.match.params.id} </Typography>
-                                    </div>
-                                    <div className={classes.sub}>
-                                        <FormControlLabel
-                                            control={
-                                                <Switch
-                                                    checked={this.state.enabled}
-                                                    onChange={this.handleOnOff}
-                                                    color="primary"
-                                                />
-                                            }
-                                            label={this.state.enabled ? "ON":"OFF"}
+                <div>
+                    <Paper className={classes.paper}>
+                        <Typography component="h1" variant="h4" align="center">
+                            Device configuration
+                        </Typography>
+                        <Typography variant="subtitle1" align="center">
+                            Device {this.props.match.params.id}
+                        </Typography>
+                        <Typography variant="h6" gutterBottom>
+                            Settings
+                        </Typography>
+                        <Grid container spacing={3}>
+                            <Grid item xs={12}>
+                                <Typography display="inline">Enabled </Typography>
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={this.state.enabled}
+                                            onChange={this.handleOnOff}
+                                            color="primary"
                                         />
-                                    </div>
-                                </div>
-                            </Paper>
-                            <Paper className={classes.paper}>
-                                <div className={classes.box}>
-                                    <div className={classes.sub}>
-                                        <form onChange={this.handleRefreshRate}>
-                                            <TextField
-                                                id="refreshratetext"
-                                                label="Frequency"
-                                                value={this.state.refreshRate}
-                                                helperText="Customize device's refesh rate"
-                                            />
-                                        </form>
-                                    </div>
-                                </div>
-                            </Paper>
-                            <Paper className={classes.paper} >
-                                <div className={classes.box}>
-                                    <div className={classes.sub}>
-                                        <form onChange={this.handleRefreshLatitude} css={{padding:"left"}}>
-                                            <TextField
-                                                id="lat"
-                                                label="Latitude"
-                                                value={this.state.latitude}
-                                                helperText="Customize device's latitude"
-                                            />
-                                        </form>
-                                    </div>
-                                    <div className={classes.sub}>
-                                        <form onChange={this.handleRefreshLongitude} css={{padding:"left"}}>
-                                            <TextField
-                                                id="lon"
-                                                label="Longitude"
-                                                value={this.state.longitude}
-                                                helperText="Customize device's longitude"
-                                            />
-                                        </form>
-                                    </div>
-                                </div>
-                            </Paper>
+                                    }
+                                    label={this.state.enabled ? "ON":"OFF"}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    id="refreshratetext"
+                                    label="Refresh interval"
+                                    value={this.state.refreshRate}
+                                    helperText="Customize device's refesh interval"
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    id="lat"
+                                    label="Latitude"
+                                    value={this.state.latitude}
+                                    helperText="Customize device's latitude"
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    id="lon"
+                                    label="Longitude"
+                                    value={this.state.longitude}
+                                    helperText="Customize device's longitude"
+                                />
+                            </Grid>
                         </Grid>
-                        <Grid item xs={12}>
-                            <Paper className={classes.paper}>
-                                <Typography variant="h6">Groups</Typography>
-                                <div className={classes.box}>
-                                    { 
-                                        // creates as many group papers as needed
-                                        this.state.deviceGroups.map(g => 
-                                            <Chip className={classes.chip} key={g.id} label={g.name}
-                                                  onDelete={this.handleRemoveGroup.bind(this, g.id)}/>
+
+                        <div style={{marginTop: 20}}>
+                            <Typography variant="h6" gutterBottom>
+                                Groups
+                            </Typography>
+                            {
+                                // creates as many group papers as needed
+                                this.state.deviceGroups.map(g =>
+                                    <Chip className={classes.chip} key={g.id} label={g.name}
+                                          onDelete={this.handleRemoveGroup.bind(this, g.id)}/>
+                                )
+                            }
+                            <FormControl className={classes.formControl}>
+                                <InputLabel id="group-select-label">Add group</InputLabel>
+                                <Select
+                                    labelId="group-select-label"
+                                    id="group-select"
+                                    value=""
+                                    onChange={this.handleSetGroup}
+                                >
+                                    {
+                                        this.getGroupsCouldBeAdded().map(group =>
+                                            <MenuItem key={group["id"]} value={group["id"]}>
+                                                {group["name"]}
+                                            </MenuItem>
                                         )
                                     }
-                                    <FormControl className={classes.formControl}>
-                                        <InputLabel id="group-select-label">Add group</InputLabel>
-                                        <Select
-                                            labelId="group-select-label"
-                                            id="group-select"
-                                            value=""
-                                            onChange={this.handleSetGroup}
-                                        >
-                                            {
-                                                this.getGroupsCouldBeAdded().map(group =>
-                                                    <MenuItem key={group["id"]} value={group["id"]}>
-                                                        {group["name"]}
-                                                    </MenuItem>
-                                                )
-                                            }
-                                        </Select>
-                                    </FormControl>
-                                </div>
-                            </Paper>
-
-                            <div className={classes.groupButton}>
-                                <AddNewGroupDialog whenDone={this.handleAddNewGroup} />
+                                </Select>
+                            </FormControl>
+                            <AddNewGroupDialog whenDone={this.handleAddNewGroup} />
+                        </div>
+                        <div className={classes.buttons}>
+                            <div className={classes.button}>
+                                <Button onClick={this.handleCancel} variant="contained" color="secondary">
+                                    Cancel
+                                </Button>
                             </div>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Paper className={classes.paper}>
-                                <Grid container>
-                                    <div className={classes.box}>
-                                        <div className={classes.sub}>
-                                            <TextField
-                                                disabled
-                                                id="tokenlabel"
-                                                label={String(this.state.token)}
-                                                helperText="Current token"
-                                                margin="normal"
-                                            />    
-                                        </div>
-                                    </div>
-                                </Grid>
-                            </Paper>
-                            <div className={classes.groupButton}>
-                                {
-                                    this.state.newToken 
-                                    ? 
-                                        <Button onClick={this.handleToken} variant="contained" color="primary">Don't generate</Button> 
-                                    : 
-                                        <Button onClick={this.handleToken} variant="contained" color="primary">Generate new</Button>
-                                }
-                            </div>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <div className={classes.containerSave}>
-                                <div className={classes.saveButton}>
-                                    <Button onClick={this.handleCancel} variant="contained" color="secondary">
-                                        Cancel
-                                    </Button>
-                                </div>
-                                <div className={classes.saveButton}>
+                            <div className={classes.button}>
 
-                                    <Button onClick={this.handleSave} variant="contained" color="primary">
-                                        Save Changes
-                                    </Button>
-                                </div>
+                                <Button onClick={this.handleSave} variant="contained" color="primary">
+                                    Save Changes
+                                </Button>
                             </div>
-                        
-                        </Grid>
+                        </div>
+                    </Paper>
 
-                    </ Grid>
+
+
+                    <Paper className={classes.paper}>
+                        <Typography variant="h6" gutterBottom>
+                            Device token
+                        </Typography>
+                        <TextField
+                            disabled
+                            id="tokenlabel"
+                            label={String(this.state.token)}
+                            helperText="Current token"
+                        />
+                        <div className={classes.buttons}>
+                            <div className={classes.button}>
+                                <Button onClick={this.handleToken} variant="contained" color="primary">Generate new</Button>
+                            </div>
+                        </div>
+                    </Paper>
                 </div>
             );
         }
