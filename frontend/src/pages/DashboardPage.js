@@ -62,6 +62,12 @@ const useStyles = makeStyles((theme) => ({
         width: 180,
         float:"left"
     },
+    deviceData: {
+        backgroundColor: "#77CBB9"
+    },
+    deviceGroup: {
+        backgroundColor: "#DAD2BC"
+    },
     divider: {
         margin: `${theme.spacing(2)}px 0`
     },
@@ -83,10 +89,30 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: "#EAEAEA",
         float: "left",
     },
+    smallPaper: {
+        width: "auto"
+    },
     devices: {
         display: "flex",
         flexFlow: "row wrap",
         alignContent: "space-between"
+    },
+    powerOn: {
+        color: green[500]
+    },
+    powerOff: {
+        color: red[500]
+    },
+    batteryLow: {
+        color: red[500]
+    },
+    link: {
+        color: 'inherit',
+        textDecoration: 'inherit'
+    },
+    compactCardContent: {
+        display: "flex",
+        justifyContent: "space-between"
     }
 }));
 
@@ -96,13 +122,14 @@ const useStyles = makeStyles((theme) => ({
  * @returns {JSX.Element}
  */
 function DeviceEnabledIndicator(props) {
+    const classes = useStyles();
     if (props.enabled) {
         return (
-            <PowerIcon style={{color: green[500]}}/>
+            <PowerIcon className={classes.powerOn}/>
         )
     } else {
         return (
-            <PowerOffIcon style={{color: red[500]}}/>
+            <PowerOffIcon className={classes.powerOff}/>
         )
     }
 }
@@ -115,7 +142,7 @@ function DeviceEnabledIndicator(props) {
 function DeviceData(props) {
     const classes = useStyles();
     return (
-            <Paper className={classes.paper} style={{backgroundColor: "#77CBB9"}}>
+            <Paper className={`${classes.paper} ${classes.deviceData}`}>
                 <Typography noWrap>{props.dataType}: {props.value}</Typography>
             </Paper>
     )
@@ -129,7 +156,7 @@ function DeviceData(props) {
 function DeviceGroups(props) {
     const classes = useStyles();
     return (
-            <Paper className={classes.paper} style={{backgroundColor: "#DAD2BC"}}>
+            <Paper className={`${classes.paper} ${classes.deviceGroup}`}>
                 <Typography noWrap>{props.groupName}</Typography>
             </Paper>
     );
@@ -141,9 +168,10 @@ function DeviceGroups(props) {
  * @returns {JSX.Element}
  */
 function Battery(props) {
+    const classes = useStyles();
     const percentage = props.percentage
     if (percentage < 10)
-        return <BatteryAlert style={{color: red[500]}}/>
+        return <BatteryAlert className={classes.batteryLow}/>
     else if (percentage < 25)
         return <Battery20/>
     else if (percentage < 40)
@@ -181,10 +209,10 @@ function Device (props) {
         <Zoom in={checked} style={{ transitionDelay: checked ? delay : 0 }}>
             <Card className={classes.deviceCardCompact}>
                 <CardActionArea>
-                    <Link style={{color: 'inherit', textDecoration: 'inherit'}}
+                    <Link className={classes.link}
                           component={RouterLink} to={"/dashboard/device/"+deviceId}>
                         <CardContent>
-                            <div style={{display: "flex", justifyContent: "space-between"}}>
+                            <div className={classes.compactCardContent}>
                                 <Typography noWrap gutterBottom variant="subtitle1">
                                     {dataLabelsSpace(productName)}
                                 </Typography>
@@ -205,7 +233,7 @@ function Device (props) {
                         </CardContent>
                     </Link>
                 </CardActionArea>
-                <CardActions style={{display: "flex", justifyContent: "space-between"}}>
+                <CardActions className={classes.compactCardContent}>
                     <IconButton component={RouterLink} to={"/dashboard/device/"+deviceId+"/config"} >
                         <SettingsIcon/>
                     </IconButton>
@@ -225,11 +253,11 @@ function Device (props) {
                     <Card className={classes.deviceCard}>
                         <CardActionArea component={RouterLink} to={"/dashboard/device/"+deviceId}>
                             <CardContent className={classes.deviceContainer}>
-                                <Paper className={classes.paper} style={{width: "auto"}}>
+                                <Paper className={`${classes.paper} ${classes.smallPaper}`}>
                                     <DeviceEnabledIndicator enabled={deviceConfig["enabled"]}/>
                                     <Battery percentage={deviceStatus["battery"]}/>
                                 </Paper>
-                                <Paper className={classes.paper} style={{width: 70}}>
+                                <Paper className={`${classes.paper} ${classes.smallPaper}`}>
                                     <Typography>ID: {deviceId}</Typography>
                                 </Paper>
                                 {
