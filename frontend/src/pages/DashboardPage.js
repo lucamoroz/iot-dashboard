@@ -87,7 +87,9 @@ const useStyles = makeStyles((theme) => ({
         width: 230,
         margin: 10,
         backgroundColor: "#EAEAEA",
-        float: "left",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
     },
     smallPaper: {
         width: "auto"
@@ -106,13 +108,9 @@ const useStyles = makeStyles((theme) => ({
     batteryLow: {
         color: red[500]
     },
-    link: {
-        color: 'inherit',
-        textDecoration: 'inherit'
-    },
     compactCardContent: {
         display: "flex",
-        justifyContent: "space-between"
+        justifyContent: "space-between",
     }
 }));
 
@@ -209,7 +207,7 @@ function Device (props) {
         <Zoom in={checked} style={{ transitionDelay: checked ? delay : 0 }}>
             <Card className={classes.deviceCardCompact}>
                 <CardActionArea>
-                    <Link className={classes.link}
+                    <Link style={{color: 'inherit', textDecoration: 'inherit'}}
                           component={RouterLink} to={"/dashboard/device/"+deviceId}>
                         <CardContent>
                             <div className={classes.compactCardContent}>
