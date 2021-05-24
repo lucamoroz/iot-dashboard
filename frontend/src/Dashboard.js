@@ -162,6 +162,7 @@ function Dashboard(props) {
             })
     }
 
+    // Content of drawer, i.e. the sidebar menu
     const drawer = (
         <div>
             <div className={classes.toolbar}>
@@ -211,6 +212,7 @@ function Dashboard(props) {
         </div>
     );
 
+    // Main content of the dashboard displayed using nested routing
     const main = (
         <main className={classes.content}>
             <div className={classes.toolbar} />
