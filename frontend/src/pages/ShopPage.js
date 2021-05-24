@@ -1,6 +1,6 @@
 import React, {useEffect, useState,useContext} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
-import { CssBaseline, Typography } from '@material-ui/core';
+import { CssBaseline } from '@material-ui/core';
 import SensorsToBuy from '../components/SensorsToBuy';
 
 import CustomerContext from "../CustomerContext";
@@ -60,9 +60,6 @@ export default function ShopPage(props) {
     return (
         <div className={classes.root}>
             <CssBaseline />
-            {/*<Typography variant='h4' className={classes.title}>
-                Check our awesome products
-            </Typography>*/}
             <SensorsToBuy onProductAdded={(quantity) => {setNumProdInCart(prev => prev + quantity)}}/>
         </div>
 

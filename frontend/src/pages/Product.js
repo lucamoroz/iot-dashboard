@@ -52,6 +52,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '1.2vw',
     color: '#757575',
     margin: 50,
+    whiteSpace: "pre-wrap"
   },
   productName: {
     marginTop: 20,
@@ -103,10 +104,12 @@ const useStyles = makeStyles((theme) => ({
     //marginTop: '50%',
     fontSize: '1vw',
     marginRight: 5,
+    borderRadius: 50,
   },
   buyNowButton: {
     fontSize: '1vw',
     marginLeft: 5,
+    borderRadius: 50,
   },
   buttonsContent: {
     display: 'flex',
@@ -220,17 +223,17 @@ function Product(props) {
               
             </CardContent>
 
-            <Typography className={classes.description} style={{ whiteSpace: "pre-wrap" }}>
+            <Typography className={classes.description}>
                   {state.product.description}
             </Typography>
 
             <CardContent className={classes.buttonsContent}>
 
-              <Button className={classes.addToCartButton} variant="contained" color="primary" onClick={() => { onAddToCart(state.product.id); setNumProdInCart(numProdInCart + quantity);setSnackSeverity("success"); setSnackMessage("Product added to cart!"); }} style={{borderRadius: 50}}>
+              <Button className={classes.addToCartButton} variant="contained" color="primary" onClick={() => { onAddToCart(state.product.id); setNumProdInCart(numProdInCart + quantity);setSnackSeverity("success"); setSnackMessage("Product added to cart!"); }}>
                 Add to Cart
            </Button>
 
-              <Button className={classes.buyNowButton} variant="contained" color="primary" component={RouterLink} to="/dashboard/shop/cart" onClick={() => { onAddToCart(state.product.id); setNumProdInCart(numProdInCart + quantity) }} style={{borderRadius: 50}}>
+              <Button className={classes.buyNowButton} variant="contained" color="primary" component={RouterLink} to="/dashboard/shop/cart" onClick={() => { onAddToCart(state.product.id); setNumProdInCart(numProdInCart + quantity) }}>
                 Buy Now
           </Button>
             </CardContent>
