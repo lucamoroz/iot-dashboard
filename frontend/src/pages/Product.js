@@ -37,17 +37,19 @@ const useStyles = makeStyles((theme) => ({
   topContent: {
     display: 'flex',
     justifyContent: 'flex-start',
-    alignItems: 'flex.start',
+    alignItems: 'flex-start',
     width:  '100%',
   },
   productImage: {
-    height: 300,
-    width:  300,//`calc(max(100%, 100vh))`,
-    display: 'flex',
+    height: undefined,
+    width:  '50%',
+    aspectRatio: 1,
+    //display: 'flex',
   },
 
   description: {
     //margin: '20px',
+    fontSize: '1.2vw',
     color: '#757575',
     margin: 50,
   },
@@ -55,49 +57,55 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 20,
     marginBottom: 0,
     fontFamily: 'Roboto',
-    fontSize: '2rem',
+    fontSize: '2vw',
     fontWeight: 'bold',
   },
   freeShippingDeliveryText: {
     color: 'black',
+    fontSize: '1.1vw',
 
   },
 
   productPrice: {
     marginBottom: 0,
-    fontSize: '1.5rem',
+    fontSize: '1.5vw',
     color: '#ef5350',
     
   },
 
   taxes: {
+    fontSize: '1.1vw',
     marginBottom: 0,
   },
   availableText: {
     marginBottom: 5,
+    fontSize: '1.1vw',
     color: '#43A047',
     fontFamily: 'Roboto',
     fontWeight: 500,
   },
   shippingTime: {
     //marginBottom: 10,
+    fontSize: '1.1vw',
     fontFamily: 'Roboto',
     fontWeight: 500,
   },
   secureTransactions: {
     marginRight: 10,
-    fontSize: '0.9rem',
+    fontSize: '0.9vw',
     color: '#9E9E9E'
   },
   shippedby: {
     marginBottom: 20,
-    fontSize: '0.8rem',
+    fontSize: '0.8vw',
   },
   addToCartButton: {
     //marginTop: '50%',
+    fontSize: '1vw',
     marginRight: 5,
   },
   buyNowButton: {
+    fontSize: '1vw',
     marginLeft: 5,
   },
   buttonsContent: {
@@ -177,7 +185,7 @@ function Product(props) {
               <CardMedia
                 className={classes.productImage}
                 component="img"
-                height="80"
+                width="10"
                 image={state.imageUrl}
 
               />
