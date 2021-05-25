@@ -30,6 +30,7 @@ import ShopPage from "./pages/ShopPage";
 import ShopCart from "./pages/ShopCart";
 import OrderList from "./pages/OrderList";
 import Order from "./pages/Order";
+import DeviceConfig from "./pages/DeviceConfig";
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import HistoryIcon from '@material-ui/icons/History';
 import {Badge, Button} from "@material-ui/core";
@@ -161,6 +162,7 @@ function Dashboard(props) {
             })
     }
 
+    // Content of drawer, i.e. the sidebar menu
     const drawer = (
         <div>
             <div className={classes.toolbar}>
@@ -210,6 +212,7 @@ function Dashboard(props) {
         </div>
     );
 
+    // Main content of the dashboard displayed using nested routing
     const main = (
         <main className={classes.content}>
             <div className={classes.toolbar} />
@@ -228,6 +231,7 @@ function Dashboard(props) {
                 <Route exact path={`${match.path}/shop/product/:id`} render={(props) => (
                     <Product {...props} handleSetCartCount={handleSetCartCount} />
                 )} />
+                <Route exact path={`${match.path}/device/:id/config`} component={DeviceConfig} />
             </Switch>
         </main>
     );
