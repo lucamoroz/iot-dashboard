@@ -2,7 +2,7 @@ import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import ImageCard from './ImageCard';
 import { Link as RouterLink } from 'react-router-dom';
-import { Grid, Zoom } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import { useState } from 'react';
 import { useEffect } from 'react';
 

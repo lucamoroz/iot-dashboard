@@ -85,8 +85,6 @@ export default function ImageCard({ sensor, checked, onAddToCart, onClick, compo
           <CardContent className={classes.cardContent}>
           <Typography
                 gutterBottom
-                variant="h5"
-                component="h1"
                 className={classes.title}>
                 {capitalized(sensor.name)}
               </Typography>

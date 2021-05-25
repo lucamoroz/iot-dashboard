@@ -4,7 +4,7 @@ import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { latLngBounds } from 'leaflet';
-import { Card, CssBaseline, FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
+import { Card, CssBaseline, FormControl, InputLabel, MenuItem, Select, Typography } from '@material-ui/core';
 import PowerIcon from '@material-ui/icons/Power';
 import PowerOffIcon from '@material-ui/icons/PowerOff';
 import { green, red } from '@material-ui/core/colors';
@@ -31,6 +31,20 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     minWidth: 120,
   },
+  productName: {
+    fontSize: '1.3rem',
+    fontWeight: 'bold',
+  },
+  subtitle: {
+    fontSize: '1rem',
+    fontWeight: 'bold'
+  },
+  powerOffIcon: {
+    color: red[500] 
+  },
+  powerOnIcon: {
+    color: green[500] 
+  }
 
 }));
 
@@ -102,7 +116,6 @@ export default function MapPage(props) {
   const [group, setGroup] = useState("");
   const [product, setProduct] = useState([]);
   const [products, setProducts] = useState([]);
-  const [autoReload, setAutoReload] = useState(false);
   const center = [45.416667, 11.883333] // Padova default coordinates
 
   const customerContext = useContext(CustomerContext);
@@ -137,15 +150,7 @@ export default function MapPage(props) {
       .catch((err) => {
         console.log(err);
       });
-  }, [group, product, autoReload]);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setAutoReload(!autoReload);
-    }, 1000);
-    // clearing interval
-    return () => clearInterval(timer);
-  }, []);
+  }, [group, product]);
 
   useEffect(() => {
     // get user's groups
@@ -221,9 +226,9 @@ export default function MapPage(props) {
 
             <Marker key={item.device.id} position={[item.device.config.latitude, item.device.config.longitude]}>
               <Popup>
-                {item.device.config.enabled ? <PowerIcon style={{ color: green[500] }} /> : <PowerOffIcon style={{ color: red[500] }} />}
-                <h2 >{capitalized(item.product_name)}</h2>
-                <h3>Device info:</h3>
+                {item.device.config.enabled ? <PowerIcon className={classes.powerOnIcon} /> : <PowerOffIcon className={classes.powerOffIcon} />}
+                <Typography className={classes.productName}>{capitalized(item.product_name)}</Typography>
+                <Typography className={classes.subtitle}>Device info:</Typography>
                 <ul>
                   <li>Lat: {item.device.config.latitude}</li>
                   <li>Lon: {item.device.config.longitude}</li>
@@ -232,7 +237,7 @@ export default function MapPage(props) {
                   <li>Last Update: {timestampFormat(item.device.deviceStatus.last_update)}</li>
                 </ul>
 
-                <h3> Groups:</h3>
+                <Typography className={classes.subtitle}> Groups:</Typography>
                 {
                   <ul>
                     {
@@ -244,7 +249,7 @@ export default function MapPage(props) {
 
                 }
 
-                <h3>Latest Data:</h3>
+                <Typography className={classes.subtitle}>Latest Data:</Typography>
                 {
                   <ul>
                     {

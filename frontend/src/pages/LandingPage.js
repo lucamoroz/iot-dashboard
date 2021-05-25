@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
-import {AppBar, Box, Button, Collapse, CssBaseline, Toolbar} from '@material-ui/core';
+import {AppBar, Box, Button, Collapse, CssBaseline, Toolbar, Typography} from '@material-ui/core';
 import CustomerContext from "../CustomerContext";
 import {Link as RouterLink, NavLink, Route, Switch} from "react-router-dom";
 import Signup from "./Signup";
@@ -25,13 +25,19 @@ const useStyles = makeStyles((theme) => ({
         fontFamily: 'Roboto',
     },
     appBarTitle: {
+        fontSize: '1.4rem',
+        fontWeight: 'bold',
+    },
+    appBarTitleLink: {
         flexGrow: '1',
-        color: 'fff',
+        textDecoration: "none", 
+        color: 'inherit',
     },
     appBarWrapper: {
         width: '80%',
         margin: '0 Auto',
     },
+
     colorText: {
         color: '#648dae'
     },
@@ -42,9 +48,11 @@ const useStyles = makeStyles((theme) => ({
     title: {
         color: '#fff',
         fontSize: '4.5rem',
+        fontWeight: 'bold',
     },
     subtitle: {
-        fontSize: '1.5rem',
+        fontSize: '1.8rem',
+        fontWeight: 'bold',
     },
     container: {
         minHeight: '100vh',
@@ -59,10 +67,16 @@ const useStyles = makeStyles((theme) => ({
     },
     paper: {
         backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        borderRadius: 25,
     },
     buttonsStyle: {
         borderRadius: 50
-    }
+    },
+    headerButton: {
+        fontSize: `calc(max(0.6rem,min(0.8rem, 1vw)))`,
+        maxFontSize: '0.5rem',
+        borderRadius: 50
+    },
 }));
 
 //Not optimized for network calls. For every render it calls the axiom.get function. TODO: Solve this by using react component
@@ -83,12 +97,14 @@ export default function LandingPage(props) {
 
     const Welcome = () => (
         <div>
-            <h1 className={classes.subtitle}>
+            <Typography 
+            className={classes.subtitle}
+            >
                 Don't you have an account?
-            </h1>
+            </Typography>
 
             <Button component={RouterLink} to="/signup" variant="contained" color="primary" size="large"
-                    style={{borderRadius: 50}}>
+                    className={classes.buttonsStyle}>
                 Signup
             </Button>
         </div>
@@ -109,20 +125,25 @@ export default function LandingPage(props) {
             <CssBaseline/>
             <AppBar className={classes.appbar} elevation={0}>
                 <Toolbar className={classes.appBarWrapper}>
-                    <NavLink to="/" className={classes.appBarTitle} style={{textDecoration: "none", color: 'inherit'}}>
-                        <h1>IoT<span className={classes.colorText}>-Dash</span></h1>
+                    <NavLink to="/" className={classes.appBarTitleLink}>
+                        <Typography
+                           className={classes.appBarTitle}
+                        >
+                            IoT<span className={classes.colorText}>-Dash</span>
+                        </Typography>
+                       
                     </NavLink>
                     <Box m="0.5vw">
                         <Button component={RouterLink} to="/dashboard/shop" variant="outlined" color="primary"
-                                style={{fontSize: '1vw', borderRadius: 50}}>Shop</Button>
+                                className={classes.headerButton}>Shop</Button>
                     </Box>
                     <Box m="0.5vw">
                         <Button component={RouterLink} to="/dashboard" variant="outlined" color="primary"
-                                style={{fontSize: '1vw', borderRadius: 50}}>Dashboard</Button>
+                                 className={classes.headerButton}>Dashboard</Button>
                     </Box>
                     <Box m="0.5vw">
                         <Button component={RouterLink} to="/signin" variant="contained" color="primary"
-                                style={{fontSize: '1vw', borderRadius: 50}}>LogIn</Button>
+                                 className={classes.headerButton}>LogIn</Button>
                     </Box>
                 </Toolbar>
             </AppBar>
@@ -130,10 +151,10 @@ export default function LandingPage(props) {
 
             <div className={classes.container}>
                 <Collapse in={checked} {...(checked ? {timeout: 1000} : {})} collapsedHeight={50}>
-                    <h1 className={classes.title}>
+                    <Typography className={classes.title}>
                         Welcome to <br/> IoT<span className={classes.colorText}>-Dash</span>
-                    </h1>
-                    <Box className={classes.paper} p='2rem' style={{borderRadius: 25}}>
+                    </Typography>
+                    <Box className={classes.paper} p='2rem'>
                         {main}
                     </Box>
                 </Collapse>
