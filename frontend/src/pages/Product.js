@@ -10,6 +10,7 @@ import SnackbarAlert from "../components/SnackbarAlert";
 const useStyles = makeStyles((theme) => ({
   root: {
     minHeight: '100vh',
+    width: `calc(max(85%, 400px))`,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -24,9 +25,9 @@ const useStyles = makeStyles((theme) => ({
   },
   card1: {
     //minHeight: '60vh',
-    //width: '70%',
+    //width: '70%', `calc(max(240px, min(50%, 380px)))`
     height: '100%',
-    width: '60%',
+    width: `calc(max(85%, 600px))`,
     display: 'flex',
     justifyContent: 'flex-top',
     alignItems: 'flext-end',
@@ -42,14 +43,14 @@ const useStyles = makeStyles((theme) => ({
   },
   productImage: {
     height: undefined,
-    width:  '50%',
+    width:  `calc(min(50%, 340px))`,
     aspectRatio: 1,
     //display: 'flex',
   },
 
   description: {
     //margin: '20px',
-    fontSize: '1.2vw',
+    fontSize: '1.0em',
     color: '#757575',
     margin: 50,
     whiteSpace: "pre-wrap"
@@ -58,56 +59,56 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 20,
     marginBottom: 0,
     fontFamily: 'Roboto',
-    fontSize: '2vw',
+    fontSize: '2em',
     fontWeight: 'bold',
   },
   freeShippingDeliveryText: {
     color: 'black',
-    fontSize: '1.1vw',
+    fontSize: '1.1em',
 
   },
 
   productPrice: {
     marginBottom: 0,
-    fontSize: '1.5vw',
+    fontSize: '1.5em',
     color: '#ef5350',
     
   },
 
   taxes: {
-    fontSize: '1.1vw',
+    fontSize: '1.1em',
     marginBottom: 0,
   },
   availableText: {
     marginBottom: 5,
-    fontSize: '1.1vw',
+    fontSize: '1.1em',
     color: '#43A047',
     fontFamily: 'Roboto',
     fontWeight: 500,
   },
   shippingTime: {
     //marginBottom: 10,
-    fontSize: '1.1vw',
+    fontSize: '1.1em',
     fontFamily: 'Roboto',
     fontWeight: 500,
   },
   secureTransactions: {
     marginRight: 10,
-    fontSize: '0.9vw',
+    fontSize: '0.9em',
     color: '#9E9E9E'
   },
   shippedby: {
     marginBottom: 20,
-    fontSize: '0.8vw',
+    fontSize: '0.8em',
   },
   addToCartButton: {
     //marginTop: '50%',
-    fontSize: '1vw',
+    //fontSize: '1vw',
     marginRight: 5,
     borderRadius: 50,
   },
   buyNowButton: {
-    fontSize: '1vw',
+    //fontSize: '1vw',
     marginLeft: 5,
     borderRadius: 50,
   },
@@ -140,7 +141,7 @@ function Product(props) {
       .then((res) => {
         console.log(res);
 
-        var imageUrl = res.data.id === 1 ? process.env.PUBLIC_URL + '/assets/temp_sensor.jpg' : process.env.PUBLIC_URL + '/assets/wind_sensor.jpg';
+        var imageUrl = res.data.image;
         setState({ loading: false, product: res.data, imageUrl: imageUrl });
         setChecked(true);
       }).catch((err) => {

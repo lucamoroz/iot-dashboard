@@ -11,10 +11,11 @@ import {capitalized} from '../hook/util';
 
 const useStyles = makeStyles({
   root: {
-    width: '35%',
-    //background: 'rgba(0,0,255,0.7)',
+    //width: '40%',//`calc(100% - 20px)`,
+    width: `calc(max(240px, min(50%, 380px)))`,
     margin: '1%',
     borderRadius: 15,
+    //flexBasis: '50%',
   },
   media: {
     width: '100%',
@@ -24,20 +25,20 @@ const useStyles = makeStyles({
   title: {
     fontFamily: 'Roboto',
     fontWeight: 'bold',
-    fontSize: '1.5vw',
+    fontSize: '1rem',
     color: 'rgba(0,0,0,0.8)',
     marginRight: '0.5vw',
   },
   description: {
     fontFamily: 'Roboto',
     fontWeight: 'regular',
-    fontSize: '1.1vw',
+    fontSize: '1.1rem',
     color: '#ddd'
   },
   price: {
     fontFamily: 'Roboto',
     fontWeight: 'regular',
-    fontSize: '1.1vw',
+    fontSize: '0.9rem',
     color: 'black'
   },
   buttonText: {
@@ -66,7 +67,7 @@ export default function ImageCard({ sensor, checked, onAddToCart, onClick, compo
     shadow: 0,
   })
   // Not good. Get the image id or the image directly from backend
-  const imageUrl = sensor.id === 1 ? process.env.PUBLIC_URL + '/assets/temp_sensor.jpg' : process.env.PUBLIC_URL + '/assets/wind_sensor.jpg';
+  const imageUrl = sensor.image;
   return (
     <Zoom in={checked} style={{ transitionDelay: checked ? delay : '0ms' }}>
       <Card className={classes.root}
