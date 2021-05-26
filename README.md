@@ -1,19 +1,72 @@
-# IoT Dashboard #
+# IoT Dashboard
 
 Nowadays IoT is one of the fastest growing industries, we impersonate a company selling IoT sensors and we provide an online Dashboard for: user registration, data collection and visualization, device registration, management and monitoring. We charge our users on the basis of data usage.
 
+<!-- PROJECT LOGO -->
+<br />
+<p align="center">
+  <a href="">
+    <img src="https://i.ibb.co/h1jZ8ny/logo.png" alt="Logo" height="80">
+  </a>
 
-## Table of Contents
-- [Overview](#overview)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [Team](#team)
-- [License](#license)
+  <h3 align="center">IoT Shop and Dashboard</h3>
+
+  <p align="center">
+    An awesome README template to jumpstart your projects!
+    <br />
+    <a href=""><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="">View Demo</a>
+    ·
+    <a href="">Report Bug</a>
+    ·
+    <a href="">Request Feature</a>
+  </p>
+</p>
+
+
+<!-- TABLE OF CONTENTS -->
+<details open="open">
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#overview">Overview</a>
+      <ul>
+        <li><a href="#built-with">Built With</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#requirements">Requirements</a></li>
+        <li><a href="#installation">Installation</a></li>
+      </ul>
+    </li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+	<li><a href="#team">Team</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#acknowledgements">Acknowledgements</a></li>
+  </ol>
+</details>
 
 ## Overview
 .....
 
-## Usage
+### Built With
+* [Java](https://www.java.com/)
+* [Spring Boot](https://spring.io/projects/spring-boot)
+* [PostgreSQL](https://www.postgresql.org/)
+* [React](https://reactjs.org/)
+* [JavaScript](https://www.javascript.com/)
+* [Material-UI](https://material-ui.com/)
+* [Python](https://www.python.org/)
+
+
+<!-- GETTING STARTED -->
+## Getting Started
 
 ### Requirements
 - Docker
@@ -46,9 +99,19 @@ The SQL script that will be executed to populate the database can be found in `d
 #### Clear database
 Run `sudo make delete-db` to delete all postgres data in order to start with a fresh new database.
 
+## Usage
+...
 
+<!-- CONTRIBUTING -->
 ## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ## Team
 Luca Moroldo
