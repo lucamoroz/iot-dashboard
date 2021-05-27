@@ -11,11 +11,9 @@ import {capitalized} from '../hook/util';
 
 const useStyles = makeStyles({
   root: {
-    //width: '40%',//`calc(100% - 20px)`,
     width: `calc(max(240px, min(50%, 380px)))`,
     margin: '1%',
     borderRadius: 15,
-    //flexBasis: '50%',
   },
   media: {
     width: '100%',

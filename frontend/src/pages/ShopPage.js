@@ -17,8 +17,6 @@ const useStyles = makeStyles((theme) => ({
     },
     title: {
         fontFamily: 'Roboto',
-        //fontSize: '3rem',
-        //fontWeight: 'bold',
 
     }
 }));

@@ -10,7 +10,6 @@ import SnackbarAlert from "../components/SnackbarAlert";
 const useStyles = makeStyles((theme) => ({
   root: {
     minHeight: '100vh',
-    width: `calc(max(85%, 400px))`,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -24,8 +23,6 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
   },
   card1: {
-    //minHeight: '60vh',
-    //width: '70%', `calc(max(240px, min(50%, 380px)))`
     height: '100%',
     width: `calc(max(85%, 600px))`,
     display: 'flex',
@@ -41,15 +38,20 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'flex-start',
     width:  '100%',
   },
+  topContentMobile: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+    width:  '100%',
+  },
   productImage: {
     height: undefined,
     width:  `calc(min(50%, 340px))`,
     aspectRatio: 1,
-    //display: 'flex',
   },
 
   description: {
-    //margin: '20px',
     fontSize: '1.0em',
     color: '#757575',
     margin: 50,
@@ -87,7 +89,6 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 500,
   },
   shippingTime: {
-    //marginBottom: 10,
     fontSize: '1.1em',
     fontFamily: 'Roboto',
     fontWeight: 500,
@@ -102,13 +103,10 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '0.8em',
   },
   addToCartButton: {
-    //marginTop: '50%',
-    //fontSize: '1vw',
     marginRight: 5,
     borderRadius: 50,
   },
   buyNowButton: {
-    //fontSize: '1vw',
     marginLeft: 5,
     borderRadius: 50,
   },
@@ -127,6 +125,32 @@ function onAddToCart(id) {
     .then((res) => {
       console.log(res)
     });
+}
+
+function useWindowSize() {
+  // Initialize state with undefined width/height so server and client renders match
+  // Learn more here: https://joshwcomeau.com/react/the-perils-of-rehydration/
+  const [windowSize, setWindowSize] = useState({
+    width: undefined,
+    height: undefined,
+  });
+  useEffect(() => {
+    // Handler to call on window resize
+    function handleResize() {
+      // Set window width/height to state
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    }
+    // Add event listener
+    window.addEventListener("resize", handleResize);
+    // Call handler right away so state gets updated with initial window size
+    handleResize();
+    // Remove event listener on cleanup
+    return () => window.removeEventListener("resize", handleResize);
+  }, []); // Empty array ensures that effect is only run on mount
+  return windowSize;
 }
 
 function Product(props) {
@@ -174,6 +198,7 @@ function Product(props) {
   }, [numProdInCart, setCartCount]);
 
   const quantity = 1;
+  const isMobile = useWindowSize().width <= 450; // Checks if the rendering happens on mobile
   if (state.loading) {
     return (
       <div >
@@ -185,7 +210,7 @@ function Product(props) {
       <Grow in={checked} >
         <div className={classes.root}>
           <Card className={classes.card1}>
-            <CardContent className={classes.topContent}>
+            <CardContent className={isMobile ? classes.topContentMobile : classes.topContent}>
               <CardMedia
                 className={classes.productImage}
                 component="img"
