@@ -25,14 +25,14 @@ VALUES
                        'and are available in different nominal resistance values. Discrete NTC Sensor Type: Epoxy ' ||
                        'Coated NTC Thermistor. Discrete NTC Package: Epoxy Radial Discrete. Wire/Cladding Connection: ' ||
                        '32 AWG (.2mm) Alloy 180 Tin Plated. Discrete NTC Wire Length(mm): 76. Wire Connection: Open ' ||
-                       'End',0,199.99),
+                       'End','https://i.imgur.com/yqOF54a.jpg',199.99),
 ('wind sensor', 'Our wind sensor measures the wind horizontal and vertical speed as well as the wind direction. ' ||
                 'The sensor is based on hot film anemometry. There are two wind sensor units on MSL and each is ' ||
                 'mounted on separate booms or housings. These booms are designed to support the wind sensor units ' ||
                 'in order to reduce aerodynamic effects and minimize weight. Booms are located on the MSL rover cam-mast' ||
                 ' and placed at an angle of 120 degrees, and located at slightly different heights: 50mm difference. ' ||
                 'The different locations of the booms allows to measure wind from all directions, and in this way it' ||
-                ' can be ensured that the mast perturbation affects only one sensor unit at a time.',0,150.50);
+                ' can be ensured that the mast perturbation affects only one sensor unit at a time.','https://i.imgur.com/fAKSMyz.jpg',150.50);
 
 
 /* INSERT DATATYPE	data_type */

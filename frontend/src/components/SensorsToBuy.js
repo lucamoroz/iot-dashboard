@@ -10,7 +10,6 @@ const axios = require('axios').default
 
 const styles = theme => ({
   root: {
-    minHeight: '100vh',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
