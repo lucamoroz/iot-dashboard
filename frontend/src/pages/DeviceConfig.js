@@ -418,6 +418,7 @@ class DeviceConfig extends React.Component {
                             </Grid>
                             <Grid item xs={12}>
                                 <TextField
+                                    type="number"
                                     id="refreshratetext"
                                     label="Refresh interval"
                                     value={this.state.refreshRate}
@@ -428,6 +429,7 @@ class DeviceConfig extends React.Component {
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <TextField
+                                    type="number"
                                     id="lat"
                                     label="Latitude"
                                     value={this.state.latitude}
@@ -438,6 +440,7 @@ class DeviceConfig extends React.Component {
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <TextField
+                                    type="number"
                                     id="lon"
                                     label="Longitude"
                                     value={this.state.longitude}
