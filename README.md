@@ -1,7 +1,5 @@
 # IoT Dashboard
 
-Nowadays IoT is one of the fastest growing industries, we impersonate a company selling IoT sensors and we provide an online Dashboard for: user registration, data collection and visualization, device registration, management and monitoring. We charge our users on the basis of data usage.
-
 
 <!-- TABLE OF CONTENTS -->
 
@@ -27,7 +25,8 @@ Nowadays IoT is one of the fastest growing industries, we impersonate a company 
 
 
 ## Overview
-.....
+Nowadays IoT is one of the fastest growing industries, we impersonate a company selling IoT sensors and we provide an online Dashboard for: user registration, data collection and visualization, device registration, management and monitoring. We charge our users on the basis of data usage.
+
 
 ### Built With
 * [Java](https://www.java.com/)
