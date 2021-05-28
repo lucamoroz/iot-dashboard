@@ -96,13 +96,13 @@ Fabio Vaccaro
 | [![Stefano Ivancich](https://avatars1.githubusercontent.com/u/36710626?s=200&v=4)](https://stefanoivancich.com)    | [![Denis Deronjic](https://avatars1.githubusercontent.com/u/28018184?s=200&v=4)](https://github.com/deno750) | [![Francesco Pham](https://avatars.githubusercontent.com/u/3135881?s=200&v=4)](https://github.com/frankplus) |
 | [`github.com/ivaste`](https://github.com/ivaste) | [`github.com/deno750`](https://github.com/deno750) | [`https://github.com/frankplus`](https://github.com/frankplus) |
 
-| **[Luca Moroldo](https://github.com/lucamoroz)** | **[Fabio Vaccaro](https://www.linkedin.com/in/fabiovac/)** 
-| :---: |:---:|
-| [![Luca Moroldo](https://avatars.githubusercontent.com/u/44212562?s=200&v=4)](https://github.com/lucamoroz)| [![Fabio Vaccaro](https://avatars.githubusercontent.com/u/1366853?s=200&v=4)](https://github.com/fabiovac)|
-| [`https://github.com/lucamoroz`](https://github.com/lucamoroz) | [`https://github.com/fabiovac`](https://github.com/fabiovac) |
+| **[Luca Moroldo](https://github.com/lucamoroz)** | **[Fabio Vaccaro](https://www.linkedin.com/in/fabiovac/)** | **[Nicola Maino](https://www.linkedin.com/in/fabiovac/)** |
+| :---: |:---:|:---:|
+| [![Luca Moroldo](https://avatars.githubusercontent.com/u/44212562?s=200&v=4)](https://github.com/lucamoroz)| [![Fabio Vaccaro](https://avatars.githubusercontent.com/u/1366853?s=200&v=4)](https://github.com/fabiovac)| [![Nicola Maino](https://avatars.githubusercontent.com/u/1366853?s=200&v=4)](https://github.com/fabiovac)|
+| [`https://github.com/lucamoroz`](https://github.com/lucamoroz) | [`https://github.com/fabiovac`](https://github.com/fabiovac) | [`https://github.com/fabiovac`](https://github.com/fabiovac) |
 
 
-...
+
 
 ## License
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
