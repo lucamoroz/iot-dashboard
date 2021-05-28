@@ -57,7 +57,9 @@ function AddNewGroupDialog(props) {
     const [open, setOpen] = React.useState(false);
 
     // state capturing wether the dialog box is open or not
-    const [newGroupName, setNewGroupName] = React.useState('');
+    const [newGroupName, setNewGroupName] = React.useState("");
+
+    const [error, setError] = React.useState("");
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -68,8 +70,12 @@ function AddNewGroupDialog(props) {
     }
 
     const handleClose = () => {
-        setOpen(false);
-        props.whenDone(newGroupName)
+        if (newGroupName === "") {
+            setError("Please insert a group name")
+        } else {
+            setOpen(false);
+            props.whenDone(newGroupName)
+        }
     }
 
     const handleChange = (event) => {
@@ -92,13 +98,15 @@ function AddNewGroupDialog(props) {
                     <DialogContentText id="add-new-group-dialog-description">
                         Type below a name for the new group
                     </DialogContentText>
-                    <form onChange={handleChange}>
+                    <form>
                         <TextField
+                            onChange={handleChange}
                             id="newgrouptext"
                             label="New group name"
                             placeholder="Name"
-                            helperText="Add new group"
+                            helperText={error}
                             margin="normal"
+                            error={error}
                         />
                     </form>
                 </DialogContent>
@@ -126,15 +134,20 @@ class DeviceConfig extends React.Component {
             latitude: "",
             longitude: "",
             allGroups: [],
-            snackMessage: ""
+            snackMessage: "",
+            error: {
+                refreshRate: "",
+                latitude: "",
+                longitude: ""
+            }
         }
 
         this.handleRemoveGroup = this.handleRemoveGroup.bind(this);
         this.handleRefreshRate = this.handleRefreshRate.bind(this);
         this.handleOnOff = this.handleOnOff.bind(this);
         this.handleToken = this.handleToken.bind(this);
-        this.handleRefreshLatitude = this.handleRefreshLatitude.bind(this);
-        this.handleRefreshLongitude = this.handleRefreshLongitude.bind(this);
+        this.handleLatitude = this.handleLatitude.bind(this);
+        this.handleLongitude = this.handleLongitude.bind(this);
         this.handleSave = this.handleSave.bind(this);
     }
 
@@ -250,48 +263,65 @@ class DeviceConfig extends React.Component {
         this.setState({enabled: !this.state.enabled});
     }
 
-    handleRefreshLatitude (event) {
+    handleLatitude (event) {
         this.setState({latitude: event.target.value});
     }
 
-    handleRefreshLongitude (event) {
+    handleLongitude (event) {
         this.setState({longitude: event.target.value});
     }
 
-    handleSave(event) {
-
-        // sets frequency and enabled
-        axios.put('devices/'+this.props.match.params.id+'/config', null, {
-            params: {
-                "updateFrequency": parseInt(this.state.refreshRate),
-                "enabled": this.state.enabled,
-                "latitude": parseFloat(this.state.latitude),
-                "longitude": parseFloat(this.state.longitude)
+    validateForm() {
+        this.setState({
+            error: {
+                refreshRate: this.state.refreshRate ? "" : "Please enter a refresh interval",
+                latitude: this.state.latitude ? "" : "Please insert a latitude",
+                longitude: this.state.longitude ? "" : "Please insert a longitude"
             }
         })
-        .then((resp) => {
-            console.log(resp);
-        })
-        .catch((error) => {
-            console.log(error.response);
-        })
 
-        // sets groups
-        let groupsIds = []
-        for (let i = 0; i < this.state.deviceGroups.length; i++) {
-            groupsIds.push(Number(this.state.deviceGroups[i].id))
-        }
+        const valid = this.state.refreshRate
+            && this.state.latitude
+            && this.state.longitude;
 
-        axios.post('devices/'+this.props.match.params.id+'/group/', groupsIds)
-        .then((resp) => {
-            console.log(resp);
-            this.setState({
-                snackMessage: "Configuration saved successfully"
+        return valid
+    }
+
+    handleSave(event) {
+        if (this.validateForm()) {
+            // sets frequency and enabled
+            axios.put('devices/' + this.props.match.params.id + '/config', null, {
+                params: {
+                    "updateFrequency": parseInt(this.state.refreshRate),
+                    "enabled": this.state.enabled,
+                    "latitude": parseFloat(this.state.latitude),
+                    "longitude": parseFloat(this.state.longitude)
+                }
             })
-        })
-        .catch((error) => {
-            console.log(error.response);
-        })
+                .then((resp) => {
+                    console.log(resp);
+                })
+                .catch((error) => {
+                    console.log(error.response);
+                })
+
+            // sets groups
+            let groupsIds = []
+            for (let i = 0; i < this.state.deviceGroups.length; i++) {
+                groupsIds.push(Number(this.state.deviceGroups[i].id))
+            }
+
+            axios.post('devices/' + this.props.match.params.id + '/group/', groupsIds)
+                .then((resp) => {
+                    console.log(resp);
+                    this.setState({
+                        snackMessage: "Configuration saved successfully"
+                    })
+                })
+                .catch((error) => {
+                    console.log(error.response);
+                })
+        }
     }
 
     handleCancel() {
@@ -351,7 +381,9 @@ class DeviceConfig extends React.Component {
                                         id="refreshratetext"
                                         label="Refresh interval"
                                         value={this.state.refreshRate}
-                                        helperText="Customize device's refesh interval"
+                                        helperText={this.state.error.refreshRate}
+                                        onChange={this.handleRefreshRate}
+                                        error={this.state.error.refreshRate}
                                     />
                                 </Grid>
                                 <Grid item xs={12} sm={6}>
@@ -359,7 +391,9 @@ class DeviceConfig extends React.Component {
                                         id="lat"
                                         label="Latitude"
                                         value={this.state.latitude}
-                                        helperText="Customize device's latitude"
+                                        helperText={this.state.error.latitude}
+                                        onChange={this.handleLatitude}
+                                        error={this.state.error.latitude}
                                     />
                                 </Grid>
                                 <Grid item xs={12} sm={6}>
@@ -367,7 +401,9 @@ class DeviceConfig extends React.Component {
                                         id="lon"
                                         label="Longitude"
                                         value={this.state.longitude}
-                                        helperText="Customize device's longitude"
+                                        helperText={this.state.error.longitude}
+                                        onChange={this.handleLongitude}
+                                        error={this.state.error.longitude}
                                     />
                                 </Grid>
                             </Grid>
