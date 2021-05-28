@@ -104,7 +104,15 @@ export default function ShopCart(props) {
         customerInfo();
     }, [])
 
-    
+    // Set the shop cart count badge when the products in cart are changed
+    const setCartCount = props.handleSetCartCount;
+    useEffect(() => {
+        var numProducts = 0;
+        products.forEach((orderProd) => {
+            numProducts += orderProd.quantity
+        });
+        setCartCount(numProducts)
+    }, [products])
 
     //If user clicked on "+" button of a product
     function increaseQuantity(index){
