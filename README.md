@@ -2,33 +2,10 @@
 
 Nowadays IoT is one of the fastest growing industries, we impersonate a company selling IoT sensors and we provide an online Dashboard for: user registration, data collection and visualization, device registration, management and monitoring. We charge our users on the basis of data usage.
 
-<!-- PROJECT LOGO -->
-<br />
-<p align="center">
-  <a href="">
-    <img src="https://i.ibb.co/h1jZ8ny/logo.png" alt="Logo" height="80">
-  </a>
-
-  <h3 align="center">IoT Shop and Dashboard</h3>
-
-  <p align="center">
-    An awesome README template to jumpstart your projects!
-    <br />
-    <a href=""><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    <a href="">View Demo</a>
-    ·
-    <a href="">Report Bug</a>
-    ·
-    <a href="">Request Feature</a>
-  </p>
-</p>
-
 
 <!-- TABLE OF CONTENTS -->
-<details open="open">
-  <summary>Table of Contents</summary>
+
+**Table of Contents**
   <ol>
     <li>
       <a href="#overview">Overview</a>
@@ -43,14 +20,13 @@ Nowadays IoT is one of the fastest growing industries, we impersonate a company 
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
-    <li><a href="#usage">Usage</a></li>
     <li><a href="#contributing">Contributing</a></li>
 	<li><a href="#team">Team</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgements">Acknowledgements</a></li>
   </ol>
-</details>
+
 
 ## Overview
 .....
@@ -99,8 +75,6 @@ The SQL script that will be executed to populate the database can be found in `d
 #### Clear database
 Run `sudo make delete-db` to delete all postgres data in order to start with a fresh new database.
 
-## Usage
-...
 
 <!-- CONTRIBUTING -->
 ## Contributing
