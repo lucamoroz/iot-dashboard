@@ -225,7 +225,10 @@ function Dashboard(props) {
                        <ShopPage {...props} handleSetCartCount={handleSetCartCount}/>
                    )}
                 />
-                <Route exact path={`${match.path}/shop/cart`} component={ShopCart} />
+                <Route exact path={`${match.path}/shop/cart`} render={(props) => (
+                        <ShopCart {...props} handleSetCartCount={handleSetCartCount}/>
+                    )}
+                />
                 <Route exact path={`${match.path}/shop/orders`} component={OrderList} />
                 <Route exact path={`${match.path}/shop/order/:id`} component={Order} />
                 <Route exact path={`${match.path}/shop/product/:id`} render={(props) => (
