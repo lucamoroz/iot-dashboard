@@ -75,8 +75,9 @@ Run `sudo make delete-db` to delete all postgres data in order to start with a f
 
 ### Frontend
 To install the necessary packages, in the `frontend/` directory run:
-- `sudo rm package-lock.json`
-- `sudo npm install` or `sudo yarn install`
+
+ - `sudo rm package-lock.json`
+ - `sudo npm install` or `sudo yarn install`
 
 <!-- CONTRIBUTING -->
 ## Contributing
