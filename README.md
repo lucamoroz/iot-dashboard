@@ -23,8 +23,6 @@ Nowadays IoT is one of the fastest growing industries, we impersonate a company 
     <li><a href="#contributing">Contributing</a></li>
 	<li><a href="#team">Team</a></li>
     <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgements">Acknowledgements</a></li>
   </ol>
 
 
@@ -93,10 +91,17 @@ Nicola Maino
 Francesco Pham
 Fabio Vaccaro
 
-| **[Stefano Ivancich](https://stefanoivancich.com)**| **[Denis Deronjic](https://github.com/deno750)** | **[Francesco Pham](https://github.com/frankplus)** | **[Luca Moroldo](https://github.com/lucamoroz)** |
-| :---: |:---:|:---:|:---:|
-| [![Stefano Ivancich](https://avatars1.githubusercontent.com/u/36710626?s=200&v=4)](https://stefanoivancich.com)    | [![Denis Deronjic](https://avatars1.githubusercontent.com/u/28018184?s=200&v=4)](https://github.com/deno750) | [![Francesco Pham](https://avatars.githubusercontent.com/u/3135881?s=200&v=4)](https://github.com/frankplus) | [![Luca Moroldo](https://avatars.githubusercontent.com/u/44212562?s=200&v=4)](https://github.com/lucamoroz)
-| [`github.com/ivaste`](https://github.com/ivaste) | [`github.com/deno750`](https://github.com/deno750) | [`https://github.com/frankplus`](https://github.com/frankplus) | [`https://github.com/lucamoroz`](https://github.com/lucamoroz) |
+| **[Stefano Ivancich](https://stefanoivancich.com)**| **[Denis Deronjic](https://github.com/deno750)** | **[Francesco Pham](https://github.com/frankplus)** |
+| :---: |:---:|:---:|
+| [![Stefano Ivancich](https://avatars1.githubusercontent.com/u/36710626?s=200&v=4)](https://stefanoivancich.com)    | [![Denis Deronjic](https://avatars1.githubusercontent.com/u/28018184?s=200&v=4)](https://github.com/deno750) | [![Francesco Pham](https://avatars.githubusercontent.com/u/3135881?s=200&v=4)](https://github.com/frankplus) |
+| [`github.com/ivaste`](https://github.com/ivaste) | [`github.com/deno750`](https://github.com/deno750) | [`https://github.com/frankplus`](https://github.com/frankplus) |
+
+| **[Luca Moroldo](https://github.com/lucamoroz)** | **[Fabio Vaccaro](https://www.linkedin.com/in/fabiovac/)** 
+| :---: |:---:|
+| [![Luca Moroldo](https://avatars.githubusercontent.com/u/44212562?s=200&v=4)](https://github.com/lucamoroz)| [![Fabio Vaccaro](https://avatars.githubusercontent.com/u/1366853?s=200&v=4)](https://github.com/fabiovac)|
+| [`https://github.com/lucamoroz`](https://github.com/lucamoroz) | [`https://github.com/fabiovac`](https://github.com/fabiovac) |
+
+
 ...
 
 ## License
