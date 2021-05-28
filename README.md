@@ -43,9 +43,10 @@ Nowadays IoT is one of the fastest growing industries, we impersonate a company 
 ## Getting Started
 
 ### Requirements
-- Docker
-- Docker Compose
-- Make
+- [Docker](https://www.docker.com/)
+- [Docker Compose](https://docs.docker.com/compose/)
+- [Make](https://www.gnu.org/software/make/)
+- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
 
 ### Environment
 You can define project variables changing the `.env` file. 
@@ -73,6 +74,10 @@ The SQL script that will be executed to populate the database can be found in `d
 #### Clear database
 Run `sudo make delete-db` to delete all postgres data in order to start with a fresh new database.
 
+### Frontend
+To install the necessary packages, in the `frontend/` directory run:
+- `sudo rm package-lock.json`
+- `sudo npm install` or `sudo yarn install`
 
 <!-- CONTRIBUTING -->
 ## Contributing
@@ -86,10 +91,6 @@ Contributions are what make the open source community such an amazing place to b
 5. Open a Pull Request
 
 ## Team
-Luca Moroldo
-Nicola Maino
-Francesco Pham
-Fabio Vaccaro
 
 | **[Stefano Ivancich](https://stefanoivancich.com)**| **[Denis Deronjic](https://github.com/deno750)** | **[Francesco Pham](https://github.com/frankplus)** |
 | :---: |:---:|:---:|
@@ -98,8 +99,8 @@ Fabio Vaccaro
 
 | **[Luca Moroldo](https://github.com/lucamoroz)** | **[Fabio Vaccaro](https://www.linkedin.com/in/fabiovac/)** | **[Nicola Maino](https://www.linkedin.com/in/fabiovac/)** |
 | :---: |:---:|:---:|
-| [![Luca Moroldo](https://avatars.githubusercontent.com/u/44212562?s=200&v=4)](https://github.com/lucamoroz)| [![Fabio Vaccaro](https://avatars.githubusercontent.com/u/1366853?s=200&v=4)](https://github.com/fabiovac)| [![Nicola Maino](https://avatars.githubusercontent.com/u/1366853?s=200&v=4)](https://github.com/fabiovac)|
-| [`https://github.com/lucamoroz`](https://github.com/lucamoroz) | [`https://github.com/fabiovac`](https://github.com/fabiovac) | [`https://github.com/fabiovac`](https://github.com/fabiovac) |
+| [![Luca Moroldo](https://avatars.githubusercontent.com/u/44212562?s=200&v=4)](https://github.com/lucamoroz)| [![Fabio Vaccaro](https://avatars.githubusercontent.com/u/1366853?s=200&v=4)](https://github.com/fabiovac)| [![Nicola Maino](https://avatars.githubusercontent.com/u/62897883?s=200&v=4)](https://github.com/nmaino)|
+| [`https://github.com/lucamoroz`](https://github.com/lucamoroz) | [`https://github.com/fabiovac`](https://github.com/fabiovac) | [`https://github.com/nmaino`](https://github.com/nmaino) |
 
 
 
