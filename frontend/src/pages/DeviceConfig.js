@@ -11,13 +11,12 @@ import Typography from '@material-ui/core/Typography';
 import Switch from '@material-ui/core/Switch';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import { withStyles } from '@material-ui/styles';
+import {withStyles} from '@material-ui/styles';
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import Chip from '@material-ui/core/Chip';
-import DoneIcon from '@material-ui/icons/Done';
 import Divider from "@material-ui/core/Divider";
 import SnackbarAlert from "../components/SnackbarAlert";
 
@@ -50,14 +49,20 @@ const styles = theme => ({
 
 const axios = require('axios').default
 
-
+/**
+ * Dialog for creating a new group and assign it to the current device
+ * @param props A handle in props.whenDone which is call when this dialog is closed
+ * @returns {JSX.Element}
+ */
 function AddNewGroupDialog(props) {
 
     // state capturing wether the dialog box is open or not
     const [open, setOpen] = React.useState(false);
 
     // state capturing wether the dialog box is open or not
-    const [newGroupName, setNewGroupName] = React.useState('');
+    const [newGroupName, setNewGroupName] = React.useState("");
+
+    const [error, setError] = React.useState("");
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -68,8 +73,12 @@ function AddNewGroupDialog(props) {
     }
 
     const handleClose = () => {
-        setOpen(false);
-        props.whenDone(newGroupName)
+        if (newGroupName === "") {
+            setError("Please insert a group name")
+        } else {
+            setOpen(false);
+            props.whenDone(newGroupName)
+        }
     }
 
     const handleChange = (event) => {
@@ -92,13 +101,15 @@ function AddNewGroupDialog(props) {
                     <DialogContentText id="add-new-group-dialog-description">
                         Type below a name for the new group
                     </DialogContentText>
-                    <form onChange={handleChange}>
+                    <form>
                         <TextField
+                            onChange={handleChange}
                             id="newgrouptext"
                             label="New group name"
                             placeholder="Name"
-                            helperText="Add new group"
+                            helperText={error}
                             margin="normal"
+                            error={error}
                         />
                     </form>
                 </DialogContent>
@@ -118,7 +129,6 @@ class DeviceConfig extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            errorState: false,
             refreshRate: "",
             deviceGroups: [],
             token: "",
@@ -126,15 +136,21 @@ class DeviceConfig extends React.Component {
             latitude: "",
             longitude: "",
             allGroups: [],
-            snackMessage: ""
+            snackMessage: "",
+            snackSeverity: "success",
+            error: {
+                refreshRate: "",
+                latitude: "",
+                longitude: ""
+            }
         }
 
         this.handleRemoveGroup = this.handleRemoveGroup.bind(this);
         this.handleRefreshRate = this.handleRefreshRate.bind(this);
         this.handleOnOff = this.handleOnOff.bind(this);
         this.handleToken = this.handleToken.bind(this);
-        this.handleRefreshLatitude = this.handleRefreshLatitude.bind(this);
-        this.handleRefreshLongitude = this.handleRefreshLongitude.bind(this);
+        this.handleLatitude = this.handleLatitude.bind(this);
+        this.handleLongitude = this.handleLongitude.bind(this);
         this.handleSave = this.handleSave.bind(this);
     }
 
@@ -161,22 +177,32 @@ class DeviceConfig extends React.Component {
             .catch((error) => {
                 //Sets error state
                 this.setState({
-                    errorState: true,
+                    snackMessage: "Could not load device's groups",
+                    snackSeverity: "error"
                 })
             })
         })
         .catch((error) => {
             //Sets error state
             this.setState({
-                errorState: true,
+                snackMessage: "Could not load device's configurations",
+                snackSeverity: "error"
             })
         })
     }
 
+    /**
+     * On refresh interval text field change
+     * @param event
+     */
     handleRefreshRate(event) {
         this.setState({refreshRate: event.target.value});
     }
 
+    /**
+     * Remove a group from a device
+     * @param groupIdToRemove ID of the group to remove
+     */
     handleRemoveGroup(groupIdToRemove) {
         // copies groups in state
         const newGroups = this.state.deviceGroups;
@@ -187,6 +213,10 @@ class DeviceConfig extends React.Component {
         this.setState({groups: newGroups})
     }
 
+    /**
+     * When a new group is created, add the group in backend and add it to the device
+     * @param groupName Name of the group to be created
+     */
     handleAddNewGroup = (groupName) => {
 
         const setGroup = (name) => {
@@ -219,6 +249,10 @@ class DeviceConfig extends React.Component {
             })
     }
 
+    /**
+     * Set a group to the device
+     * @param event GroupId in event.target.value
+     */
     handleSetGroup = (event) => {
         const groupId = event.target.value;
         for (const [id, group] of Object.entries(this.state.allGroups)) {
@@ -232,6 +266,10 @@ class DeviceConfig extends React.Component {
         }
     }
 
+    /**
+     * Generate a new token for the device
+     * @param event
+     */
     handleToken(event) {
         // sets token
         axios.put('devices/'+this.props.match.params.id+'/generatetoken/')
@@ -242,7 +280,10 @@ class DeviceConfig extends React.Component {
                 })
             })
             .catch((error) => {
-                console.log(error.response);
+                this.setState({
+                    snackMessage: "Could not generate token",
+                    snackSeverity: "error"
+                })
             })
     }
 
@@ -250,54 +291,89 @@ class DeviceConfig extends React.Component {
         this.setState({enabled: !this.state.enabled});
     }
 
-    handleRefreshLatitude (event) {
+    handleLatitude (event) {
         this.setState({latitude: event.target.value});
     }
 
-    handleRefreshLongitude (event) {
+    handleLongitude (event) {
         this.setState({longitude: event.target.value});
     }
 
-    handleSave(event) {
-
-        // sets frequency and enabled
-        axios.put('devices/'+this.props.match.params.id+'/config', null, {
-            params: {
-                "updateFrequency": parseInt(this.state.refreshRate),
-                "enabled": this.state.enabled,
-                "latitude": parseFloat(this.state.latitude),
-                "longitude": parseFloat(this.state.longitude)
+    /**
+     * Validate form checking the required fields
+     * @returns A true value when the form is correctly validated
+     */
+    validateForm() {
+        this.setState({
+            error: {
+                refreshRate: this.state.refreshRate ? "" : "Please enter a refresh interval",
+                latitude: this.state.latitude ? "" : "Please insert a latitude",
+                longitude: this.state.longitude ? "" : "Please insert a longitude"
             }
         })
-        .then((resp) => {
-            console.log(resp);
-        })
-        .catch((error) => {
-            console.log(error.response);
-        })
 
-        // sets groups
-        let groupsIds = []
-        for (let i = 0; i < this.state.deviceGroups.length; i++) {
-            groupsIds.push(Number(this.state.deviceGroups[i].id))
-        }
+        return this.state.refreshRate
+            && this.state.latitude
+            && this.state.longitude
+    }
 
-        axios.post('devices/'+this.props.match.params.id+'/group/', groupsIds)
-        .then((resp) => {
-            console.log(resp);
-            this.setState({
-                snackMessage: "Configuration saved successfully"
+    /**
+     * Save device's configuration
+     * @param event
+     */
+    handleSave(event) {
+        // check if form is valid
+        if (this.validateForm()) {
+            // sets frequency and enabled, latitude and longitude
+            axios.put('devices/' + this.props.match.params.id + '/config', null, {
+                params: {
+                    "updateFrequency": parseInt(this.state.refreshRate),
+                    "enabled": this.state.enabled,
+                    "latitude": parseFloat(this.state.latitude),
+                    "longitude": parseFloat(this.state.longitude)
+                }
             })
-        })
-        .catch((error) => {
-            console.log(error.response);
-        })
+                .then((resp) => {
+                    console.log(resp);
+                })
+                .catch((error) => {
+                    this.setState({
+                        snackMessage: "Could not save configurations",
+                        snackSeverity: "error"
+                    })
+                })
+
+            // sets groups
+            let groupsIds = []
+            for (let i = 0; i < this.state.deviceGroups.length; i++) {
+                groupsIds.push(Number(this.state.deviceGroups[i].id))
+            }
+
+            axios.post('devices/' + this.props.match.params.id + '/group/', groupsIds)
+                .then((resp) => {
+                    console.log(resp);
+                    this.setState({
+                        snackMessage: "Configuration saved successfully",
+                        snackSeverity: "success"
+                    })
+                })
+                .catch((error) => {
+                    this.setState({
+                        snackMessage: "Could not save device's groups",
+                        snackSeverity: "error"
+                    })
+                })
+        }
     }
 
     handleCancel() {
         window.location.reload();
     }
 
+    /**
+     * Get a list of groups that could be added to the device
+     * @returns {*[]} List of groups
+     */
     getGroupsCouldBeAdded() {
         let diff = [...this.state.allGroups];
         for (let i = 0; i < this.state.deviceGroups.length; i++) {
@@ -313,142 +389,141 @@ class DeviceConfig extends React.Component {
 
         const { classes } = this.props;
 
-        if (this.state.errorState) {
-            return (
-                <span>Error Loading data</span>
-            );
-        }
-        else {
-            return (
-                <div>
-                    <Paper className={classes.paper}>
-                        <Typography component="h1" variant="h4" align="center">
-                            Device configuration
-                        </Typography>
-                        <Typography variant="subtitle1" align="center">
-                            Device {this.props.match.params.id}
-                        </Typography>
-                        <div style={{margin: 20}}>
-                            <Typography variant="h6" gutterBottom>
-                                Settings
-                            </Typography>
-                            <Grid container spacing={3}>
-                                <Grid item xs={12}>
-                                    <Typography display="inline">Enabled </Typography>
-                                    <FormControlLabel
-                                        control={
-                                            <Switch
-                                                checked={this.state.enabled}
-                                                onChange={this.handleOnOff}
-                                                color="primary"
-                                            />
-                                        }
-                                        label={this.state.enabled ? "ON":"OFF"}
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        id="refreshratetext"
-                                        label="Refresh interval"
-                                        value={this.state.refreshRate}
-                                        helperText="Customize device's refesh interval"
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        id="lat"
-                                        label="Latitude"
-                                        value={this.state.latitude}
-                                        helperText="Customize device's latitude"
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        id="lon"
-                                        label="Longitude"
-                                        value={this.state.longitude}
-                                        helperText="Customize device's longitude"
-                                    />
-                                </Grid>
-                            </Grid>
-                        </div>
-
-                        <Divider/>
-
-                        <div style={{margin: 20}}>
-                            <Typography variant="h6" gutterBottom>
-                                Groups
-                            </Typography>
-                            {
-                                // creates as many group papers as needed
-                                this.state.deviceGroups.map(g =>
-                                    <Chip className={classes.chip} key={g.id} label={g.name}
-                                          onDelete={this.handleRemoveGroup.bind(this, g.id)}/>
-                                )
-                            }
-                            <FormControl className={classes.formControl}>
-                                <InputLabel id="group-select-label">Add group</InputLabel>
-                                <Select
-                                    labelId="group-select-label"
-                                    id="group-select"
-                                    value=""
-                                    onChange={this.handleSetGroup}
-                                >
-                                    {
-                                        this.getGroupsCouldBeAdded().map(group =>
-                                            <MenuItem key={group["id"]} value={group["id"]}>
-                                                {group["name"]}
-                                            </MenuItem>
-                                        )
-                                    }
-                                </Select>
-                            </FormControl>
-                            <AddNewGroupDialog whenDone={this.handleAddNewGroup} />
-                        </div>
-                        <div className={classes.buttons}>
-                            <div className={classes.button}>
-                                <Button onClick={this.handleCancel} variant="contained" color="secondary">
-                                    Cancel
-                                </Button>
-                            </div>
-                            <div className={classes.button}>
-
-                                <Button onClick={this.handleSave} variant="contained" color="primary">
-                                    Save Changes
-                                </Button>
-                            </div>
-                        </div>
-                    </Paper>
-
-                    <Paper className={classes.paper}>
+        return (
+            <div>
+                <Paper className={classes.paper}>
+                    <Typography component="h1" variant="h4" align="center">
+                        Device configuration
+                    </Typography>
+                    <Typography variant="subtitle1" align="center">
+                        Device {this.props.match.params.id}
+                    </Typography>
+                    <div style={{margin: 20}}>
                         <Typography variant="h6" gutterBottom>
-                            Device token
+                            Settings
                         </Typography>
-                        <TextField
-                            disabled
-                            id="tokenlabel"
-                            label={String(this.state.token)}
-                            helperText="Current token"
-                        />
-                        <div className={classes.buttons}>
-                            <div className={classes.button}>
-                                <Button onClick={this.handleToken} variant="contained" color="primary">Generate new</Button>
-                            </div>
-                        </div>
-                    </Paper>
+                        <Grid container spacing={3}>
+                            <Grid item xs={12}>
+                                <Typography display="inline">Enabled </Typography>
+                                <FormControlLabel
+                                    control={
+                                        <Switch
+                                            checked={this.state.enabled}
+                                            onChange={this.handleOnOff}
+                                            color="primary"
+                                        />
+                                    }
+                                    label={this.state.enabled ? "ON":"OFF"}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    id="refreshratetext"
+                                    label="Refresh interval"
+                                    value={this.state.refreshRate}
+                                    helperText={this.state.error.refreshRate}
+                                    onChange={this.handleRefreshRate}
+                                    error={this.state.error.refreshRate}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    id="lat"
+                                    label="Latitude"
+                                    value={this.state.latitude}
+                                    helperText={this.state.error.latitude}
+                                    onChange={this.handleLatitude}
+                                    error={this.state.error.latitude}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                                <TextField
+                                    id="lon"
+                                    label="Longitude"
+                                    value={this.state.longitude}
+                                    helperText={this.state.error.longitude}
+                                    onChange={this.handleLongitude}
+                                    error={this.state.error.longitude}
+                                />
+                            </Grid>
+                        </Grid>
+                    </div>
 
-                    <SnackbarAlert
-                        open={this.state.snackMessage !== ""}
-                        autoHideDuration={3000}
-                        onTimeout={() => this.setState({
-                            snackMessage: ""
-                        })}
-                        severity="success"
-                        message={this.state.snackMessage}
+                    <Divider/>
+
+                    <div style={{margin: 20}}>
+                        <Typography variant="h6" gutterBottom>
+                            Groups
+                        </Typography>
+                        {
+                            // creates as many group papers as needed
+                            this.state.deviceGroups.map(g =>
+                                <Chip className={classes.chip} key={g.id} label={g.name}
+                                      onDelete={this.handleRemoveGroup.bind(this, g.id)}/>
+                            )
+                        }
+                        <FormControl className={classes.formControl}>
+                            <InputLabel id="group-select-label">Add group</InputLabel>
+                            <Select
+                                labelId="group-select-label"
+                                id="group-select"
+                                value=""
+                                onChange={this.handleSetGroup}
+                            >
+                                {
+                                    this.getGroupsCouldBeAdded().map(group =>
+                                        <MenuItem key={group["id"]} value={group["id"]}>
+                                            {group["name"]}
+                                        </MenuItem>
+                                    )
+                                }
+                            </Select>
+                        </FormControl>
+                        <AddNewGroupDialog whenDone={this.handleAddNewGroup} />
+                    </div>
+                    <div className={classes.buttons}>
+                        <div className={classes.button}>
+                            <Button onClick={this.handleCancel} variant="contained" color="secondary">
+                                Cancel
+                            </Button>
+                        </div>
+                        <div className={classes.button}>
+
+                            <Button onClick={this.handleSave} variant="contained" color="primary">
+                                Save Changes
+                            </Button>
+                        </div>
+                    </div>
+                </Paper>
+
+                <Paper className={classes.paper}>
+                    <Typography variant="h6" gutterBottom>
+                        Device token
+                    </Typography>
+                    <TextField
+                        disabled
+                        id="tokenlabel"
+                        label={String(this.state.token)}
+                        helperText="Current token"
                     />
-                </div>
-            );
-        }
+                    <div className={classes.buttons}>
+                        <div className={classes.button}>
+                            <Button onClick={this.handleToken} variant="contained" color="primary">Generate new</Button>
+                        </div>
+                    </div>
+                </Paper>
+
+                <SnackbarAlert
+                    open={this.state.snackMessage !== ""}
+                    autoHideDuration={3000}
+                    onTimeout={() => this.setState({
+                        snackMessage: ""
+                    })}
+                    severity={this.state.snackSeverity}
+                    message={this.state.snackMessage}
+                />
+            </div>
+        );
     }
 }
 
