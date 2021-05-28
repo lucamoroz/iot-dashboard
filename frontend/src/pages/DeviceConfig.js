@@ -191,10 +191,18 @@ class DeviceConfig extends React.Component {
         })
     }
 
+    /**
+     * On refresh interval text field change
+     * @param event
+     */
     handleRefreshRate(event) {
         this.setState({refreshRate: event.target.value});
     }
 
+    /**
+     * Remove a group from a device
+     * @param groupIdToRemove ID of the group to remove
+     */
     handleRemoveGroup(groupIdToRemove) {
         // copies groups in state
         const newGroups = this.state.deviceGroups;
@@ -205,6 +213,10 @@ class DeviceConfig extends React.Component {
         this.setState({groups: newGroups})
     }
 
+    /**
+     * When a new group is created, add the group in backend and add it to the device
+     * @param groupName Name of the group to be created
+     */
     handleAddNewGroup = (groupName) => {
 
         const setGroup = (name) => {
@@ -237,6 +249,10 @@ class DeviceConfig extends React.Component {
             })
     }
 
+    /**
+     * Set a group to the device
+     * @param event GroupId in event.target.value
+     */
     handleSetGroup = (event) => {
         const groupId = event.target.value;
         for (const [id, group] of Object.entries(this.state.allGroups)) {
@@ -250,6 +266,10 @@ class DeviceConfig extends React.Component {
         }
     }
 
+    /**
+     * Generate a new token for the device
+     * @param event
+     */
     handleToken(event) {
         // sets token
         axios.put('devices/'+this.props.match.params.id+'/generatetoken/')
@@ -279,6 +299,10 @@ class DeviceConfig extends React.Component {
         this.setState({longitude: event.target.value});
     }
 
+    /**
+     * Validate form checking the required fields
+     * @returns A true value when the form is correctly validated
+     */
     validateForm() {
         this.setState({
             error: {
@@ -293,9 +317,14 @@ class DeviceConfig extends React.Component {
             && this.state.longitude
     }
 
+    /**
+     * Save device's configuration
+     * @param event
+     */
     handleSave(event) {
+        // check if form is valid
         if (this.validateForm()) {
-            // sets frequency and enabled
+            // sets frequency and enabled, latitude and longitude
             axios.put('devices/' + this.props.match.params.id + '/config', null, {
                 params: {
                     "updateFrequency": parseInt(this.state.refreshRate),
@@ -341,6 +370,10 @@ class DeviceConfig extends React.Component {
         window.location.reload();
     }
 
+    /**
+     * Get a list of groups that could be added to the device
+     * @returns {*[]} List of groups
+     */
     getGroupsCouldBeAdded() {
         let diff = [...this.state.allGroups];
         for (let i = 0; i < this.state.deviceGroups.length; i++) {
