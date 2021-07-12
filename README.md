@@ -106,6 +106,5 @@ Contributions are what make the open source community such an amazing place to b
 
 
 ## License
-[![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
 
-- **[MIT license](http://opensource.org/licenses/mit-license.php)**
+- **[GPLv3 license](LICENSE)**
